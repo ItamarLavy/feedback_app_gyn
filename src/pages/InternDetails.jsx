@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function InternDetails() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(true);
+  const queryClient = useQueryClient();
   
   const urlParams = new URLSearchParams(window.location.search);
   const internId = urlParams.get('id');
@@ -32,6 +33,11 @@ export default function InternDetails() {
     },
     enabled: isAuthenticated && !!internId
   });
+
+  const handleDeleteFeedback = async (feedbackId) => {
+    await base44.entities.Feedback.delete(feedbackId);
+    queryClient.invalidateQueries({ queryKey: ['feedbacks', internId] });
+  };
 
   if (!isAuthenticated) {
     return (
@@ -73,7 +79,7 @@ export default function InternDetails() {
 
         {/* Stats */}
         <div className="mb-8">
-          <InternStats feedbacks={feedbacks} />
+          <InternStats feedbacks={feedbacks} internName={intern?.name} />
         </div>
 
         {/* Feedbacks */}
@@ -87,7 +93,12 @@ export default function InternDetails() {
           <CardContent>
             <div className="space-y-4">
               {feedbacks.map(feedback => (
-                <FeedbackCard key={feedback.id} feedback={feedback} />
+                <FeedbackCard 
+                  key={feedback.id} 
+                  feedback={feedback} 
+                  showDelete={true}
+                  onDelete={handleDeleteFeedback}
+                />
               ))}
               {feedbacks.length === 0 && (
                 <div className="text-center py-12 text-slate-500">

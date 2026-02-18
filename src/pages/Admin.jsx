@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -13,11 +13,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+const RATING_KEYS = ['knowledge_rating', 'manual_skill_rating', 'professionalism_rating', 'independence_rating'];
+
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
+  const queryClient = useQueryClient();
 
   const { data: feedbacks = [] } = useQuery({
     queryKey: ['feedbacks'],
@@ -31,6 +34,11 @@ export default function Admin() {
     enabled: isAuthenticated
   });
 
+  const handleDeleteFeedback = async (feedbackId) => {
+    await base44.entities.Feedback.delete(feedbackId);
+    queryClient.invalidateQueries({ queryKey: ['feedbacks'] });
+  };
+
   const procedures = [...new Set(feedbacks.map(f => f.procedure_type))];
 
   const filteredFeedbacks = feedbacks.filter(f => {
@@ -42,8 +50,14 @@ export default function Admin() {
 
   // Stats
   const totalFeedbacks = feedbacks.length;
-  const avgRating = feedbacks.length > 0 
-    ? (feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length).toFixed(1)
+  const allRatings = [];
+  feedbacks.forEach(f => {
+    RATING_KEYS.forEach(key => {
+      if (f[key] && f[key] > 0) allRatings.push(f[key]);
+    });
+  });
+  const avgRating = allRatings.length > 0 
+    ? (allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(1)
     : 0;
 
   if (!isAuthenticated) {
@@ -138,8 +152,14 @@ export default function Admin() {
             <div className="flex flex-wrap gap-3">
               {interns.map(intern => {
                 const internFeedbacks = feedbacks.filter(f => f.intern_id === intern.id);
-                const avg = internFeedbacks.length > 0
-                  ? (internFeedbacks.reduce((sum, f) => sum + f.rating, 0) / internFeedbacks.length).toFixed(1)
+                const internRatings = [];
+                internFeedbacks.forEach(f => {
+                  RATING_KEYS.forEach(key => {
+                    if (f[key] && f[key] > 0) internRatings.push(f[key]);
+                  });
+                });
+                const avg = internRatings.length > 0
+                  ? (internRatings.reduce((a, b) => a + b, 0) / internRatings.length).toFixed(1)
                   : '-';
                 return (
                   <Link
@@ -197,7 +217,12 @@ export default function Admin() {
         {/* Feedbacks List */}
         <div className="grid md:grid-cols-2 gap-4">
           {filteredFeedbacks.map(feedback => (
-            <FeedbackCard key={feedback.id} feedback={feedback} />
+            <FeedbackCard 
+              key={feedback.id} 
+              feedback={feedback} 
+              showDelete={true}
+              onDelete={handleDeleteFeedback}
+            />
           ))}
           {filteredFeedbacks.length === 0 && (
             <div className="col-span-2 text-center py-12 text-slate-500">
