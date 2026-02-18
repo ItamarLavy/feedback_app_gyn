@@ -26,8 +26,9 @@ export default function Home() {
             <Stethoscope className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            מערכת משובים - מחלקת נשים
+            מערכת משוב אגף נשים
           </h1>
+          <p className="text-lg text-teal-700 font-medium mb-1">הדסה הר הצופים</p>
           <p className="text-slate-500">
             הזנת משוב למתמחה לאחר ביצוע פרוצדורה
           </p>

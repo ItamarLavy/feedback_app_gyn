@@ -4,19 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Star, Send, CheckCircle } from 'lucide-react';
+import { Send, CheckCircle, Info } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
+import RatingCategory from './RatingCategory';
 
 const PROCEDURES = [
-  "לידה רגילה",
-  "ניתוח קיסרי", 
+  "קיסרי כראשון",
+  "קיסרי כעוזר",
   "לפרוסקופיה",
-  "היסטרוסקופיה",
-  "היסטרקטומיה",
-  "כריתת שחלה",
-  "אולטרסאונד",
-  "אחר"
+  "תפירת אפיזיוטומיה",
+  "הצגת מטופלת"
+];
+
+const RATING_CATEGORIES = [
+  { key: 'knowledge_rating', label: 'ידע', description: 'רמת הידע התיאורטי והקליני של המתמחה' },
+  { key: 'manual_skill_rating', label: 'מיומנות מנואלית', description: 'יכולת ביצוע טכני של הפרוצדורה' },
+  { key: 'professionalism_rating', label: 'מקצועיות', description: 'התנהלות מקצועית, תקשורת עם הצוות והמטופלת' },
+  { key: 'independence_rating', label: 'עצמאות', description: 'האם המתמחה יוכל להיות עצמאי בפרוצדורה זו' }
 ];
 
 export default function FeedbackForm({ interns, experts, onSuccess }) {
@@ -24,10 +29,12 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
     intern_id: '',
     expert_id: '',
     procedure_type: '',
-    rating: 0,
+    knowledge_rating: 0,
+    manual_skill_rating: 0,
+    professionalism_rating: 0,
+    independence_rating: 0,
     verbal_feedback: ''
   });
-  const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -38,11 +45,22 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
     const selectedIntern = interns.find(i => i.id === formData.intern_id);
     const selectedExpert = experts.find(e => e.id === formData.expert_id);
 
-    await base44.entities.Feedback.create({
-      ...formData,
+    // Only include ratings that were actually set (> 0)
+    const dataToSave = {
+      intern_id: formData.intern_id,
       intern_name: selectedIntern?.name,
-      expert_name: selectedExpert?.name
-    });
+      expert_id: formData.expert_id,
+      expert_name: selectedExpert?.name,
+      procedure_type: formData.procedure_type,
+      verbal_feedback: formData.verbal_feedback
+    };
+
+    if (formData.knowledge_rating > 0) dataToSave.knowledge_rating = formData.knowledge_rating;
+    if (formData.manual_skill_rating > 0) dataToSave.manual_skill_rating = formData.manual_skill_rating;
+    if (formData.professionalism_rating > 0) dataToSave.professionalism_rating = formData.professionalism_rating;
+    if (formData.independence_rating > 0) dataToSave.independence_rating = formData.independence_rating;
+
+    await base44.entities.Feedback.create(dataToSave);
 
     setShowSuccess(true);
     setTimeout(() => {
@@ -51,7 +69,10 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
         intern_id: '',
         expert_id: '',
         procedure_type: '',
-        rating: 0,
+        knowledge_rating: 0,
+        manual_skill_rating: 0,
+        professionalism_rating: 0,
+        independence_rating: 0,
         verbal_feedback: ''
       });
       onSuccess?.();
@@ -60,7 +81,12 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
     setIsSubmitting(false);
   };
 
-  const isValid = formData.intern_id && formData.expert_id && formData.procedure_type && formData.rating > 0;
+  const hasAtLeastOneRating = formData.knowledge_rating > 0 || 
+                               formData.manual_skill_rating > 0 || 
+                               formData.professionalism_rating > 0 || 
+                               formData.independence_rating > 0;
+
+  const isValid = formData.intern_id && formData.expert_id && formData.procedure_type && hasAtLeastOneRating;
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
@@ -149,31 +175,26 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
                 </Select>
               </div>
 
-              <div className="space-y-3">
-                <Label className="text-slate-700 font-medium">דירוג</Label>
-                <div className="flex justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, rating: star })}
-                      onMouseEnter={() => setHoveredRating(star)}
-                      onMouseLeave={() => setHoveredRating(0)}
-                      className="p-1 transition-transform hover:scale-110"
-                    >
-                      <Star
-                        className={`w-10 h-10 transition-colors ${
-                          star <= (hoveredRating || formData.rating)
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'text-slate-300'
-                        }`}
-                      />
-                    </button>
-                  ))}
+              {/* Rating Instructions */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3">
+                <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">הוראות דירוג:</p>
+                  <p>דרג את המתמחה בכל קטגוריה רלוונטית. אם קטגוריה מסוימת אינה רלוונטית לפרוצדורה זו, השאר אותה ריקה (ללא כוכבים). יש לדרג לפחות קטגוריה אחת.</p>
                 </div>
-                <p className="text-center text-sm text-slate-500">
-                  {formData.rating > 0 ? `דירוג: ${formData.rating} מתוך 5` : 'לחץ לדירוג'}
-                </p>
+              </div>
+
+              {/* Rating Categories */}
+              <div className="grid md:grid-cols-2 gap-4">
+                {RATING_CATEGORIES.map((category) => (
+                  <RatingCategory
+                    key={category.key}
+                    label={category.label}
+                    description={category.description}
+                    value={formData[category.key]}
+                    onChange={(value) => setFormData({ ...formData, [category.key]: value })}
+                  />
+                ))}
               </div>
 
               <div className="space-y-2">
