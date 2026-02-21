@@ -138,14 +138,12 @@ export default function Experts() {
                       )}
                     </div>
                   </div>
-                  {totalFeedbacks > 0 && (
-                    <Link to={createPageUrl('ExpertFeedbackDetail') + `?id=${expert.id}`}>
-                      <Button className="bg-purple-600 hover:bg-purple-700">
-                        צפה במשובים
-                        <ChevronLeft className="w-4 h-4 mr-2" />
-                      </Button>
-                    </Link>
-                  )}
+                  <Link to={createPageUrl('ExpertFeedbackDetail') + `?id=${expert.id}`}>
+                    <Button className="bg-purple-600 hover:bg-purple-700">
+                      {totalFeedbacks > 0 ? 'צפה במשובים' : 'עמוד המומחה'}
+                      <ChevronLeft className="w-4 h-4 mr-2" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
