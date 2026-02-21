@@ -52,6 +52,7 @@ export default function Experts() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
         <PasswordModal
           open={showPasswordModal}
+          mode="expert"
           onSuccess={() => {
             setIsAuthenticated(true);
             setShowPasswordModal(false);

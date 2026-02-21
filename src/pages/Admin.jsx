@@ -7,6 +7,7 @@ import PasswordModal from '../components/admin/PasswordModal';
 import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import AnomalousReports from '../components/admin/AnomalousReports';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
+import SystemAISummary from '../components/admin/SystemAISummary';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
   Star, Search, Filter, Clock
@@ -39,6 +40,12 @@ export default function Admin() {
   const { data: experts = [] } = useQuery({
     queryKey: ['experts'],
     queryFn: () => base44.entities.Expert.list(),
+    enabled: isAuthenticated
+  });
+
+  const { data: meetings = [] } = useQuery({
+    queryKey: ['meetings'],
+    queryFn: () => base44.entities.FeedbackMeeting.list(),
     enabled: isAuthenticated
   });
 
@@ -172,6 +179,11 @@ export default function Admin() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* System AI Summary */}
+        <div className="mb-8">
+          <SystemAISummary feedbacks={feedbacks} interns={interns} meetings={meetings} />
         </div>
 
         {/* Feedback Meeting Manager */}

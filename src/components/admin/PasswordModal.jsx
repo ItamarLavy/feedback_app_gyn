@@ -5,15 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Lock, Eye, EyeOff } from 'lucide-react';
 
 const ADMIN_PASSWORD = "admin123"; // סיסמת מנהל
+const EXPERT_PASSWORD = "nashim123"; // סיסמת מומחים
 
-export default function PasswordModal({ open, onSuccess, onClose }) {
+export default function PasswordModal({ open, onSuccess, onClose, mode = "admin" }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
+    const correctPassword = mode === "admin" ? ADMIN_PASSWORD : EXPERT_PASSWORD;
+    
+    if (password === correctPassword) {
       onSuccess();
       setPassword('');
       setError('');
@@ -28,7 +31,7 @@ export default function PasswordModal({ open, onSuccess, onClose }) {
         <DialogHeader>
           <DialogTitle className="text-center flex items-center justify-center gap-2">
             <Lock className="w-5 h-5 text-teal-600" />
-            כניסה לאזור ניהול
+            {mode === "admin" ? "כניסה לאזור ניהול" : "כניסה לפאנל מומחים"}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -40,7 +43,7 @@ export default function PasswordModal({ open, onSuccess, onClose }) {
                 setPassword(e.target.value);
                 setError('');
               }}
-              placeholder="הזן סיסמת מנהל"
+              placeholder={mode === "admin" ? "הזן סיסמת מנהל" : "הזן סיסמת מומחים"}
               className="h-12 pr-4 pl-12"
             />
             <button

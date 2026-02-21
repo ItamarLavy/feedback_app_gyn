@@ -11,7 +11,7 @@ const EXPERT_RATING_KEYS = [
   { key: 'expert_independence_rating', label: 'עצמאות', icon: UserCog }
 ];
 
-export default function InternStats({ feedbacks, internName }) {
+export default function InternStats({ feedbacks, internName, rotations, meetings, managerNotes }) {
   const [aiSummary, setAiSummary] = useState(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
 
@@ -73,12 +73,44 @@ export default function InternStats({ feedbacks, internName }) {
       return `פרוצדורה: ${f.procedure_type}, ${expertRatings.join(', ')}${f.expert_verbal_feedback ? `, משוב מומחה: ${f.expert_verbal_feedback}` : ''}`;
     }).join('\n');
 
+    // בניית מידע נוסף על המתמחה
+    let additionalInfo = '';
+
+    // סיבובים
+    if (rotations && rotations.length > 0) {
+      const rotationsText = rotations.map(r => 
+        `${r.rotation_type} (${r.status}${r.start_date ? `, התחלה: ${r.start_date}` : ''})`
+      ).join(', ');
+      additionalInfo += `\n\nסיבובים: ${rotationsText}`;
+    }
+
+    // פגישות מתוכננות
+    if (meetings && meetings.length > 0) {
+      const upcomingMeetings = meetings.filter(m => new Date(m.meeting_date) > new Date() && m.status === 'מתוכנן');
+      if (upcomingMeetings.length > 0) {
+        const meetingsText = upcomingMeetings.map(m => 
+          `פגישה ב-${new Date(m.meeting_date).toLocaleDateString('he-IL')}${m.location ? ` ב${m.location}` : ''}`
+        ).join(', ');
+        additionalInfo += `\n\nפגישות מתוכננות: ${meetingsText}`;
+      }
+    }
+
+    // הערות מנהל
+    if (managerNotes && managerNotes.length > 0) {
+      const notesText = managerNotes.slice(0, 3).map(n => 
+        `[${n.note_type}] ${n.note_content}`
+      ).join('\n');
+      additionalInfo += `\n\nהערות מנהל:\n${notesText}`;
+    }
+
     const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `אתה מנהל מחלקה רפואית. להלן משובים על מתמחה בשם ${internName}:
+      prompt: `אתה מנהל מחלקה רפואית. להלן מידע מקיף על מתמחה בשם ${internName}:
 
+משובים מומחים:
 ${feedbacksText}
+${additionalInfo}
 
-כתוב פסקה אחת מסכמת (3-5 משפטים) שמתארת את החוזקות והאתגרים של המתמחה, ומה הצעדים הבאים שלו צריכים להיות. כתוב בעברית, בצורה מקצועית ובונה.`,
+כתוב 1-2 פסקאות מסכמות שמתארות את החוזקות והאתגרים של המתמחה, התקדמותו בסיבובים, פגישות קרובות, והצעדים הבאים. השתמש רק במידע שניתן לך (אם משהו חסר, אל תזכיר אותו). כתוב בעברית, בצורה מקצועית ובונה.`,
       response_json_schema: {
         type: "object",
         properties: {

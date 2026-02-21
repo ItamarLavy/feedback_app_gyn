@@ -54,6 +54,12 @@ export default function InternDetails() {
     enabled: isAuthenticated && !!internId
   });
 
+  const { data: managerNotes = [] } = useQuery({
+    queryKey: ['manager-notes', internId],
+    queryFn: () => base44.entities.ManagerNote.filter({ intern_id: internId }, '-created_date'),
+    enabled: isAuthenticated && !!internId
+  });
+
   const handleDeleteFeedback = async (feedbackId) => {
     await base44.entities.Feedback.delete(feedbackId);
     queryClient.invalidateQueries({ queryKey: ['feedbacks', internId] });
@@ -99,7 +105,13 @@ export default function InternDetails() {
 
         {/* Stats */}
         <div className="mb-8">
-          <InternStats feedbacks={feedbacks} internName={intern?.name} />
+          <InternStats 
+            feedbacks={feedbacks} 
+            internName={intern?.name} 
+            rotations={rotations}
+            meetings={meetings}
+            managerNotes={managerNotes}
+          />
         </div>
 
         {/* Rotation Management & Map */}
