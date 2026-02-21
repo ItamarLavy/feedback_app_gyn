@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import PasswordModal from '../components/admin/PasswordModal';
-import FeedbackCard from '../components/feedback/FeedbackCard';
+import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import AnomalousReports from '../components/admin/AnomalousReports';
 import MessagingPanel from '../components/admin/MessagingPanel';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
@@ -52,21 +52,26 @@ export default function Admin() {
 
   const filteredFeedbacks = feedbacks.filter(f => {
     const matchesSearch = f.intern_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          f.expert_name?.toLowerCase().includes(searchTerm.toLowerCase());
+                          f.expert_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          f.procedure_id_code?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesProcedure = filterProcedure === 'all' || f.procedure_type === filterProcedure;
     return matchesSearch && matchesProcedure;
   });
 
-  // Stats
+  // Count pending expert reviews
+  const pendingExpertReviews = feedbacks.filter(f => f.status === 'pending_expert_review').length;
+  const completedReviews = feedbacks.filter(f => f.status === 'completed').length;
+
+  // Stats - Only expert ratings
   const totalFeedbacks = feedbacks.length;
-  const allRatings = [];
+  const expertRatings = [];
   feedbacks.forEach(f => {
-    RATING_KEYS.forEach(key => {
-      if (f[key] && f[key] > 0) allRatings.push(f[key]);
+    ['expert_knowledge_rating', 'expert_manual_skill_rating', 'expert_professionalism_rating', 'expert_independence_rating'].forEach(key => {
+      if (f[key] && f[key] > 0) expertRatings.push(f[key]);
     });
   });
-  const avgRating = allRatings.length > 0 
-    ? (allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(1)
+  const avgRating = expertRatings.length > 0 
+    ? (expertRatings.reduce((a, b) => a + b, 0) / expertRatings.length).toFixed(1)
     : 0;
 
   if (!isAuthenticated) {
@@ -108,7 +113,7 @@ export default function Admin() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-4 gap-6 mb-8">
           <Card className="border-0 shadow-lg bg-white">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
@@ -130,8 +135,26 @@ export default function Admin() {
                   <Star className="w-6 h-6 text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-slate-500 text-sm">דירוג ממוצע</p>
+                  <p className="text-slate-500 text-sm">דירוג ממוצע מומחים</p>
                   <p className="text-3xl font-bold text-slate-800">{avgRating}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className={`border-0 shadow-lg ${pendingExpertReviews > 0 ? 'bg-amber-50 border-2 border-amber-300' : 'bg-white'}`}>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                  pendingExpertReviews > 0 ? 'bg-amber-200' : 'bg-orange-100'
+                }`}>
+                  <Clock className={`w-6 h-6 ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-orange-600'}`} />
+                </div>
+                <div>
+                  <p className="text-slate-500 text-sm">ממתינים למומחה</p>
+                  <p className={`text-3xl font-bold ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-slate-800'}`}>
+                    {pendingExpertReviews}
+                  </p>
                 </div>
               </div>
             </CardContent>
