@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, User, Calendar, Hash, Star, CheckCircle, AlertCircle, Send, Clock, MapPin, Mail, Save } from 'lucide-react';
+import { ArrowLeft, User, Calendar, Hash, Star, CheckCircle, AlertCircle, Send, Clock, MapPin } from 'lucide-react';
 import { format, parseISO, isPast } from 'date-fns';
 import RatingCategory from '../components/feedback/RatingCategory';
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,6 @@ export default function ExpertFeedbackDetail() {
     expert_verbal_feedback: ''
   });
   const [editingId, setEditingId] = useState(null);
-  const [emailInput, setEmailInput] = useState('');
 
   const { data: expert } = useQuery({
     queryKey: ['expert', expertId],
@@ -75,17 +74,6 @@ export default function ExpertFeedbackDetail() {
       });
     }
   });
-
-  const updateExpertEmailMutation = useMutation({
-    mutationFn: (email) => base44.entities.Expert.update(expertId, { email }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['expert', expertId] });
-    }
-  });
-
-  const handleSaveEmail = () => {
-    updateExpertEmailMutation.mutate(emailInput);
-  };
 
   const pendingFeedbacks = allFeedbacks.filter(f => f.status === 'pending_expert_review');
   const completedFeedbacks = allFeedbacks.filter(f => f.status === 'completed');
@@ -156,45 +144,6 @@ export default function ExpertFeedbackDetail() {
             <ArrowLeft className="w-4 h-4" />
           </Link>
         </div>
-
-        {/* Email Settings */}
-        <Card className="border-0 shadow-lg mb-8 bg-gradient-to-br from-purple-50 to-white">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Mail className="w-5 h-5 text-purple-600" />
-              הגדרות תזכורות במייל
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-slate-600">
-              הזן כתובת מייל לקבלת תזכורות אוטומטיות כאשר מתמחה ממלא פרוצדורה וממתין למשוב שלך.
-              <br />
-              אם אינך מעוניין/ת לקבל תזכורות, השאר/י את השדה ריק.
-            </p>
-            <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="הזן כתובת מייל"
-                defaultValue={expert.email || ''}
-                onChange={(e) => setEmailInput(e.target.value)}
-                className="flex-1"
-              />
-              <Button 
-                onClick={handleSaveEmail}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                <Save className="w-4 h-4 ml-1" />
-                שמור
-              </Button>
-            </div>
-            {expert.email && (
-              <p className="text-xs text-green-700 flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" />
-                כתובת מייל נשמרה: {expert.email}
-              </p>
-            )}
-          </CardContent>
-        </Card>
 
         {/* Upcoming Meetings */}
         {upcomingMeetings.length > 0 && (
