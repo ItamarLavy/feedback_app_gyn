@@ -15,19 +15,19 @@ export default function InternStats({ feedbacks, internName }) {
   const [aiSummary, setAiSummary] = useState(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
 
-  // חישוב ממוצע כללי (מכל הדירוגים שיש)
-  const allRatings = [];
+  // חישוב ממוצע כללי (רק מדירוגי מומחים)
+  const expertRatings = [];
   feedbacks.forEach(f => {
-    RATING_KEYS.forEach(({ key }) => {
-      if (f[key] && f[key] > 0) allRatings.push(f[key]);
+    EXPERT_RATING_KEYS.forEach(({ key }) => {
+      if (f[key] && f[key] > 0) expertRatings.push(f[key]);
     });
   });
-  const overallAverage = allRatings.length > 0
-    ? (allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(1)
+  const overallAverage = expertRatings.length > 0
+    ? (expertRatings.reduce((a, b) => a + b, 0) / expertRatings.length).toFixed(1)
     : 0;
 
-  // חישוב ממוצע לכל קטגוריית דירוג
-  const categoryAverages = RATING_KEYS.map(({ key, label, icon }) => {
+  // חישוב ממוצע לכל קטגוריית דירוג (רק מדירוגי מומחים)
+  const categoryAverages = EXPERT_RATING_KEYS.map(({ key, label, icon }) => {
     const ratings = feedbacks.map(f => f[key]).filter(r => r && r > 0);
     return {
       key,
@@ -38,13 +38,13 @@ export default function InternStats({ feedbacks, internName }) {
     };
   });
 
-  // חישוב ממוצע לכל פרוצדורה
+  // חישוב ממוצע לכל פרוצדורה (רק מדירוגי מומחים)
   const procedureStats = {};
   feedbacks.forEach(f => {
     if (!procedureStats[f.procedure_type]) {
       procedureStats[f.procedure_type] = { ratings: [], count: 0 };
     }
-    RATING_KEYS.forEach(({ key }) => {
+    EXPERT_RATING_KEYS.forEach(({ key }) => {
       if (f[key] && f[key] > 0) {
         procedureStats[f.procedure_type].ratings.push(f[key]);
       }
@@ -64,13 +64,13 @@ export default function InternStats({ feedbacks, internName }) {
     setIsLoadingSummary(true);
     
     const feedbacksText = feedbacks.map(f => {
-      const ratings = [];
-      if (f.knowledge_rating) ratings.push(`ידע: ${f.knowledge_rating}/5`);
-      if (f.manual_skill_rating) ratings.push(`מיומנות מנואלית: ${f.manual_skill_rating}/5`);
-      if (f.professionalism_rating) ratings.push(`מקצועיות: ${f.professionalism_rating}/5`);
-      if (f.independence_rating) ratings.push(`עצמאות: ${f.independence_rating}/5`);
+      const expertRatings = [];
+      if (f.expert_knowledge_rating) expertRatings.push(`ידע: ${f.expert_knowledge_rating}/5`);
+      if (f.expert_manual_skill_rating) expertRatings.push(`מיומנות מנואלית: ${f.expert_manual_skill_rating}/5`);
+      if (f.expert_professionalism_rating) expertRatings.push(`מקצועיות: ${f.expert_professionalism_rating}/5`);
+      if (f.expert_independence_rating) expertRatings.push(`עצמאות: ${f.expert_independence_rating}/5`);
       
-      return `פרוצדורה: ${f.procedure_type}, ${ratings.join(', ')}${f.verbal_feedback ? `, משוב: ${f.verbal_feedback}` : ''}`;
+      return `פרוצדורה: ${f.procedure_type}, ${expertRatings.join(', ')}${f.expert_verbal_feedback ? `, משוב מומחה: ${f.expert_verbal_feedback}` : ''}`;
     }).join('\n');
 
     const result = await base44.integrations.Core.InvokeLLM({
