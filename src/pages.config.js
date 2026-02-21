@@ -52,7 +52,6 @@ import ExpertFeedbackDetail from './pages/ExpertFeedbackDetail';
 import Experts from './pages/Experts';
 import Home from './pages/Home';
 import InternDetails from './pages/InternDetails';
-import EmailManagement from './pages/EmailManagement';
 import __Layout from './Layout.jsx';
 
 
@@ -62,7 +61,6 @@ export const PAGES = {
     "Experts": Experts,
     "Home": Home,
     "InternDetails": InternDetails,
-    "EmailManagement": EmailManagement,
 }
 
 export const pagesConfig = {
