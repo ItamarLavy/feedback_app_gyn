@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import PasswordModal from '../components/admin/PasswordModal';
 import FeedbackCard from '../components/feedback/FeedbackCard';
+import AnomalousReports from '../components/admin/AnomalousReports';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
   Star, Search, Filter
@@ -141,6 +142,11 @@ export default function Admin() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Anomalous Reports */}
+        <div className="mb-8">
+          <AnomalousReports feedbacks={feedbacks} interns={interns} />
         </div>
 
         {/* Interns List */}
