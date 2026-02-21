@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Star, TrendingUp, BookOpen, Hand, Award, UserCog, Sparkles, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
-const RATING_KEYS = [
-  { key: 'knowledge_rating', label: 'ידע', icon: BookOpen },
-  { key: 'manual_skill_rating', label: 'מיומנות מנואלית', icon: Hand },
-  { key: 'professionalism_rating', label: 'מקצועיות', icon: Award },
-  { key: 'independence_rating', label: 'עצמאות', icon: UserCog }
+const EXPERT_RATING_KEYS = [
+  { key: 'expert_knowledge_rating', label: 'ידע', icon: BookOpen },
+  { key: 'expert_manual_skill_rating', label: 'מיומנות מנואלית', icon: Hand },
+  { key: 'expert_professionalism_rating', label: 'מקצועיות', icon: Award },
+  { key: 'expert_independence_rating', label: 'עצמאות', icon: UserCog }
 ];
 
 export default function InternStats({ feedbacks, internName }) {

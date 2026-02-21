@@ -254,34 +254,39 @@ export default function Admin() {
         </Card>
 
         {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <Input
-              placeholder="חיפוש לפי שם מתמחה או מומחה..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pr-10 h-12 bg-white border-slate-200"
-            />
+        <div className="space-y-4">
+          <div className="text-xs text-slate-500">
+            חיפוש לפי שם מתמחה, מומחה, או קוד פרוצדורה (לדוגמה: #001)
           </div>
-          <Select value={filterProcedure} onValueChange={setFilterProcedure}>
-            <SelectTrigger className="w-full md:w-48 h-12 bg-white border-slate-200">
-              <Filter className="w-4 h-4 ml-2" />
-              <SelectValue placeholder="סנן לפי פרוצדורה" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">כל הפרוצדורות</SelectItem>
-              {procedures.map(proc => (
-                <SelectItem key={proc} value={proc}>{proc}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Input
+                placeholder="חיפוש..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pr-10 h-12 bg-white border-slate-200"
+              />
+            </div>
+            <Select value={filterProcedure} onValueChange={setFilterProcedure}>
+              <SelectTrigger className="w-full md:w-48 h-12 bg-white border-slate-200">
+                <Filter className="w-4 h-4 ml-2" />
+                <SelectValue placeholder="סנן לפי פרוצדורה" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">כל הפרוצדורות</SelectItem>
+                {procedures.map(proc => (
+                  <SelectItem key={proc} value={proc}>{proc}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Feedbacks List */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-4 mt-6">
           {filteredFeedbacks.map(feedback => (
-            <FeedbackCard 
+            <FeedbackCardDetailed 
               key={feedback.id} 
               feedback={feedback} 
               showDelete={true}
