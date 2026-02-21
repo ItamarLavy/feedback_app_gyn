@@ -4,18 +4,56 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, CheckCircle, Info } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { Send, CheckCircle, Info, Calendar } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import RatingCategory from './RatingCategory';
 
-const PROCEDURES = [
-  "קיסרי כראשון",
-  "קיסרי כעוזר",
-  "לפרוסקופיה",
-  "תפירת אפיזיוטומיה",
-  "הצגת מטופלת"
-];
+const PROCEDURE_CATEGORIES = {
+  "אבנים בנשים": [
+    "אדר חמרני",
+    "אלומה בר",
+    "אלון קס",
+    "ג'ולנאר מוסטאפא",
+    "גילה כהן",
+    "דימא פארוג'ה",
+    "דניאל ויקטור",
+    "דר נוי",
+    "מעיין יוגב",
+    "נטלי ביבר",
+    "פארוג'ה נטור דימא",
+    "קארן הורביץ",
+    "קרן מרקס",
+    "שבית אסולין",
+    "שלהבת פרנק",
+    "שני מושקוביץ",
+    "תמר אליישיב"
+  ],
+  "גלעד רונית": [
+    "דן וולסקי",
+    "דנה לסרי",
+    "הלן מיסמה",
+    "חגי אמסלם",
+    "יהודית זנגי",
+    "יובל לביא",
+    "יעקב בנטוב",
+    "ישי סומפולינסקי",
+    "לויט לורין",
+    "לילך מור",
+    "מאור קבסה",
+    "מיכל נובוסלסקי",
+    "נעם כהן",
+    "עובדיה רוזנבלו",
+    "עפר בהריר",
+    "פרץ אדווה",
+    "צביקה שמעונוביץ",
+    "רחל פרנקל",
+    "אדר חמרני",
+    "קרן מרקס",
+    "שני מושקוביץ"
+  ]
+};
 
 const RATING_CATEGORIES = [
   { key: 'knowledge_rating', label: 'ידע', description: 'רמת הידע התיאורטי והקליני של המתמחה' },
@@ -28,7 +66,9 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
   const [formData, setFormData] = useState({
     intern_id: '',
     expert_id: '',
+    procedure_category: '',
     procedure_type: '',
+    procedure_date: '',
     knowledge_rating: 0,
     manual_skill_rating: 0,
     professionalism_rating: 0,
@@ -45,13 +85,14 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
     const selectedIntern = interns.find(i => i.id === formData.intern_id);
     const selectedExpert = experts.find(e => e.id === formData.expert_id);
 
-    // Only include ratings that were actually set (> 0)
     const dataToSave = {
       intern_id: formData.intern_id,
       intern_name: selectedIntern?.name,
       expert_id: formData.expert_id,
       expert_name: selectedExpert?.name,
+      procedure_category: formData.procedure_category,
       procedure_type: formData.procedure_type,
+      procedure_date: formData.procedure_date,
       verbal_feedback: formData.verbal_feedback
     };
 
@@ -68,7 +109,9 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
       setFormData({
         intern_id: '',
         expert_id: '',
+        procedure_category: '',
         procedure_type: '',
+        procedure_date: '',
         knowledge_rating: 0,
         manual_skill_rating: 0,
         professionalism_rating: 0,
@@ -86,7 +129,12 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
                                formData.professionalism_rating > 0 || 
                                formData.independence_rating > 0;
 
-  const isValid = formData.intern_id && formData.expert_id && formData.procedure_type && hasAtLeastOneRating;
+  const isValid = formData.intern_id && formData.expert_id && formData.procedure_category && 
+                  formData.procedure_type && hasAtLeastOneRating;
+
+  const availableProcedures = formData.procedure_category 
+    ? PROCEDURE_CATEGORIES[formData.procedure_category] || []
+    : [];
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
@@ -156,26 +204,60 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-slate-700 font-medium">סוג פרוצדורה</Label>
-                <Select
-                  value={formData.procedure_type}
-                  onValueChange={(value) => setFormData({ ...formData, procedure_type: value })}
-                >
-                  <SelectTrigger className="h-12 bg-white border-slate-200 focus:border-teal-500 focus:ring-teal-500">
-                    <SelectValue placeholder="בחר סוג פרוצדורה" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PROCEDURES.map((proc) => (
-                      <SelectItem key={proc} value={proc}>
-                        {proc}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label className="text-slate-700 font-medium">קטגוריית פרוצדורה</Label>
+                  <Select
+                    value={formData.procedure_category}
+                    onValueChange={(value) => setFormData({ ...formData, procedure_category: value, procedure_type: '' })}
+                  >
+                    <SelectTrigger className="h-12 bg-white border-slate-200 focus:border-teal-500 focus:ring-teal-500">
+                      <SelectValue placeholder="בחר קטגוריה" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(PROCEDURE_CATEGORIES).map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-slate-700 font-medium">פרוצדורה</Label>
+                  <Select
+                    value={formData.procedure_type}
+                    onValueChange={(value) => setFormData({ ...formData, procedure_type: value })}
+                    disabled={!formData.procedure_category}
+                  >
+                    <SelectTrigger className="h-12 bg-white border-slate-200 focus:border-teal-500 focus:ring-teal-500">
+                      <SelectValue placeholder="בחר פרוצדורה" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableProcedures.map((proc) => (
+                        <SelectItem key={proc} value={proc}>
+                          {proc}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              {/* Rating Instructions */}
+              <div className="space-y-2">
+                <Label className="text-slate-700 font-medium flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  תאריך ביצוע הפרוצדורה
+                </Label>
+                <Input
+                  type="date"
+                  value={formData.procedure_date}
+                  onChange={(e) => setFormData({ ...formData, procedure_date: e.target.value })}
+                  className="h-12 bg-white border-slate-200 focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
+
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3">
                 <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-800">
@@ -184,7 +266,6 @@ export default function FeedbackForm({ interns, experts, onSuccess }) {
                 </div>
               </div>
 
-              {/* Rating Categories */}
               <div className="grid md:grid-cols-2 gap-4">
                 {RATING_CATEGORIES.map((category) => (
                   <RatingCategory
