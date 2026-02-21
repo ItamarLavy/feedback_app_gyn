@@ -4,11 +4,12 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import PasswordModal from '../components/admin/PasswordModal';
-import FeedbackCard from '../components/feedback/FeedbackCard';
+import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import InternStats from '../components/admin/InternStats';
 import RotationManager from '../components/admin/RotationManager';
 import RotationMap from '../components/intern/RotationMap';
 import MyFeedbackMeetings from '../components/intern/MyFeedbackMeetings';
+import ManagerNotes from '../components/admin/ManagerNotes';
 import { User, ArrowLeft, ClipboardList } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -112,6 +113,11 @@ export default function InternDetails() {
           <MyFeedbackMeetings meetings={meetings} />
         </div>
 
+        {/* Manager Notes */}
+        <div className="mb-8">
+          <ManagerNotes intern={intern} />
+        </div>
+
         {/* Feedbacks */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
@@ -123,7 +129,7 @@ export default function InternDetails() {
           <CardContent>
             <div className="space-y-4">
               {feedbacks.map(feedback => (
-                <FeedbackCard 
+                <FeedbackCardDetailed 
                   key={feedback.id} 
                   feedback={feedback} 
                   showDelete={true}

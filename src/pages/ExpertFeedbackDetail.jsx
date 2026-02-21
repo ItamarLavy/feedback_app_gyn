@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, User, Calendar, Hash, Star, CheckCircle, AlertCircle, Send } from 'lucide-react';
-import { format } from 'date-fns';
+import { ArrowLeft, User, Calendar, Hash, Star, CheckCircle, AlertCircle, Send, Clock, MapPin } from 'lucide-react';
+import { format, parseISO, isPast } from 'date-fns';
 import RatingCategory from '../components/feedback/RatingCategory';
 
 const RATING_CATEGORIES = [
@@ -45,6 +45,17 @@ export default function ExpertFeedbackDetail() {
   const { data: allFeedbacks = [] } = useQuery({
     queryKey: ['feedbacks-for-expert', expertId],
     queryFn: () => base44.entities.Feedback.filter({ expert_id: expertId }, '-created_date'),
+    enabled: !!expertId
+  });
+
+  const { data: expertMeetings = [] } = useQuery({
+    queryKey: ['expert-meetings', expertId],
+    queryFn: async () => {
+      const allMeetings = await base44.entities.FeedbackMeeting.list('-meeting_date');
+      return allMeetings.filter(m => 
+        m.invited_experts && m.invited_experts.some(e => e.id === expertId)
+      );
+    },
     enabled: !!expertId
   });
 
@@ -107,6 +118,9 @@ export default function ExpertFeedbackDetail() {
     return <div className="p-8 text-center">טוען...</div>;
   }
 
+  const upcomingMeetings = expertMeetings.filter(m => !isPast(parseISO(m.meeting_date)) && m.status === 'מתוכנן');
+  const pastMeetings = expertMeetings.filter(m => isPast(parseISO(m.meeting_date)) || m.status === 'התקיים');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100" dir="rtl">
       <div className="max-w-5xl mx-auto px-4 py-8">
@@ -118,7 +132,7 @@ export default function ExpertFeedbackDetail() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">{expert.name}</h1>
-              <p className="text-slate-500 text-sm">משובים ממתינים למילוי</p>
+              <p className="text-slate-500 text-sm">משובים ופגישות</p>
             </div>
           </div>
           <Link 
@@ -129,6 +143,71 @@ export default function ExpertFeedbackDetail() {
             <ArrowLeft className="w-4 h-4" />
           </Link>
         </div>
+
+        {/* Upcoming Meetings */}
+        {upcomingMeetings.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-purple-600" />
+              פגישות משוב קרובות ({upcomingMeetings.length})
+            </h2>
+            <div className="space-y-3">
+              {upcomingMeetings.map(meeting => (
+                <Card key={meeting.id} className="border-2 border-purple-300 bg-purple-50">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <User className="w-4 h-4 text-slate-600" />
+                          <span className="font-semibold text-slate-800">{meeting.intern_name}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <Clock className="w-4 h-4" />
+                          <span>{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy HH:mm')}</span>
+                        </div>
+                        {meeting.location && (
+                          <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
+                            <MapPin className="w-4 h-4" />
+                            <span>{meeting.location}</span>
+                          </div>
+                        )}
+                      </div>
+                      <Badge className="bg-purple-600">מתוכנן</Badge>
+                    </div>
+                    {meeting.notes && (
+                      <p className="text-sm text-slate-600 mt-2 border-t border-purple-200 pt-2">{meeting.notes}</p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Past Meetings */}
+        {pastMeetings.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-slate-800 mb-4">פגישות שהתקיימו ({pastMeetings.length})</h2>
+            <div className="space-y-2">
+              {pastMeetings.map(meeting => (
+                <Card key={meeting.id} className="bg-slate-50 border border-slate-200">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 text-sm">
+                        <User className="w-4 h-4 text-slate-500" />
+                        <span className="text-slate-700">{meeting.intern_name}</span>
+                        <span className="text-slate-400">•</span>
+                        <Calendar className="w-4 h-4 text-slate-500" />
+                        <span className="text-slate-600">{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy')}</span>
+                      </div>
+                      <Badge className="bg-slate-600 text-xs">התקיים</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Pending Feedbacks */}
         {pendingFeedbacks.length > 0 && (
@@ -283,19 +362,152 @@ export default function ExpertFeedbackDetail() {
             </h2>
             <div className="space-y-3">
               {completedFeedbacks.map(feedback => (
-                <Card key={feedback.id} className="bg-green-50 border border-green-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Hash className="w-4 h-4 text-slate-600" />
+                <Card key={feedback.id} className="bg-white border-2 border-green-200">
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Hash className="w-4 h-4 text-slate-500" />
                         <span className="font-mono text-teal-700 font-semibold">{feedback.procedure_id_code}</span>
-                        <span className="text-slate-400">•</span>
-                        <span className="text-slate-700">{feedback.intern_name}</span>
-                        <span className="text-slate-400">•</span>
-                        <span className="text-sm text-slate-600">{feedback.procedure_type}</span>
+                        <Badge className="bg-green-600 text-xs">הושלם</Badge>
                       </div>
-                      <Badge className="bg-green-600">הושלם</Badge>
                     </div>
+                    <div className="flex items-center gap-2 text-slate-700 mb-2">
+                      <User className="w-4 h-4 text-teal-600" />
+                      <span className="font-medium">{feedback.intern_name}</span>
+                    </div>
+                    <div className="inline-block px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm font-medium mb-3">
+                      {feedback.procedure_type}
+                    </div>
+
+                    {/* Ratings Comparison */}
+                    <div className="space-y-3 border-t border-slate-100 pt-3">
+                      {(feedback.intern_knowledge_rating > 0 || feedback.expert_knowledge_rating > 0) && (
+                        <div>
+                          <div className="text-xs text-slate-600 font-medium mb-1">ידע</div>
+                          <div className="flex items-center gap-3 text-sm">
+                            {feedback.intern_knowledge_rating > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">מתמחה:</span>
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star key={star} className={`w-3 h-3 ${star <= feedback.intern_knowledge_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-200'}`} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {feedback.expert_knowledge_rating > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">אני:</span>
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star key={star} className={`w-3 h-3 ${star <= feedback.expert_knowledge_rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {(feedback.intern_manual_skill_rating > 0 || feedback.expert_manual_skill_rating > 0) && (
+                        <div>
+                          <div className="text-xs text-slate-600 font-medium mb-1">מיומנות מנואלית</div>
+                          <div className="flex items-center gap-3 text-sm">
+                            {feedback.intern_manual_skill_rating > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">מתמחה:</span>
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star key={star} className={`w-3 h-3 ${star <= feedback.intern_manual_skill_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-200'}`} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {feedback.expert_manual_skill_rating > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">אני:</span>
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star key={star} className={`w-3 h-3 ${star <= feedback.expert_manual_skill_rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {(feedback.intern_professionalism_rating > 0 || feedback.expert_professionalism_rating > 0) && (
+                        <div>
+                          <div className="text-xs text-slate-600 font-medium mb-1">מקצועיות</div>
+                          <div className="flex items-center gap-3 text-sm">
+                            {feedback.intern_professionalism_rating > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">מתמחה:</span>
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star key={star} className={`w-3 h-3 ${star <= feedback.intern_professionalism_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-200'}`} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {feedback.expert_professionalism_rating > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">אני:</span>
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star key={star} className={`w-3 h-3 ${star <= feedback.expert_professionalism_rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {(feedback.intern_independence_rating > 0 || feedback.expert_independence_rating > 0) && (
+                        <div>
+                          <div className="text-xs text-slate-600 font-medium mb-1">עצמאות</div>
+                          <div className="flex items-center gap-3 text-sm">
+                            {feedback.intern_independence_rating > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">מתמחה:</span>
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star key={star} className={`w-3 h-3 ${star <= feedback.intern_independence_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-200'}`} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {feedback.expert_independence_rating > 0 && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">אני:</span>
+                                <div className="flex">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star key={star} className={`w-3 h-3 ${star <= feedback.expert_independence_rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Verbal Feedback */}
+                    {(feedback.intern_verbal_feedback || feedback.expert_verbal_feedback) && (
+                      <div className="border-t border-slate-100 pt-3 mt-3 space-y-2">
+                        {feedback.intern_verbal_feedback && (
+                          <div className="bg-blue-50 rounded-lg p-3">
+                            <p className="text-xs text-blue-700 font-semibold mb-1">משוב עצמי של המתמחה:</p>
+                            <p className="text-sm text-slate-700">{feedback.intern_verbal_feedback}</p>
+                          </div>
+                        )}
+                        {feedback.expert_verbal_feedback && (
+                          <div className="bg-purple-50 rounded-lg p-3">
+                            <p className="text-xs text-purple-700 font-semibold mb-1">המשוב שלי:</p>
+                            <p className="text-sm text-slate-700">{feedback.expert_verbal_feedback}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
