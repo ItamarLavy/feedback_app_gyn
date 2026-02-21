@@ -6,7 +6,6 @@ import { createPageUrl } from '@/utils';
 import PasswordModal from '../components/admin/PasswordModal';
 import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import AnomalousReports from '../components/admin/AnomalousReports';
-import MessagingPanel from '../components/admin/MessagingPanel';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
@@ -185,10 +184,7 @@ export default function Admin() {
           <AnomalousReports feedbacks={feedbacks} interns={interns} />
         </div>
 
-        {/* Messaging Panel */}
-        <div className="mb-8">
-          <MessagingPanel interns={interns} experts={experts} />
-        </div>
+
 
         {/* Interns List */}
         <Card className="border-0 shadow-lg mb-8">
