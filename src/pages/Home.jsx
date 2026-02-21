@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import FeedbackForm from '../components/feedback/FeedbackForm';
+import InternSelfFeedbackForm from '../components/feedback/InternSelfFeedbackForm';
 import { Stethoscope } from 'lucide-react';
 
 export default function Home() {
@@ -30,12 +30,12 @@ export default function Home() {
           </h1>
           <p className="text-lg text-teal-700 font-medium mb-1">הדסה הר הצופים</p>
           <p className="text-slate-500">
-            הזנת משוב למתמחה לאחר ביצוע פרוצדורה
+            משוב עצמי למתמחה לאחר ביצוע פרוצדורה
           </p>
         </div>
 
         {/* Form */}
-        <FeedbackForm 
+        <InternSelfFeedbackForm 
           interns={interns} 
           experts={experts}
           onSuccess={() => queryClient.invalidateQueries({ queryKey: ['feedbacks'] })}

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import PasswordModal from '../components/admin/PasswordModal';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Clock, AlertCircle, CheckCircle, Calendar } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Bell, Clock, AlertCircle, CheckCircle, Calendar, ChevronLeft } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 
 export default function Experts() {
@@ -26,33 +29,22 @@ export default function Experts() {
   // חישוב תזכורות לכל מומחה
   const expertReminders = experts.map(expert => {
     const expertFeedbacks = feedbacks.filter(f => f.expert_id === expert.id);
-    const lastFeedback = expertFeedbacks[0];
-    
-    let reminderStatus = 'none';
-    let daysSinceLastFeedback = 0;
-    
-    if (lastFeedback) {
-      daysSinceLastFeedback = differenceInDays(new Date(), new Date(lastFeedback.created_date));
-      
-      if (daysSinceLastFeedback >= 2) {
-        reminderStatus = 'urgent'; // תזכורת דחופה - 2 ימים ומעלה
-      }
-    }
+    const pendingFeedbacks = expertFeedbacks.filter(f => f.status === 'pending_expert_review');
+    const completedFeedbacks = expertFeedbacks.filter(f => f.status === 'completed');
     
     return {
       expert,
-      reminderStatus,
-      daysSinceLastFeedback,
-      lastFeedback,
+      pendingCount: pendingFeedbacks.length,
+      completedCount: completedFeedbacks.length,
       totalFeedbacks: expertFeedbacks.length
     };
   });
 
-  // מיון לפי דחיפות
+  // מיון לפי מספר משובים ממתינים
   const sortedExperts = [...expertReminders].sort((a, b) => {
-    if (a.reminderStatus === 'urgent' && b.reminderStatus !== 'urgent') return -1;
-    if (a.reminderStatus !== 'urgent' && b.reminderStatus === 'urgent') return 1;
-    return b.daysSinceLastFeedback - a.daysSinceLastFeedback;
+    if (a.pendingCount > 0 && b.pendingCount === 0) return -1;
+    if (a.pendingCount === 0 && b.pendingCount > 0) return 1;
+    return b.pendingCount - a.pendingCount;
   });
 
   if (!isAuthenticated) {
@@ -86,14 +78,14 @@ export default function Experts() {
           </div>
         </div>
 
-        {/* Experts List with Reminders */}
+        {/* Experts List with Pending Feedbacks */}
         <div className="space-y-4">
-          {sortedExperts.map(({ expert, reminderStatus, daysSinceLastFeedback, lastFeedback, totalFeedbacks }) => (
+          {sortedExperts.map(({ expert, pendingCount, completedCount, totalFeedbacks }) => (
             <Card 
               key={expert.id} 
               className={`border-0 shadow-lg transition-all ${
-                reminderStatus === 'urgent' 
-                  ? 'bg-red-50 border-2 border-red-300' 
+                pendingCount > 0
+                  ? 'bg-amber-50 border-2 border-amber-300' 
                   : 'bg-white'
               }`}
             >
@@ -108,38 +100,36 @@ export default function Experts() {
                       
                       <div className="flex flex-wrap gap-2 mb-3">
                         <Badge variant="outline" className="text-slate-600">
-                          {totalFeedbacks} משובים כתובים
+                          {completedCount} משובים הושלמו
                         </Badge>
-                        {lastFeedback && (
-                          <Badge variant="outline" className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            משוב אחרון: {format(new Date(lastFeedback.created_date), 'dd/MM/yyyy')}
+                        {pendingCount > 0 && (
+                          <Badge className="bg-amber-600 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {pendingCount} ממתינים למילוי
                           </Badge>
                         )}
                       </div>
 
-                      {reminderStatus === 'urgent' && (
-                        <div className="flex items-start gap-2 bg-red-100 border border-red-300 rounded-lg p-3">
-                          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      {pendingCount > 0 && (
+                        <div className="flex items-start gap-2 bg-amber-100 border border-amber-300 rounded-lg p-3 mb-3">
+                          <AlertCircle className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
                           <div>
-                            <p className="font-semibold text-red-800">תזכורת למילוי משוב</p>
-                            <p className="text-sm text-red-700">
-                              {daysSinceLastFeedback === 2 
-                                ? 'עברו יומיים מהמשוב האחרון' 
-                                : `עברו ${daysSinceLastFeedback} ימים מהמשוב האחרון`}
+                            <p className="font-semibold text-amber-900">יש משובים חדשים למילוי</p>
+                            <p className="text-sm text-amber-800">
+                              {pendingCount} פרוצדורות חדשות ממתינות למשוב שלך
                             </p>
                           </div>
                         </div>
                       )}
 
-                      {reminderStatus === 'none' && lastFeedback && (
+                      {pendingCount === 0 && completedCount > 0 && (
                         <div className="flex items-center gap-2 text-green-700 text-sm">
                           <CheckCircle className="w-4 h-4" />
-                          <span>עדכני - משוב אחרון לפני {daysSinceLastFeedback} {daysSinceLastFeedback === 1 ? 'יום' : 'ימים'}</span>
+                          <span>כל המשובים עדכניים</span>
                         </div>
                       )}
 
-                      {!lastFeedback && (
+                      {totalFeedbacks === 0 && (
                         <div className="flex items-center gap-2 text-slate-500 text-sm">
                           <Clock className="w-4 h-4" />
                           <span>עדיין לא נכתבו משובים</span>
@@ -147,6 +137,14 @@ export default function Experts() {
                       )}
                     </div>
                   </div>
+                  {totalFeedbacks > 0 && (
+                    <Link to={createPageUrl('ExpertFeedbackDetail') + `?id=${expert.id}`}>
+                      <Button className="bg-purple-600 hover:bg-purple-700">
+                        צפה במשובים
+                        <ChevronLeft className="w-4 h-4 mr-2" />
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </CardContent>
             </Card>
