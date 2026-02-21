@@ -8,7 +8,7 @@ import FeedbackCard from '../components/feedback/FeedbackCard';
 import AnomalousReports from '../components/admin/AnomalousReports';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
-  Star, Search, Filter
+  Star, Search, Filter, Clock
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -167,16 +167,30 @@ export default function Admin() {
                 const avg = internRatings.length > 0
                   ? (internRatings.reduce((a, b) => a + b, 0) / internRatings.length).toFixed(1)
                   : '-';
+                
+                // בדיקה אם עבר שבוע מאז המשוב האחרון
+                const lastFeedback = internFeedbacks[0]; // feedbacks ממוינים לפי תאריך
+                const needsReminder = lastFeedback 
+                  ? (Date.now() - new Date(lastFeedback.created_date).getTime()) > 7 * 24 * 60 * 60 * 1000
+                  : internFeedbacks.length > 0;
+                
                 return (
                   <Link
                     key={intern.id}
                     to={createPageUrl('InternDetails') + `?id=${intern.id}`}
-                    className="flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-teal-50 rounded-xl transition-colors border border-slate-100 hover:border-teal-200"
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border ${
+                      needsReminder 
+                        ? 'bg-amber-50 hover:bg-amber-100 border-amber-200 hover:border-amber-300' 
+                        : 'bg-slate-50 hover:bg-teal-50 border-slate-100 hover:border-teal-200'
+                    }`}
                   >
+                    {needsReminder && (
+                      <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    )}
                     <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold">
                       {intern.name?.[0]}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="font-medium text-slate-800">{intern.name}</p>
                       <div className="flex items-center gap-1 text-sm text-slate-500">
                         <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
@@ -184,6 +198,9 @@ export default function Admin() {
                         <span className="text-slate-300 mx-1">•</span>
                         <span>{internFeedbacks.length} משובים</span>
                       </div>
+                      {needsReminder && (
+                        <p className="text-xs text-amber-700 mt-1">עבר שבוע מהמשוב האחרון</p>
+                      )}
                     </div>
                   </Link>
                 );
