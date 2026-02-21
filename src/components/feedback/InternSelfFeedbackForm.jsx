@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Send, CheckCircle, Info, Calendar, AlertCircle, Hash } from 'lucide-react';
+import { Send, CheckCircle, Info, Calendar, AlertCircle, Hash, Mail, MailX } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import RatingCategory from './RatingCategory';
@@ -157,6 +157,7 @@ export default function InternSelfFeedbackForm({ interns, experts, onSuccess }) 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [procedureCode, setProcedureCode] = useState('');
+  const [emailStatus, setEmailStatus] = useState({ intern: null, expert: null });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -191,37 +192,40 @@ export default function InternSelfFeedbackForm({ interns, experts, onSuccess }) 
     await base44.entities.Feedback.create(dataToSave);
 
     // שליחת מיילים
+    const emailResults = { intern: null, expert: null };
+    
     try {
       // מייל למתמחה - סיכום פרוצדורות
       if (selectedIntern?.email) {
-        const internFeedbacks = await base44.entities.Feedback.filter({ intern_id: formData.intern_id });
-        
-        // חישוב סיכום פרוצדורות
-        const procedureSummary = {};
-        internFeedbacks.forEach(f => {
-          if (!procedureSummary[f.procedure_type]) {
-            procedureSummary[f.procedure_type] = { count: 0, comments: [] };
-          }
-          procedureSummary[f.procedure_type].count += 1;
-          if (f.intern_verbal_feedback) {
-            procedureSummary[f.procedure_type].comments.push(f.intern_verbal_feedback);
-          }
-        });
-
-        const summaryText = Object.entries(procedureSummary)
-          .map(([proc, data]) => {
-            let text = `${proc}: ${data.count} פעמים`;
-            if (data.comments.length > 0) {
-              text += `\n  משובים עצמיים:\n  ${data.comments.map((c, i) => `  ${i + 1}. ${c}`).join('\n  ')}`;
+        try {
+          const internFeedbacks = await base44.entities.Feedback.filter({ intern_id: formData.intern_id });
+          
+          // חישוב סיכום פרוצדורות
+          const procedureSummary = {};
+          internFeedbacks.forEach(f => {
+            if (!procedureSummary[f.procedure_type]) {
+              procedureSummary[f.procedure_type] = { count: 0, comments: [] };
             }
-            return text;
-          })
-          .join('\n\n');
+            procedureSummary[f.procedure_type].count += 1;
+            if (f.intern_verbal_feedback) {
+              procedureSummary[f.procedure_type].comments.push(f.intern_verbal_feedback);
+            }
+          });
 
-        await base44.integrations.Core.SendEmail({
-          to: selectedIntern.email,
-          subject: `סיכום פרוצדורות - ${code}`,
-          body: `שלום ${selectedIntern.name},
+          const summaryText = Object.entries(procedureSummary)
+            .map(([proc, data]) => {
+              let text = `${proc}: ${data.count} פעמים`;
+              if (data.comments.length > 0) {
+                text += `\n  משובים עצמיים:\n  ${data.comments.map((c, i) => `  ${i + 1}. ${c}`).join('\n  ')}`;
+              }
+              return text;
+            })
+            .join('\n\n');
+
+          await base44.integrations.Core.SendEmail({
+            to: selectedIntern.email,
+            subject: `סיכום פרוצדורות - ${code}`,
+            body: `שלום ${selectedIntern.name},
 
 קוד פרוצדורה: ${code}
 
@@ -230,15 +234,23 @@ export default function InternSelfFeedbackForm({ interns, experts, onSuccess }) 
 ${summaryText}
 
 בהצלחה!`
-        });
+          });
+          emailResults.intern = selectedIntern.email;
+        } catch (error) {
+          console.error('Error sending email to intern:', error);
+          emailResults.intern = 'error';
+        }
+      } else {
+        emailResults.intern = 'no_email';
       }
 
       // מייל למומחה - תזכורת למילוי משוב
       if (selectedExpert?.email) {
-        await base44.integrations.Core.SendEmail({
-          to: selectedExpert.email,
-          subject: `תזכורת: משוב על פרוצדורה ${code}`,
-          body: `שלום ${selectedExpert.name},
+        try {
+          await base44.integrations.Core.SendEmail({
+            to: selectedExpert.email,
+            subject: `תזכורת: משוב על פרוצדורה ${code}`,
+            body: `שלום ${selectedExpert.name},
 
 קוד פרוצדורה: ${code}
 
@@ -247,17 +259,27 @@ ${selectedIntern?.name} ביצע/ה פרוצדורה "${formData.procedure_type}
 אנא היכנס/י לפאנל המומחים ומלא/י את המשוב.
 
 תודה!`
-        });
+          });
+          emailResults.expert = selectedExpert.email;
+        } catch (error) {
+          console.error('Error sending email to expert:', error);
+          emailResults.expert = 'error';
+        }
+      } else {
+        emailResults.expert = 'no_email';
       }
     } catch (error) {
       console.error('Error sending emails:', error);
     }
+
+    setEmailStatus(emailResults);
 
     setProcedureCode(code);
     setShowSuccess(true);
     setTimeout(() => {
       setShowSuccess(false);
       setProcedureCode('');
+      setEmailStatus({ intern: null, expert: null });
       setFormData({
         intern_id: '',
         expert_id: '',
@@ -271,7 +293,7 @@ ${selectedIntern?.name} ביצע/ה פרוצדורה "${formData.procedure_type}
         intern_verbal_feedback: ''
       });
       onSuccess?.();
-    }, 4000);
+    }, 6000);
     
     setIsSubmitting(false);
   };
@@ -323,7 +345,7 @@ ${selectedIntern?.name} ביצע/ה פרוצדורה "${formData.procedure_type}
                 <CheckCircle className="w-10 h-10 text-emerald-600" />
               </div>
               <p className="text-xl font-semibold text-slate-800 mb-3">המשוב העצמי נשמר בהצלחה!</p>
-              <div className="bg-teal-50 border-2 border-teal-300 rounded-xl p-6 text-center">
+              <div className="bg-teal-50 border-2 border-teal-300 rounded-xl p-6 text-center mb-4">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Hash className="w-6 h-6 text-teal-600" />
                   <p className="text-sm text-slate-600">קוד הפרוצדורה שלך:</p>
@@ -332,6 +354,53 @@ ${selectedIntern?.name} ביצע/ה פרוצדורה "${formData.procedure_type}
                 <p className="text-sm text-slate-600 mt-3">
                   העבר קוד זה למומחה שהדריך אותך
                 </p>
+              </div>
+              
+              {/* Email Status */}
+              <div className="space-y-3 text-right">
+                <p className="text-sm font-semibold text-slate-700 mb-2">סטטוס שליחת מיילים:</p>
+                
+                {/* Intern Email Status */}
+                <div className="flex items-center gap-2 text-sm">
+                  {emailStatus.intern && emailStatus.intern !== 'no_email' && emailStatus.intern !== 'error' ? (
+                    <>
+                      <Mail className="w-4 h-4 text-green-600" />
+                      <span className="text-slate-700">מייל נשלח למתמחה:</span>
+                      <span className="font-medium text-green-700">{emailStatus.intern}</span>
+                    </>
+                  ) : emailStatus.intern === 'no_email' ? (
+                    <>
+                      <MailX className="w-4 h-4 text-amber-600" />
+                      <span className="text-amber-700">למתמחה אין כתובת מייל רשומה</span>
+                    </>
+                  ) : emailStatus.intern === 'error' ? (
+                    <>
+                      <MailX className="w-4 h-4 text-red-600" />
+                      <span className="text-red-700">שגיאה בשליחת מייל למתמחה</span>
+                    </>
+                  ) : null}
+                </div>
+
+                {/* Expert Email Status */}
+                <div className="flex items-center gap-2 text-sm">
+                  {emailStatus.expert && emailStatus.expert !== 'no_email' && emailStatus.expert !== 'error' ? (
+                    <>
+                      <Mail className="w-4 h-4 text-green-600" />
+                      <span className="text-slate-700">מייל תזכורת נשלח למומחה:</span>
+                      <span className="font-medium text-green-700">{emailStatus.expert}</span>
+                    </>
+                  ) : emailStatus.expert === 'no_email' ? (
+                    <>
+                      <MailX className="w-4 h-4 text-amber-600" />
+                      <span className="text-amber-700">למומחה אין כתובת מייל רשומה</span>
+                    </>
+                  ) : emailStatus.expert === 'error' ? (
+                    <>
+                      <MailX className="w-4 h-4 text-red-600" />
+                      <span className="text-red-700">שגיאה בשליחת מייל למומחה</span>
+                    </>
+                  ) : null}
+                </div>
               </div>
             </motion.div>
           ) : (
