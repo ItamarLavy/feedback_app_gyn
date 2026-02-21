@@ -6,6 +6,8 @@ import { createPageUrl } from '@/utils';
 import PasswordModal from '../components/admin/PasswordModal';
 import FeedbackCard from '../components/feedback/FeedbackCard';
 import InternStats from '../components/admin/InternStats';
+import RotationManager from '../components/admin/RotationManager';
+import RotationMap from '../components/intern/RotationMap';
 import { User, ArrowLeft, ClipboardList } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -30,6 +32,14 @@ export default function InternDetails() {
     queryKey: ['feedbacks', internId],
     queryFn: async () => {
       return base44.entities.Feedback.filter({ intern_id: internId }, '-created_date');
+    },
+    enabled: isAuthenticated && !!internId
+  });
+
+  const { data: rotations = [] } = useQuery({
+    queryKey: ['rotations', internId],
+    queryFn: async () => {
+      return base44.entities.Rotation.filter({ intern_id: internId }, 'start_date');
     },
     enabled: isAuthenticated && !!internId
   });
@@ -80,6 +90,12 @@ export default function InternDetails() {
         {/* Stats */}
         <div className="mb-8">
           <InternStats feedbacks={feedbacks} internName={intern?.name} />
+        </div>
+
+        {/* Rotation Management & Map */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <RotationManager intern={intern} rotations={rotations} />
+          <RotationMap rotations={rotations} />
         </div>
 
         {/* Feedbacks */}
