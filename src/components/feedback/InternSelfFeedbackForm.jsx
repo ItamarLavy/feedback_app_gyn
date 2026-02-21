@@ -190,6 +190,69 @@ export default function InternSelfFeedbackForm({ interns, experts, onSuccess }) 
 
     await base44.entities.Feedback.create(dataToSave);
 
+    // שליחת מיילים
+    try {
+      // מייל למתמחה - סיכום פרוצדורות
+      if (selectedIntern?.email) {
+        const internFeedbacks = await base44.entities.Feedback.filter({ intern_id: formData.intern_id });
+        
+        // חישוב סיכום פרוצדורות
+        const procedureSummary = {};
+        internFeedbacks.forEach(f => {
+          if (!procedureSummary[f.procedure_type]) {
+            procedureSummary[f.procedure_type] = { count: 0, comments: [] };
+          }
+          procedureSummary[f.procedure_type].count += 1;
+          if (f.intern_verbal_feedback) {
+            procedureSummary[f.procedure_type].comments.push(f.intern_verbal_feedback);
+          }
+        });
+
+        const summaryText = Object.entries(procedureSummary)
+          .map(([proc, data]) => {
+            let text = `${proc}: ${data.count} פעמים`;
+            if (data.comments.length > 0) {
+              text += `\n  משובים עצמיים:\n  ${data.comments.map((c, i) => `  ${i + 1}. ${c}`).join('\n  ')}`;
+            }
+            return text;
+          })
+          .join('\n\n');
+
+        await base44.integrations.Core.SendEmail({
+          to: selectedIntern.email,
+          subject: `סיכום פרוצדורות - ${code}`,
+          body: `שלום ${selectedIntern.name},
+
+קוד פרוצדורה: ${code}
+
+להלן סיכום הפרוצדורות שביצעת עד כה:
+
+${summaryText}
+
+בהצלחה!`
+        });
+      }
+
+      // מייל למומחה - תזכורת למילוי משוב
+      if (selectedExpert?.email) {
+        await base44.integrations.Core.SendEmail({
+          to: selectedExpert.email,
+          subject: `תזכורת: משוב על פרוצדורה ${code}`,
+          body: `שלום ${selectedExpert.name},
+
+קוד פרוצדורה: ${code}
+
+${selectedIntern?.name} ביצע/ה פרוצדורה "${formData.procedure_type}" ומחכה למשוב שלך.
+
+אנא היכנס/י לפאנל המומחים ומלא/י את המשוב.
+
+תודה!`
+        });
+      }
+    } catch (error) {
+      console.error('Error sending emails:', error);
+    }
+
     setProcedureCode(code);
     setShowSuccess(true);
     setTimeout(() => {

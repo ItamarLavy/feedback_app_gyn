@@ -48,19 +48,21 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Admin from './pages/Admin';
+import ExpertFeedbackDetail from './pages/ExpertFeedbackDetail';
 import Experts from './pages/Experts';
 import Home from './pages/Home';
 import InternDetails from './pages/InternDetails';
-import ExpertFeedbackDetail from './pages/ExpertFeedbackDetail';
+import EmailManagement from './pages/EmailManagement';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Admin": Admin,
+    "ExpertFeedbackDetail": ExpertFeedbackDetail,
     "Experts": Experts,
     "Home": Home,
     "InternDetails": InternDetails,
-    "ExpertFeedbackDetail": ExpertFeedbackDetail,
+    "EmailManagement": EmailManagement,
 }
 
 export const pagesConfig = {
