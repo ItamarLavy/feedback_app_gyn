@@ -6,6 +6,8 @@ import { createPageUrl } from '@/utils';
 import PasswordModal from '../components/admin/PasswordModal';
 import FeedbackCard from '../components/feedback/FeedbackCard';
 import AnomalousReports from '../components/admin/AnomalousReports';
+import MessagingPanel from '../components/admin/MessagingPanel';
+import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
   Star, Search, Filter, Clock
@@ -32,6 +34,12 @@ export default function Admin() {
   const { data: interns = [] } = useQuery({
     queryKey: ['interns'],
     queryFn: () => base44.entities.Intern.list(),
+    enabled: isAuthenticated
+  });
+
+  const { data: experts = [] } = useQuery({
+    queryKey: ['experts'],
+    queryFn: () => base44.entities.Expert.list(),
     enabled: isAuthenticated
   });
 
@@ -144,9 +152,19 @@ export default function Admin() {
           </Card>
         </div>
 
+        {/* Feedback Meeting Manager */}
+        <div className="mb-8">
+          <FeedbackMeetingManager interns={interns} experts={experts} />
+        </div>
+
         {/* Anomalous Reports */}
         <div className="mb-8">
           <AnomalousReports feedbacks={feedbacks} interns={interns} />
+        </div>
+
+        {/* Messaging Panel */}
+        <div className="mb-8">
+          <MessagingPanel interns={interns} experts={experts} />
         </div>
 
         {/* Interns List */}

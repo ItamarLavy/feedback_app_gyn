@@ -8,6 +8,7 @@ import FeedbackCard from '../components/feedback/FeedbackCard';
 import InternStats from '../components/admin/InternStats';
 import RotationManager from '../components/admin/RotationManager';
 import RotationMap from '../components/intern/RotationMap';
+import MyFeedbackMeetings from '../components/intern/MyFeedbackMeetings';
 import { User, ArrowLeft, ClipboardList } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -40,6 +41,14 @@ export default function InternDetails() {
     queryKey: ['rotations', internId],
     queryFn: async () => {
       return base44.entities.Rotation.filter({ intern_id: internId }, 'start_date');
+    },
+    enabled: isAuthenticated && !!internId
+  });
+
+  const { data: meetings = [] } = useQuery({
+    queryKey: ['meetings', internId],
+    queryFn: async () => {
+      return base44.entities.FeedbackMeeting.filter({ intern_id: internId }, '-meeting_date');
     },
     enabled: isAuthenticated && !!internId
   });
@@ -96,6 +105,11 @@ export default function InternDetails() {
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <RotationManager intern={intern} rotations={rotations} />
           <RotationMap rotations={rotations} />
+        </div>
+
+        {/* Feedback Meetings */}
+        <div className="mb-8">
+          <MyFeedbackMeetings meetings={meetings} />
         </div>
 
         {/* Feedbacks */}
