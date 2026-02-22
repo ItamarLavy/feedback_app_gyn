@@ -62,10 +62,10 @@ export default function Instructions() {
                     2
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">קבלת קוד פרוצדורה</h4>
+                    <h4 className="font-semibold text-slate-800 mb-1">מספר סידורי</h4>
                     <p className="text-sm text-slate-600">
-                      לאחר שליחת המשוב, תקבל קוד ייחודי לפרוצדורה (לדוגמה: #001).
-                      העבר קוד זה למומחה שהדריך אותך.
+                      לאחר שליחת המשוב, כל מילוי מקבל מספר סידורי ייחודי (לדוגמה: #001) 
+                      אחריו ניתן לעקוב ולצפות בהתקדמות.
                     </p>
                   </div>
                 </div>

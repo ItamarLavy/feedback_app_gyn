@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, Home, Bell, BookOpen } from 'lucide-react';
+import { Stethoscope, Shield, Home, BookOpen, Notebook } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   return (
@@ -37,18 +37,18 @@ export default function Layout({ children, currentPageName }) {
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                <Bell className="w-4 h-4" />
+                <Notebook className="w-4 h-4" />
                 <span className="hidden sm:inline">מתמחים</span>
               </Link>
               <Link
                 to={createPageUrl('Experts')}
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                  currentPageName === 'Experts'
+                  currentPageName === 'Experts' || currentPageName === 'ExpertFeedbackDetail'
                     ? 'bg-teal-100 text-teal-700' 
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                <Bell className="w-4 h-4" />
+                <Stethoscope className="w-4 h-4" />
                 <span className="hidden sm:inline">מומחים</span>
               </Link>
               <Link
