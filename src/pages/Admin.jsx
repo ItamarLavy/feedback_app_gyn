@@ -11,11 +11,12 @@ import SystemAISummary from '../components/admin/SystemAISummary';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
-  Star, Search, Filter, Clock, Key
+  Star, Search, Filter, Clock, Key, BookOpen
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 const RATING_KEYS = ['knowledge_rating', 'manual_skill_rating', 'professionalism_rating', 'independence_rating'];
 
@@ -24,6 +25,7 @@ export default function Admin() {
   const [showPasswordModal, setShowPasswordModal] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
+  const [showAdminInstructions, setShowAdminInstructions] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: feedbacks = [] } = useQuery({
@@ -197,6 +199,71 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Admin Instructions Button */}
+        <div className="mb-8">
+          <Button
+            onClick={() => setShowAdminInstructions(!showAdminInstructions)}
+            variant="outline"
+            className="w-full"
+          >
+            <BookOpen className="w-4 h-4 ml-2" />
+            {showAdminInstructions ? 'הסתר' : 'הצג'} הוראות למנהלים
+          </Button>
+        </div>
+
+        {/* Admin Instructions */}
+        {showAdminInstructions && (
+          <Card className="border-0 shadow-xl mb-8">
+            <CardHeader className="bg-teal-50 border-b-2 border-teal-200">
+              <CardTitle className="flex items-center gap-3 text-teal-900">
+                <Shield className="w-6 h-6" />
+                הוראות למנהלים
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">
+                    1
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">צפייה בכל המשובים</h4>
+                    <p className="text-sm text-slate-600">
+                      בפאנל הניהול תוכל לראות את כל המשובים במערכת, לחפש ולסנן לפי מתמחה/מומחה/פרוצדורה,
+                      ולמחוק משובים במידת הצורך.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">
+                    2
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">ניהול מתמחים ומומחים</h4>
+                    <p className="text-sm text-slate-600">
+                      לחץ על שם מתמחה כדי לראות את המידע המפורט שלו. 
+                      תוכל לצפות בסיסמאות המתמחים והמומחים דרך הכפתורים המתאימים.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">
+                    3
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">ניהול פגישות משוב</h4>
+                    <p className="text-sm text-slate-600">
+                      ניתן לתזמן פגישות משוב עם מתמחים ולהזמין מומחים להשתתף.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* System AI Summary */}
         <div className="mb-8">
