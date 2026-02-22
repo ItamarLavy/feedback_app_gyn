@@ -54,6 +54,8 @@ import Home from './pages/Home';
 import InternDetails from './pages/InternDetails';
 import Interns from './pages/Interns';
 import InternProfile from './pages/InternProfile';
+import InternPasswords from './pages/InternPasswords';
+import Instructions from './pages/Instructions';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +67,8 @@ export const PAGES = {
     "InternDetails": InternDetails,
     "Interns": Interns,
     "InternProfile": InternProfile,
+    "InternPasswords": InternPasswords,
+    "Instructions": Instructions,
 }
 
 export const pagesConfig = {

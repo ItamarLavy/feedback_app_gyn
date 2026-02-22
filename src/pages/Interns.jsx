@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from "@/components/ui/card";
-import { UserCircle2, ChevronLeft, Star } from 'lucide-react';
+import { UserCircle2, ChevronLeft } from 'lucide-react';
 
 export default function Interns() {
   const { data: interns = [] } = useQuery({
@@ -50,10 +50,6 @@ export default function Interns() {
                         </div>
                         <div>
                           <h3 className="font-semibold text-slate-800 text-lg">{intern.name}</h3>
-                          <div className="flex items-center gap-1 text-sm text-slate-500">
-                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                            <span>{internFeedbacks.length} פרוצדורות</span>
-                          </div>
                         </div>
                       </div>
                       <ChevronLeft className="w-5 h-5 text-slate-400" />
