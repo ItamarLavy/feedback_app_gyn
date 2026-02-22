@@ -185,6 +185,12 @@ export default function InternDetails() {
     enabled: isAuthenticated && !!internId
   });
 
+  const { data: manualCounts = [] } = useQuery({
+    queryKey: ['manual-procedure-counts', internId],
+    queryFn: () => base44.entities.ManualProcedureCount.filter({ intern_id: internId }),
+    enabled: isAuthenticated && !!internId
+  });
+
   const handleDeleteFeedback = async (feedbackId) => {
     await base44.entities.Feedback.delete(feedbackId);
     queryClient.invalidateQueries({ queryKey: ['feedbacks', internId] });
@@ -195,6 +201,7 @@ export default function InternDetails() {
   Object.keys(PROCEDURE_REQUIREMENTS).forEach(category => {
     const categoryFeedbacks = feedbacks.filter(f => f.procedure_category === category);
     const procedureCount = {};
+    const manualProcedureCount = {};
     
     categoryFeedbacks.forEach(f => {
       if (!procedureCount[f.procedure_type]) {
@@ -203,21 +210,34 @@ export default function InternDetails() {
       procedureCount[f.procedure_type]++;
     });
 
+    // הוספת ספירה ידנית
+    manualCounts
+      .filter(m => m.procedure_category === category)
+      .forEach(m => {
+        manualProcedureCount[m.procedure_name] = m.manual_count || 0;
+      });
+
     const requirements = PROCEDURE_REQUIREMENTS[category];
     const procedureProgress = [];
     let totalRequired = 0;
     let totalCompleted = 0;
 
     Object.entries(requirements).forEach(([procName, required]) => {
-      const completed = procedureCount[procName] || 0;
+      const completedWithFeedback = procedureCount[procName] || 0;
+      const manualCount = manualProcedureCount[procName] || 0;
+      const totalCount = completedWithFeedback + manualCount;
+      
       totalRequired += required;
-      totalCompleted += Math.min(completed, required);
+      totalCompleted += Math.min(completedWithFeedback, required);
       
       procedureProgress.push({
         name: procName,
-        completed,
+        completed: completedWithFeedback,
+        manualCount: manualCount,
+        totalCount: totalCount,
         required,
-        percentage: Math.min((completed / required) * 100, 100)
+        percentage: Math.min((completedWithFeedback / required) * 100, 100),
+        manualPercentage: Math.min((manualCount / required) * 100, 100)
       });
     });
 
@@ -329,13 +349,28 @@ export default function InternDetails() {
                       <div key={idx} className="space-y-1">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-slate-700">{proc.name}</span>
-                          <span className="text-slate-500 font-medium">
-                            {proc.completed} / {proc.required}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            {proc.manualCount > 0 && (
+                              <span className="text-slate-400 text-xs">
+                                ({proc.manualCount} ידני)
+                              </span>
+                            )}
+                            <span className="text-slate-500 font-medium">
+                              {proc.totalCount} / {proc.required}
+                            </span>
+                          </div>
                         </div>
-                        <div className="w-full bg-slate-100 rounded-full h-2">
+                        <div className="w-full bg-slate-100 rounded-full h-2 relative overflow-hidden">
+                          {/* ביצועים ידניים - רקע אפור */}
+                          {proc.manualCount > 0 && (
+                            <div
+                              className="absolute h-2 bg-slate-300 rounded-full"
+                              style={{ width: `${Math.min(proc.manualPercentage, 100)}%` }}
+                            />
+                          )}
+                          {/* ביצועים עם משוב - כחול/ירוק */}
                           <div
-                            className={`h-2 rounded-full transition-all ${
+                            className={`absolute h-2 rounded-full transition-all ${
                               proc.percentage >= 100 ? 'bg-green-500' : 'bg-teal-500'
                             }`}
                             style={{ width: `${proc.percentage}%` }}
