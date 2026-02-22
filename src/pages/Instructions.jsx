@@ -110,9 +110,9 @@ export default function Instructions() {
                   3
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-800 mb-1">צפייה במשובים</h4>
+                  <h4 className="font-semibold text-slate-800 mb-1">צפייה במשובים ופגישות מנטורינג</h4>
                   <p className="text-sm text-slate-600">
-                    תוכל לראות את כל המשובים שמילאת ואת הפגישות הקרובות אם יש כאלה.
+                    תוכל לראות את כל המשובים שמילאת ואת <strong>פגישות המנטורינג</strong> הקרובות אם יש כאלה.
                   </p>
                 </div>
               </div>
