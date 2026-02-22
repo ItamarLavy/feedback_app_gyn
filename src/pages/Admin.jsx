@@ -270,17 +270,10 @@ export default function Admin() {
           <SystemAISummary feedbacks={feedbacks} interns={interns} meetings={meetings} />
         </div>
 
-        {/* Feedback Meeting Manager */}
-        <div className="mb-8">
-          <FeedbackMeetingManager interns={interns} experts={experts} />
-        </div>
-
         {/* Anomalous Reports */}
         <div className="mb-8">
           <AnomalousReports feedbacks={feedbacks} interns={interns} />
         </div>
-
-
 
         {/* Interns List */}
         <Card className="border-0 shadow-lg mb-8">
@@ -345,6 +338,11 @@ export default function Admin() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Feedback Meeting Manager */}
+        <div className="mb-8">
+          <FeedbackMeetingManager interns={interns} experts={experts} />
+        </div>
 
         {/* Filters */}
         <div className="space-y-4">

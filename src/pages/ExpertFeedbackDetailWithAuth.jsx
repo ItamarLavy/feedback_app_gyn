@@ -207,9 +207,17 @@ export default function ExpertFeedbackDetailWithAuth() {
           </Link>
         </div>
 
-        {/* Change Password */}
+        {/* Change Password - Collapsible */}
         <div className="mb-8">
-          <ChangePassword entityType="expert" entityId={expertId} />
+          <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
+            <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+              <Lock className="w-4 h-4" />
+              שינוי סיסמה
+            </summary>
+            <div className="px-4 pb-4 pt-2">
+              <ChangePassword entityType="expert" entityId={expertId} />
+            </div>
+          </details>
         </div>
 
         {/* Upcoming Meetings */}

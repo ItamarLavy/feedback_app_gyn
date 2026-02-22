@@ -273,17 +273,41 @@ export default function FeedbackMeetingManager({ interns, experts }) {
               meetings.map(meeting => (
                 <div
                   key={meeting.id}
-                  className={`p-4 rounded-lg border-2 ${
+                  className={`rounded-lg border-2 ${
                     meeting.status === 'התקיים'
-                      ? 'bg-green-50 border-green-200'
+                      ? 'bg-green-50 border-green-200 p-2'
                       : meeting.status === 'בוטל'
-                      ? 'bg-slate-100 border-slate-300'
-                      : 'bg-blue-50 border-blue-300'
+                      ? 'bg-slate-100 border-slate-300 p-4'
+                      : 'bg-blue-50 border-blue-300 p-4'
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h4 className="font-semibold text-slate-800">{meeting.intern_name}</h4>
+                  <div className={`flex items-center justify-between ${meeting.status === 'התקיים' ? 'mb-0' : 'mb-3'}`}>
+                    <div className="flex items-center gap-2 flex-1">
+                      <h4 className={`font-semibold ${meeting.status === 'התקיים' ? 'text-sm text-green-700' : 'text-slate-800'}`}>
+                        {meeting.intern_name}
+                      </h4>
+                      {meeting.status === 'התקיים' && (
+                        <>
+                          <span className="text-slate-400">•</span>
+                          <div className="flex items-center gap-1 text-xs text-slate-600">
+                            <Calendar className="w-3 h-3" />
+                            <span>{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy')}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleDelete(meeting.id)}
+                      className={`text-slate-400 hover:text-red-600 ${meeting.status === 'התקיים' ? 'h-6 w-6' : ''}`}
+                    >
+                      <Trash2 className={meeting.status === 'התקיים' ? 'w-3 h-3' : 'w-4 h-4'} />
+                    </Button>
+                  </div>
+
+                  {meeting.status !== 'התקיים' && (
+                    <>
                       <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
                         <Calendar className="w-3 h-3" />
                         <span>{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy HH:mm')}</span>
@@ -291,57 +315,49 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                       {meeting.location && (
                         <p className="text-sm text-slate-600 mt-1">📍 {meeting.location}</p>
                       )}
-                    </div>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleDelete(meeting.id)}
-                      className="text-slate-400 hover:text-red-600"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
 
-                  {meeting.invited_experts && meeting.invited_experts.length > 0 && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <Users className="w-4 h-4 text-slate-500" />
-                      <span className="text-sm text-slate-600">
-                        {meeting.invited_experts.map(e => e.name).join(', ')}
-                      </span>
-                    </div>
+                      {meeting.invited_experts && meeting.invited_experts.length > 0 && (
+                        <div className="flex items-center gap-2 mb-2 mt-2">
+                          <Users className="w-4 h-4 text-slate-500" />
+                          <span className="text-sm text-slate-600">
+                            {meeting.invited_experts.map(e => e.name).join(', ')}
+                          </span>
+                        </div>
+                      )}
+
+                      {meeting.notes && (
+                        <p className="text-sm text-slate-600 mb-2 border-t pt-2">{meeting.notes}</p>
+                      )}
+
+                      <div className="flex gap-2">
+                        {meeting.status === 'מתוכנן' && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleStatusChange(meeting, 'התקיים')}
+                              className="text-green-600 border-green-600 hover:bg-green-50"
+                            >
+                              <CheckCircle className="w-3 h-3 ml-1" />
+                              סמן כהתקיים
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleStatusChange(meeting, 'בוטל')}
+                            >
+                              ביטול פגישה
+                            </Button>
+                          </>
+                        )}
+                        {meeting.status === 'בוטל' && (
+                          <span className="text-sm font-medium text-slate-600">
+                            סטטוס: {meeting.status}
+                          </span>
+                        )}
+                      </div>
+                    </>
                   )}
-
-                  {meeting.notes && (
-                    <p className="text-sm text-slate-600 mb-2 border-t pt-2">{meeting.notes}</p>
-                  )}
-
-                  <div className="flex gap-2">
-                    {meeting.status === 'מתוכנן' && (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleStatusChange(meeting, 'התקיים')}
-                          className="text-green-600 border-green-600 hover:bg-green-50"
-                        >
-                          <CheckCircle className="w-3 h-3 ml-1" />
-                          סמן כהתקיים
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleStatusChange(meeting, 'בוטל')}
-                        >
-                          ביטול פגישה
-                        </Button>
-                      </>
-                    )}
-                    {meeting.status !== 'מתוכנן' && (
-                      <span className="text-sm font-medium text-slate-600">
-                        סטטוס: {meeting.status}
-                      </span>
-                    )}
-                  </div>
                 </div>
               ))
             )}

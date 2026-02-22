@@ -49,30 +49,30 @@
  */
 import Admin from './pages/Admin';
 import ExpertFeedbackDetail from './pages/ExpertFeedbackDetail';
+import ExpertFeedbackDetailWithAuth from './pages/ExpertFeedbackDetailWithAuth';
+import ExpertPasswords from './pages/ExpertPasswords';
 import Experts from './pages/Experts';
 import Home from './pages/Home';
-import InternDetails from './pages/InternDetails';
-import Interns from './pages/Interns';
-import InternProfile from './pages/InternProfile';
-import InternPasswords from './pages/InternPasswords';
 import Instructions from './pages/Instructions';
-import ExpertPasswords from './pages/ExpertPasswords';
-import ExpertFeedbackDetailWithAuth from './pages/ExpertFeedbackDetailWithAuth';
+import InternDetails from './pages/InternDetails';
+import InternPasswords from './pages/InternPasswords';
+import InternProfile from './pages/InternProfile';
+import Interns from './pages/Interns';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Admin": Admin,
     "ExpertFeedbackDetail": ExpertFeedbackDetail,
+    "ExpertFeedbackDetailWithAuth": ExpertFeedbackDetailWithAuth,
+    "ExpertPasswords": ExpertPasswords,
     "Experts": Experts,
     "Home": Home,
-    "InternDetails": InternDetails,
-    "Interns": Interns,
-    "InternProfile": InternProfile,
-    "InternPasswords": InternPasswords,
     "Instructions": Instructions,
-    "ExpertPasswords": ExpertPasswords,
-    "ExpertFeedbackDetailWithAuth": ExpertFeedbackDetailWithAuth,
+    "InternDetails": InternDetails,
+    "InternPasswords": InternPasswords,
+    "InternProfile": InternProfile,
+    "Interns": Interns,
 }
 
 export const pagesConfig = {
