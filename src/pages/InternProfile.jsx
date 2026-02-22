@@ -154,9 +154,27 @@ export default function InternProfile() {
     enabled: !!internId && isAuthenticated
   });
 
+  // פונקציה ליצירת סיסמה דטרמיניסטית מה-ID (זהה לזו ב-InternPasswords)
+  function generatePassword(internId) {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    let hash = 0;
+    
+    for (let i = 0; i < internId.length; i++) {
+      hash = internId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    for (let i = 0; i < 5; i++) {
+      hash = ((hash << 5) - hash) + i;
+      const index = Math.abs(hash) % chars.length;
+      password += chars[index];
+    }
+    
+    return password;
+  }
+
   const handleLogin = () => {
-    // סיסמה פשוטה - 4 ספרות אחרונות של המזהה
-    const correctPassword = internId?.slice(-4) || '0000';
+    const correctPassword = generatePassword(internId);
     if (password === correctPassword) {
       setIsAuthenticated(true);
       setError('');
@@ -195,12 +213,12 @@ export default function InternProfile() {
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
                   className="pr-10"
-                  placeholder="4 ספרות"
+                  placeholder="5 תווים"
                 />
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
               <p className="text-xs text-slate-500">
-                הסיסמה היא 4 הספרות האחרונות של מזהה המתמחה
+                הסיסמה האישית שקיבלת מהמנהל
               </p>
             </div>
             <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700">

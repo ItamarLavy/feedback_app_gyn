@@ -8,6 +8,7 @@ import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import AnomalousReports from '../components/admin/AnomalousReports';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import SystemAISummary from '../components/admin/SystemAISummary';
+import InternProgressBadges from '../components/intern/InternProgressBadges';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
   Star, Search, Filter, Clock, Key
@@ -259,6 +260,7 @@ export default function Admin() {
                       {needsReminder && (
                         <p className="text-xs text-amber-700 mt-1">עבר שבוע מהמשוב האחרון</p>
                       )}
+                      <InternProgressBadges feedbacks={internFeedbacks} />
                     </div>
                   </Link>
                 );
