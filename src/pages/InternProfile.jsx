@@ -7,9 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, UserCircle2, Lock, Calendar, Hash, Star } from 'lucide-react';
+import { ArrowLeft, UserCircle2, Lock, Calendar, Hash, Star, Plus } from 'lucide-react';
 import ChangePassword from '../components/auth/ChangePassword';
+import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
 import { format } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
 
 // מפתח כמויות הפרוצדורות הנדרשות
 const PROCEDURE_REQUIREMENTS = {
@@ -135,10 +137,12 @@ const PROCEDURE_REQUIREMENTS = {
 export default function InternProfile() {
   const urlParams = new URLSearchParams(window.location.search);
   const internId = urlParams.get('id');
+  const queryClient = useQueryClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 
   const { data: intern } = useQuery({
     queryKey: ['intern', internId],
@@ -153,6 +157,12 @@ export default function InternProfile() {
     queryKey: ['intern-feedbacks', internId],
     queryFn: () => base44.entities.Feedback.filter({ intern_id: internId }, '-created_date'),
     enabled: !!internId && isAuthenticated
+  });
+
+  const { data: experts = [] } = useQuery({
+    queryKey: ['experts'],
+    queryFn: () => base44.entities.Expert.list(),
+    enabled: isAuthenticated
   });
 
   const handleLogin = () => {
@@ -282,6 +292,38 @@ export default function InternProfile() {
         {/* Change Password */}
         <div className="mb-8">
           <ChangePassword entityType="intern" entityId={internId} />
+        </div>
+
+        {/* Add Feedback Form */}
+        <div className="mb-8">
+          {showFeedbackForm ? (
+            <div>
+              <InternSelfFeedbackFormSimple
+                internId={internId}
+                internName={intern.name}
+                experts={experts}
+                onSuccess={() => {
+                  queryClient.invalidateQueries({ queryKey: ['intern-feedbacks', internId] });
+                  setShowFeedbackForm(false);
+                }}
+              />
+              <Button
+                variant="outline"
+                onClick={() => setShowFeedbackForm(false)}
+                className="mt-4 w-full"
+              >
+                ביטול
+              </Button>
+            </div>
+          ) : (
+            <Button
+              onClick={() => setShowFeedbackForm(true)}
+              className="w-full h-14 bg-gradient-to-l from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold text-lg"
+            >
+              <Plus className="w-5 h-5 ml-2" />
+              הוסף משוב עצמי חדש
+            </Button>
+          )}
         </div>
 
         {/* Summary Stats */}
