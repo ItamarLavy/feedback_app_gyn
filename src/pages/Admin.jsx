@@ -113,10 +113,17 @@ export default function Admin() {
           <div className="flex items-center gap-3">
             <Link 
               to={createPageUrl('InternPasswords')}
-              className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium"
+              className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm"
             >
               <Key className="w-4 h-4" />
               סיסמאות מתמחים
+            </Link>
+            <Link 
+              to={createPageUrl('ExpertPasswords')}
+              className="flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-sm"
+            >
+              <Key className="w-4 h-4" />
+              סיסמאות מומחים
             </Link>
             <Link 
               to={createPageUrl('Home')}

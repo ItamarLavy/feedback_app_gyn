@@ -54,7 +54,7 @@ export default function Layout({ children, currentPageName }) {
               <Link
                 to={createPageUrl('Admin')}
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                  currentPageName === 'Admin' || currentPageName === 'InternDetails' || currentPageName === 'InternPasswords'
+                  currentPageName === 'Admin' || currentPageName === 'InternDetails' || currentPageName === 'InternPasswords' || currentPageName === 'ExpertPasswords'
                     ? 'bg-teal-100 text-teal-700' 
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}

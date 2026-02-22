@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, UserCircle2, Lock, Calendar, Hash, Star } from 'lucide-react';
+import ChangePassword from '../components/auth/ChangePassword';
 import { format } from 'date-fns';
 
 // מפתח כמויות הפרוצדורות הנדרשות
@@ -154,28 +155,8 @@ export default function InternProfile() {
     enabled: !!internId && isAuthenticated
   });
 
-  // פונקציה ליצירת סיסמה דטרמיניסטית מה-ID (זהה לזו ב-InternPasswords)
-  function generatePassword(internId) {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let password = '';
-    let hash = 0;
-    
-    for (let i = 0; i < internId.length; i++) {
-      hash = internId.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    
-    for (let i = 0; i < 5; i++) {
-      hash = ((hash << 5) - hash) + i;
-      const index = Math.abs(hash) % chars.length;
-      password += chars[index];
-    }
-    
-    return password;
-  }
-
   const handleLogin = () => {
-    const correctPassword = generatePassword(internId);
-    if (password === correctPassword) {
+    if (password === (intern?.password || '')) {
       setIsAuthenticated(true);
       setError('');
     } else {
@@ -296,6 +277,11 @@ export default function InternProfile() {
             חזרה
             <ArrowLeft className="w-4 h-4" />
           </Link>
+        </div>
+
+        {/* Change Password */}
+        <div className="mb-8">
+          <ChangePassword entityType="intern" entityId={internId} />
         </div>
 
         {/* Summary Stats */}
