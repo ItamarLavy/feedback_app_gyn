@@ -27,7 +27,7 @@ export default function Layout({ children, currentPageName }) {
                 }`}
               >
                 <Home className="w-4 h-4" />
-                <span className="hidden sm:inline">הזנת משוב</span>
+                <span className="hidden sm:inline">דף הבית</span>
               </Link>
               <Link
                 to={createPageUrl('Interns')}
