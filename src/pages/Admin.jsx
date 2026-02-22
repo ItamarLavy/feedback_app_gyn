@@ -4,19 +4,20 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import PasswordModal from '../components/admin/PasswordModal';
-import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import AnomalousReports from '../components/admin/AnomalousReports';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import SystemAISummary from '../components/admin/SystemAISummary';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
-  Star, Search, Filter, Clock, Key, BookOpen
+  Star, Search, Filter, Clock, Key, BookOpen, Hash, Calendar, User, Stethoscope, Trash2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { format } from 'date-fns';
 
 const RATING_KEYS = ['knowledge_rating', 'manual_skill_rating', 'professionalism_rating', 'independence_rating'];
 
@@ -374,18 +375,50 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* Feedbacks List */}
-        <div className="grid md:grid-cols-2 gap-4 mt-6">
+        {/* Feedbacks List - Compact */}
+        <div className="space-y-2 mt-6">
           {filteredFeedbacks.map(feedback => (
-            <FeedbackCardDetailed 
-              key={feedback.id} 
-              feedback={feedback} 
-              showDelete={true}
-              onDelete={handleDeleteFeedback}
-            />
+            <div key={feedback.id} className="bg-white rounded-lg p-3 border border-slate-200 hover:border-teal-300 transition-colors flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-1">
+                <Hash className="w-4 h-4 text-slate-400" />
+                <span className="font-mono text-teal-700 font-semibold min-w-[60px]">{feedback.procedure_id_code}</span>
+                
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="w-3 h-3 text-slate-400" />
+                  <span className="text-slate-700">{feedback.intern_name}</span>
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm">
+                  <Stethoscope className="w-3 h-3 text-slate-400" />
+                  <span className="text-slate-700">{feedback.expert_name}</span>
+                </div>
+                
+                <span className="text-sm text-slate-600">{feedback.procedure_type}</span>
+                
+                {feedback.procedure_date && (
+                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <Calendar className="w-3 h-3" />
+                    <span>{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
+                  </div>
+                )}
+                
+                <Badge className={feedback.status === 'completed' ? 'bg-green-600' : 'bg-amber-600'}>
+                  {feedback.status === 'completed' ? 'הושלם' : 'ממתין'}
+                </Badge>
+              </div>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDeleteFeedback(feedback.id)}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
           ))}
           {filteredFeedbacks.length === 0 && (
-            <div className="col-span-2 text-center py-12 text-slate-500">
+            <div className="text-center py-12 text-slate-500">
               לא נמצאו משובים
             </div>
           )}
