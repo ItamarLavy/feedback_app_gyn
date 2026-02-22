@@ -3,27 +3,22 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import PasswordModal from '../components/admin/PasswordModal';
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bell, Clock, AlertCircle, CheckCircle, Calendar, ChevronLeft } from 'lucide-react';
+import { Stethoscope, Clock, AlertCircle, CheckCircle, Calendar, ChevronLeft } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 
 export default function Experts() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(true);
-
   const { data: feedbacks = [] } = useQuery({
     queryKey: ['feedbacks'],
-    queryFn: () => base44.entities.Feedback.list('-created_date'),
-    enabled: isAuthenticated
+    queryFn: () => base44.entities.Feedback.list('-created_date')
   });
 
   const { data: experts = [] } = useQuery({
     queryKey: ['experts'],
-    queryFn: () => base44.entities.Expert.list(),
-    enabled: isAuthenticated
+    queryFn: () => base44.entities.Expert.list()
   });
 
   // חישוב תזכורות לכל מומחה
@@ -47,22 +42,6 @@ export default function Experts() {
     return b.pendingCount - a.pendingCount;
   });
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
-        <PasswordModal
-          open={showPasswordModal}
-          mode="expert"
-          onSuccess={() => {
-            setIsAuthenticated(true);
-            setShowPasswordModal(false);
-          }}
-          onClose={() => window.history.back()}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
       <div className="max-w-5xl mx-auto px-4 py-8">
@@ -70,7 +49,7 @@ export default function Experts() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-bl from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <Bell className="w-6 h-6 text-white" />
+              <Stethoscope className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">פאנל מומחים</h1>
@@ -93,24 +72,12 @@ export default function Experts() {
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4 flex-1">
-                    <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold flex-shrink-0">
-                      {expert.name?.[0]}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-slate-800 mb-2">{expert.name}</h3>
+                   <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold flex-shrink-0">
+                     {expert.name?.[0]}
+                   </div>
+                   <div className="flex-1">
+                     <h3 className="text-lg font-semibold text-slate-800">{expert.name}</h3>
                       
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        <Badge variant="outline" className="text-slate-600">
-                          {completedCount} משובים הושלמו
-                        </Badge>
-                        {pendingCount > 0 && (
-                          <Badge className="bg-amber-600 flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3" />
-                            {pendingCount} ממתינים למילוי
-                          </Badge>
-                        )}
-                      </div>
-
                       {pendingCount > 0 && (
                         <div className="flex items-start gap-2 bg-amber-100 border border-amber-300 rounded-lg p-3 mb-3">
                           <AlertCircle className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
@@ -151,7 +118,7 @@ export default function Experts() {
 
           {experts.length === 0 && (
             <div className="text-center py-12 text-slate-500">
-              <Bell className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+              <Stethoscope className="w-12 h-12 mx-auto mb-3 text-slate-300" />
               <p>אין מומחים במערכת</p>
             </div>
           )}
