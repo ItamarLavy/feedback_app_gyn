@@ -52,6 +52,8 @@ import ExpertFeedbackDetail from './pages/ExpertFeedbackDetail';
 import Experts from './pages/Experts';
 import Home from './pages/Home';
 import InternDetails from './pages/InternDetails';
+import Interns from './pages/Interns';
+import InternProfile from './pages/InternProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +63,8 @@ export const PAGES = {
     "Experts": Experts,
     "Home": Home,
     "InternDetails": InternDetails,
+    "Interns": Interns,
+    "InternProfile": InternProfile,
 }
 
 export const pagesConfig = {
