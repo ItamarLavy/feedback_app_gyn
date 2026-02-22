@@ -38,8 +38,8 @@ export default function InternPasswords() {
     enabled: isAuthenticated
   });
 
-  const handleCopy = (password, internId) => {
-    navigator.clipboard.writeText(password);
+  const handleCopy = (displayPassword, internId) => {
+    navigator.clipboard.writeText(displayPassword);
     setCopiedId(internId);
     setTimeout(() => setCopiedId(null), 2000);
   };
@@ -65,7 +65,7 @@ export default function InternPasswords() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-bl from-teal-500 to-teal-600 flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-bl from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
               <Key className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -105,16 +105,16 @@ export default function InternPasswords() {
                         <td className="py-3 px-4 text-slate-600">{index + 1}</td>
                         <td className="py-3 px-4 font-medium text-slate-800">{intern.name}</td>
                         <td className="py-3 px-4">
-                          <code className="bg-slate-100 px-3 py-1 rounded font-mono text-teal-700">
-                            {password}
+                          <code className="bg-slate-100 px-3 py-1 rounded font-mono text-blue-700">
+                            {intern.password || password}
                           </code>
                         </td>
                         <td className="py-3 px-4 text-center">
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleCopy(password, intern.id)}
-                            className="text-teal-600 hover:text-teal-700"
+                            onClick={() => handleCopy(intern.password || password, intern.id)}
+                            className="text-blue-600 hover:text-blue-700"
                           >
                             {copiedId === intern.id ? (
                               <span className="text-green-600">✓ הועתק</span>
@@ -135,8 +135,9 @@ export default function InternPasswords() {
 
             <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
               <p className="text-sm text-amber-800">
-                <strong>שים לב:</strong> הסיסמאות הן ייחודיות לכל מתמחה ונוצרות אוטומטית. 
-                יש להעביר לכל מתמחה את הסיסמה האישית שלו לגישה לעמוד האישי.
+                <strong>שים לב:</strong> הסיסמאות המוצגות כאן הן הסיסמאות הנוכחיות במערכת - 
+                אם מתמחה שינה סיסמה, הסיסמה המעודכנת תוצג כאן. 
+                הסיסמאות הראשוניות נוצרות אוטומטית. יש להעביר לכל מתמחה את הסיסמה האישית שלו.
               </p>
             </div>
           </CardContent>
