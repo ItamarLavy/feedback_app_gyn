@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, UserCircle2, Lock, Calendar, Hash, Star, Plus } from 'lucide-react';
+import { ArrowLeft, UserCircle2, Lock, Calendar, Hash, Star, Plus, BarChart3, ClipboardList } from 'lucide-react';
 import ChangePassword from '../components/auth/ChangePassword';
 import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
 import { format } from 'date-fns';
@@ -334,156 +334,170 @@ export default function InternProfile() {
           )}
         </div>
 
-        {/* Summary Stats */}
-        <div className="grid md:grid-cols-5 gap-4 mb-8">
-          {Object.entries(categoryStats).map(([category, stats]) => (
-            <Card key={category} className="border-0 shadow-lg">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <h3 className="font-semibold text-slate-700 mb-2">{category}</h3>
-                  <div className="text-3xl font-bold text-blue-600 mb-1">
-                    {Math.round(stats.totalPercentage)}%
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    {stats.totalCompleted} / {stats.totalRequired}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Detailed Progress by Category */}
-        <div className="space-y-6">
-          {Object.entries(categoryStats).map(([category, stats]) => (
-            <Card key={category} className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{category}</span>
-                  <Badge className="bg-blue-600">
-                    {Math.round(stats.totalPercentage)}% הושלם
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {stats.procedures.map((proc, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-700">{proc.name}</span>
-                        <span className="text-slate-500 font-medium">
-                          {proc.completed} / {proc.required}
-                        </span>
-                      </div>
-                      <div className="w-full bg-slate-100 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full transition-all ${
-                            proc.percentage >= 100 ? 'bg-green-500' : 'bg-blue-500'
-                          }`}
-                          style={{ width: `${proc.percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* My Feedbacks */}
-        <Card className="border-0 shadow-lg mt-8">
-          <CardHeader>
-            <CardTitle>המשובים שלי ({feedbacks.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {feedbacks.map(feedback => (
-                <div key={feedback.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Hash className="w-4 h-4 text-slate-500" />
-                      <span className="font-mono text-teal-700 font-semibold">{feedback.procedure_id_code}</span>
-                      <Badge className={feedback.status === 'completed' ? 'bg-green-600' : 'bg-amber-600'}>
-                        {feedback.status === 'completed' ? 'הושלם' : 'ממתין למומחה'}
-                      </Badge>
-                    </div>
-                    {feedback.procedure_date && (
-                      <div className="flex items-center gap-1 text-sm text-slate-500">
-                        <Calendar className="w-4 h-4" />
-                        <span>{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="text-sm text-slate-700 mb-3">
-                    <span className="font-medium">{feedback.procedure_category}</span>
-                    <span className="text-slate-400 mx-2">•</span>
-                    <span>{feedback.procedure_type}</span>
-                  </div>
-
-                  {/* Self Ratings */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-                    {feedback.intern_knowledge_rating > 0 && (
-                      <div className="flex flex-col">
-                        <span className="text-xs text-slate-500">ידע</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < feedback.intern_knowledge_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
-                          ))}
+        {/* Progress Tracking - Collapsible */}
+        <div className="mb-8">
+          <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
+            <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              מעקב התקדמות ({feedbacks.length} פרוצדורות)
+            </summary>
+            <div className="px-4 pb-4 pt-2">
+              {/* Summary Stats */}
+              <div className="grid md:grid-cols-5 gap-4 mb-6">
+                {Object.entries(categoryStats).map(([category, stats]) => (
+                  <Card key={category} className="border-0 shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="text-center">
+                        <h3 className="font-semibold text-slate-700 mb-2">{category}</h3>
+                        <div className="text-3xl font-bold text-blue-600 mb-1">
+                          {Math.round(stats.totalPercentage)}%
                         </div>
+                        <p className="text-xs text-slate-500">
+                          {stats.totalCompleted} / {stats.totalRequired}
+                        </p>
                       </div>
-                    )}
-                    {feedback.intern_manual_skill_rating > 0 && (
-                      <div className="flex flex-col">
-                        <span className="text-xs text-slate-500">מיומנות</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < feedback.intern_manual_skill_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {feedback.intern_professionalism_rating > 0 && (
-                      <div className="flex flex-col">
-                        <span className="text-xs text-slate-500">מקצועיות</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < feedback.intern_professionalism_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {feedback.intern_independence_rating > 0 && (
-                      <div className="flex flex-col">
-                        <span className="text-xs text-slate-500">עצמאות</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < feedback.intern_independence_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
 
-                  {/* Verbal Feedback */}
-                  {feedback.intern_verbal_feedback && (
-                    <div className="bg-white rounded-lg p-3 border border-slate-200">
-                      <p className="text-xs text-blue-700 font-semibold mb-1">המשוב שלי:</p>
-                      <p className="text-sm text-slate-700">{feedback.intern_verbal_feedback}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {feedbacks.length === 0 && (
-                <div className="text-center py-8 text-slate-500">
-                  עדיין לא מילאת משובים
-                </div>
-              )}
+              {/* Detailed Progress by Category */}
+              <div className="space-y-6">
+                {Object.entries(categoryStats).map(([category, stats]) => (
+                  <Card key={category} className="border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between text-base">
+                        <span>{category}</span>
+                        <Badge className="bg-blue-600">
+                          {Math.round(stats.totalPercentage)}% הושלם
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {stats.procedures.map((proc, idx) => (
+                          <div key={idx} className="space-y-1">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-slate-700">{proc.name}</span>
+                              <span className="text-slate-500 font-medium">
+                                {proc.completed} / {proc.required}
+                              </span>
+                            </div>
+                            <div className="w-full bg-slate-100 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all ${
+                                  proc.percentage >= 100 ? 'bg-green-500' : 'bg-blue-500'
+                                }`}
+                                style={{ width: `${proc.percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </details>
+        </div>
+
+        {/* My Feedbacks - Collapsible */}
+        <div className="mb-8">
+          <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
+            <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+              <ClipboardList className="w-4 h-4" />
+              המשובים שלי ({feedbacks.length})
+            </summary>
+            <div className="px-4 pb-4 pt-2">
+              <div className="space-y-3">
+                {feedbacks.map(feedback => (
+                  <div key={feedback.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Hash className="w-4 h-4 text-slate-500" />
+                        <span className="font-mono text-teal-700 font-semibold">{feedback.procedure_id_code}</span>
+                        <Badge className={feedback.status === 'completed' ? 'bg-green-600' : 'bg-amber-600'}>
+                          {feedback.status === 'completed' ? 'הושלם' : 'ממתין למומחה'}
+                        </Badge>
+                      </div>
+                      {feedback.procedure_date && (
+                        <div className="flex items-center gap-1 text-sm text-slate-500">
+                          <Calendar className="w-4 h-4" />
+                          <span>{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="text-sm text-slate-700 mb-3">
+                      <span className="font-medium">{feedback.procedure_category}</span>
+                      <span className="text-slate-400 mx-2">•</span>
+                      <span>{feedback.procedure_type}</span>
+                    </div>
+
+                    {/* Self Ratings */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+                      {feedback.intern_knowledge_rating > 0 && (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-slate-500">ידע</span>
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-3 h-3 ${i < feedback.intern_knowledge_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {feedback.intern_manual_skill_rating > 0 && (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-slate-500">מיומנות</span>
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-3 h-3 ${i < feedback.intern_manual_skill_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {feedback.intern_professionalism_rating > 0 && (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-slate-500">מקצועיות</span>
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-3 h-3 ${i < feedback.intern_professionalism_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {feedback.intern_independence_rating > 0 && (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-slate-500">עצמאות</span>
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-3 h-3 ${i < feedback.intern_independence_rating ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Verbal Feedback */}
+                    {feedback.intern_verbal_feedback && (
+                      <div className="bg-white rounded-lg p-3 border border-slate-200">
+                        <p className="text-xs text-blue-700 font-semibold mb-1">המשוב שלי:</p>
+                        <p className="text-sm text-slate-700">{feedback.intern_verbal_feedback}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {feedbacks.length === 0 && (
+                  <div className="text-center py-8 text-slate-500">
+                    עדיין לא מילאת משובים
+                  </div>
+                )}
+              </div>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   );

@@ -220,68 +220,81 @@ export default function ExpertFeedbackDetailWithAuth() {
           </details>
         </div>
 
-        {/* Upcoming Meetings */}
-        {upcomingMeetings.length > 0 && (
+        {/* Meetings - Collapsible */}
+        {(upcomingMeetings.length > 0 || pastMeetings.length > 0) && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-purple-600" />
-              פגישות משוב קרובות ({upcomingMeetings.length})
-            </h2>
-            <div className="space-y-3">
-              {upcomingMeetings.map(meeting => (
-                <Card key={meeting.id} className="border-2 border-purple-300 bg-purple-50">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <User className="w-4 h-4 text-slate-600" />
-                          <span className="font-semibold text-slate-800">{meeting.intern_name}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <Clock className="w-4 h-4" />
-                          <span>{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy HH:mm')}</span>
-                        </div>
-                        {meeting.location && (
-                          <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
-                            <MapPin className="w-4 h-4" />
-                            <span>{meeting.location}</span>
-                          </div>
-                        )}
-                      </div>
-                      <Badge className="bg-purple-600">מתוכנן</Badge>
+            <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
+              <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                פגישות מנטורינג ({upcomingMeetings.length + pastMeetings.length})
+              </summary>
+              <div className="px-4 pb-4 pt-2">
+                {/* Upcoming Meetings */}
+                {upcomingMeetings.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-base font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-purple-600" />
+                      פגישות קרובות ({upcomingMeetings.length})
+                    </h3>
+                    <div className="space-y-3">
+                      {upcomingMeetings.map(meeting => (
+                        <Card key={meeting.id} className="border-2 border-purple-300 bg-purple-50">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <User className="w-4 h-4 text-slate-600" />
+                                  <span className="font-semibold text-slate-800">{meeting.intern_name}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-slate-600">
+                                  <Clock className="w-4 h-4" />
+                                  <span>{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy HH:mm')}</span>
+                                </div>
+                                {meeting.location && (
+                                  <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
+                                    <MapPin className="w-4 h-4" />
+                                    <span>{meeting.location}</span>
+                                  </div>
+                                )}
+                              </div>
+                              <Badge className="bg-purple-600">מתוכנן</Badge>
+                            </div>
+                            {meeting.notes && (
+                              <p className="text-sm text-slate-600 mt-2 border-t border-purple-200 pt-2">{meeting.notes}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
-                    {meeting.notes && (
-                      <p className="text-sm text-slate-600 mt-2 border-t border-purple-200 pt-2">{meeting.notes}</p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
+                  </div>
+                )}
 
-        {/* Past Meetings */}
-        {pastMeetings.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">פגישות שהתקיימו ({pastMeetings.length})</h2>
-            <div className="space-y-2">
-              {pastMeetings.map(meeting => (
-                <Card key={meeting.id} className="bg-slate-50 border border-slate-200">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 text-sm">
-                        <User className="w-4 h-4 text-slate-500" />
-                        <span className="text-slate-700">{meeting.intern_name}</span>
-                        <span className="text-slate-400">•</span>
-                        <Calendar className="w-4 h-4 text-slate-500" />
-                        <span className="text-slate-600">{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy')}</span>
-                      </div>
-                      <Badge className="bg-slate-600 text-xs">התקיים</Badge>
+                {/* Past Meetings */}
+                {pastMeetings.length > 0 && (
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-800 mb-3">פגישות שהתקיימו ({pastMeetings.length})</h3>
+                    <div className="space-y-2">
+                      {pastMeetings.map(meeting => (
+                        <Card key={meeting.id} className="bg-slate-50 border border-slate-200">
+                          <CardContent className="p-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3 text-sm">
+                                <User className="w-4 h-4 text-slate-500" />
+                                <span className="text-slate-700">{meeting.intern_name}</span>
+                                <span className="text-slate-400">•</span>
+                                <Calendar className="w-4 h-4 text-slate-500" />
+                                <span className="text-slate-600">{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy')}</span>
+                              </div>
+                              <Badge className="bg-slate-600 text-xs">התקיים</Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  </div>
+                )}
+              </div>
+            </details>
           </div>
         )}
 
@@ -429,14 +442,44 @@ export default function ExpertFeedbackDetailWithAuth() {
           </div>
         )}
 
-        {/* Completed Feedbacks - קוד זהה לקובץ המקורי */}
+        {/* Completed Feedbacks - Collapsible */}
         {completedFeedbacks.length > 0 && (
-          <div>
-            <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              משובים שהושלמו ({completedFeedbacks.length})
-            </h2>
-            {/* שאר התוכן זהה... */}
+          <div className="mb-8">
+            <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
+              <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-green-600" />
+                משובים שהושלמו ({completedFeedbacks.length})
+              </summary>
+              <div className="px-4 pb-4 pt-2 space-y-3">
+                {completedFeedbacks.map(feedback => (
+                  <div key={feedback.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Hash className="w-4 h-4 text-slate-500" />
+                        <span className="font-mono text-teal-700 font-semibold">{feedback.procedure_id_code}</span>
+                        <span className="text-slate-400">•</span>
+                        <User className="w-4 h-4 text-slate-500" />
+                        <span className="text-slate-700">{feedback.intern_name}</span>
+                      </div>
+                      <Badge className="bg-green-600">הושלם</Badge>
+                    </div>
+                    
+                    <div className="text-sm text-slate-700 mb-2">
+                      <span className="font-medium">{feedback.procedure_category}</span>
+                      <span className="text-slate-400 mx-2">•</span>
+                      <span>{feedback.procedure_type}</span>
+                    </div>
+
+                    {feedback.procedure_date && (
+                      <div className="flex items-center gap-1 text-sm text-slate-500 mb-2">
+                        <Calendar className="w-3 h-3" />
+                        <span>{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </details>
           </div>
         )}
 
