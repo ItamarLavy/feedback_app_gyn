@@ -57,6 +57,21 @@ export default function Instructions() {
                   3
                 </div>
                 <div>
+                  <h4 className="font-semibold text-slate-800 mb-1">הזנה ידנית של פרוצדורות קיימות (תקופת פיילוט)</h4>
+                  <p className="text-sm text-slate-600">
+                    בימים הראשונים, ניתן למתמחים להזין את מספר הפרוצדורות שעשו עד כה ידנית, 
+                    ואלה יחשבו כפרוצדורות ללא משוב, אך כחלק מהיעד שלהם. 
+                    ההזנה הידנית תופיע בצבע אפור בטבלת ההתקדמות.
+                    לאחר תקופת הפיילוט, אפשרות זו תוסר והתקדמות תתבסס רק על משובים.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold flex items-center justify-center">
+                  4
+                </div>
+                <div>
                   <h4 className="font-semibold text-slate-800 mb-1">מעקב אחר התקדמות</h4>
                   <p className="text-sm text-slate-600">
                     בעמוד האישי תוכל לראות את אחוזי ההשלמה שלך בכל קטגוריה, 
