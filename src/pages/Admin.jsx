@@ -10,7 +10,7 @@ import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import SystemAISummary from '../components/admin/SystemAISummary';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
-  Star, Search, Filter, Clock
+  Star, Search, Filter, Clock, Key
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -109,13 +109,22 @@ export default function Admin() {
               <p className="text-slate-500 text-sm">צפייה בכל המשובים</p>
             </div>
           </div>
-          <Link 
-            to={createPageUrl('Home')}
-            className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
-          >
-            חזרה לדף הבית
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link 
+              to={createPageUrl('InternPasswords')}
+              className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium"
+            >
+              <Key className="w-4 h-4" />
+              סיסמאות מתמחים
+            </Link>
+            <Link 
+              to={createPageUrl('Home')}
+              className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
+            >
+              חזרה לדף הבית
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
 
         {/* Stats Cards */}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, Home, Bell } from 'lucide-react';
+import { Stethoscope, Shield, Home, Bell, BookOpen } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   return (
@@ -54,13 +54,24 @@ export default function Layout({ children, currentPageName }) {
               <Link
                 to={createPageUrl('Admin')}
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                  currentPageName === 'Admin' || currentPageName === 'InternDetails'
+                  currentPageName === 'Admin' || currentPageName === 'InternDetails' || currentPageName === 'InternPasswords'
                     ? 'bg-teal-100 text-teal-700' 
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
                 <Shield className="w-4 h-4" />
                 <span className="hidden sm:inline">ניהול</span>
+              </Link>
+              <Link
+                to={createPageUrl('Instructions')}
+                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                  currentPageName === 'Instructions'
+                    ? 'bg-teal-100 text-teal-700' 
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">הוראות</span>
               </Link>
             </div>
           </div>
