@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, UserCircle2, Lock, Calendar, Hash, Star, Plus, BarChart3, ClipboardList } from 'lucide-react';
 import ChangePassword from '../components/auth/ChangePassword';
 import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
+import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
 import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -300,6 +301,11 @@ export default function InternProfile() {
               <ChangePassword entityType="intern" entityId={internId} />
             </div>
           </details>
+        </div>
+
+        {/* Manual Procedure Entry */}
+        <div className="mb-8">
+          <ManualProcedureEntry internId={internId} internName={intern.name} />
         </div>
 
         {/* Add Feedback Form */}

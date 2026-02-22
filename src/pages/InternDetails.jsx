@@ -10,6 +10,7 @@ import RotationManager from '../components/admin/RotationManager';
 import RotationMap from '../components/intern/RotationMap';
 import MyFeedbackMeetings from '../components/intern/MyFeedbackMeetings';
 import ManagerNotes from '../components/admin/ManagerNotes';
+import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
 import { User, ArrowLeft, ClipboardList, ListChecks } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -291,6 +292,11 @@ export default function InternDetails() {
         {/* Manager Notes */}
         <div className="mb-8">
           <ManagerNotes intern={intern} />
+        </div>
+
+        {/* Manual Procedure Entry */}
+        <div className="mb-8">
+          <ManualProcedureEntry internId={internId} internName={intern?.name} />
         </div>
 
         {/* Detailed Progress Button */}
