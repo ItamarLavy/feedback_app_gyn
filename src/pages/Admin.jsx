@@ -242,72 +242,49 @@ export default function Admin() {
           </Card>
         </div>
 
-        {/* Admin Instructions Button */}
-        <div className="mb-8">
-          <Button
+        {/* Admin Instructions - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="bg-teal-50 border-b border-teal-100 cursor-pointer select-none hover:bg-teal-100 transition-colors rounded-xl"
             onClick={() => setShowAdminInstructions(!showAdminInstructions)}
-            variant="outline"
-            className="w-full"
           >
-            <BookOpen className="w-4 h-4 ml-2" />
-            {showAdminInstructions ? 'הסתר' : 'הצג'} הוראות למנהלים
-          </Button>
-        </div>
-
-        {/* Admin Instructions */}
-        {showAdminInstructions && (
-          <Card className="border-0 shadow-xl mb-8">
-            <CardHeader className="bg-teal-50 border-b-2 border-teal-200">
-              <CardTitle className="flex items-center gap-3 text-teal-900">
-                <Shield className="w-6 h-6" />
+            <CardTitle className="flex items-center justify-between text-teal-900">
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-5 h-5" />
                 הוראות למנהלים
-              </CardTitle>
-            </CardHeader>
+              </div>
+              <span className="text-teal-500 text-lg">{showAdminInstructions ? '▲' : '▼'}</span>
+            </CardTitle>
+          </CardHeader>
+          {showAdminInstructions && (
             <CardContent className="p-6">
               <div className="space-y-6">
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">
-                    1
-                  </div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">1</div>
                   <div>
                     <h4 className="font-semibold text-slate-800 mb-1">צפייה בכל המשובים</h4>
-                    <p className="text-sm text-slate-600">
-                      בפאנל הניהול תוכל לראות את כל המשובים במערכת, לחפש ולסנן לפי מתמחה/מומחה/פרוצדורה,
-                      ולמחוק משובים במידת הצורך.
-                    </p>
+                    <p className="text-sm text-slate-600">בפאנל הניהול תוכל לראות את כל המשובים במערכת, לחפש ולסנן לפי מתמחה/מומחה/פרוצדורה, ולמחוק משובים במידת הצורך.</p>
                   </div>
                 </div>
-
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">
-                    2
-                  </div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">2</div>
                   <div>
                     <h4 className="font-semibold text-slate-800 mb-1">אישור בקשות גישה</h4>
-                    <p className="text-sm text-slate-600">
-                      כאשר משתמש חדש נכנס עם גוגל ואין לו גישה, הבקשה שלו תופיע בראש הדף. בחר תפקיד (מתמחה/מומחה), בחר את הרשומה המתאימה, ולחץ "אשר" – המייל יתעדכן אוטומטית.
-                    </p>
-                    <p className="text-sm text-slate-600 mt-1">
-                      ניתן גם להוסיף מיילים מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>.
-                    </p>
+                    <p className="text-sm text-slate-600">כאשר משתמש חדש נכנס עם גוגל ואין לו גישה, הבקשה שלו תופיע בראש הדף. בחר תפקיד (מתמחה/מומחה), בחר את הרשומה המתאימה, ולחץ "אשר" – המייל יתעדכן אוטומטית.</p>
+                    <p className="text-sm text-slate-600 mt-1">ניתן גם להוסיף מיילים מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>.</p>
                   </div>
                 </div>
-
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">
-                    3
-                  </div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">3</div>
                   <div>
                     <h4 className="font-semibold text-slate-800 mb-1">ניהול פגישות משוב</h4>
-                    <p className="text-sm text-slate-600">
-                      ניתן לתזמן פגישות משוב עם מתמחים ולהזמין מומחים להשתתף.
-                    </p>
+                    <p className="text-sm text-slate-600">ניתן לתזמן פגישות משוב עם מתמחים ולהזמין מומחים להשתתף.</p>
                   </div>
                 </div>
               </div>
             </CardContent>
-          </Card>
-        )}
+          )}
+        </Card>
 
         {/* Access Requests */}
         <AccessRequestsPanel interns={interns} experts={experts} />
