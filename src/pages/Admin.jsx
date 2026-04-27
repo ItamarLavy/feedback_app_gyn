@@ -277,8 +277,22 @@ export default function Admin() {
                 <div className="flex gap-3">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">3</div>
                   <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">עדכון מיילים מראש</h4>
+                    <p className="text-sm text-slate-600">ניתן לרשום את המייל של כל מתמחה/מומחה מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>. כך הם יזוהו אוטומטית בכניסה הראשונה.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">4</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">ניהול שוטף</h4>
+                    <p className="text-sm text-slate-600">לחץ על שם מתמחה לצפייה מפורטת. ניתן לתזמן פגישות מנטורינג, לצפות בסיכומי AI ובדוחות חריגים, ולמחוק משובים במידת הצורך.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">5</div>
+                  <div>
                     <h4 className="font-semibold text-slate-800 mb-1">ניהול פגישות משוב</h4>
-                    <p className="text-sm text-slate-600">ניתן לתזמן פגישות משוב עם מתמחים ולהזמין מומחים להשתתף.</p>
+                    <p className="text-sm text-slate-600">ניתן לתזמן פגישות משוב עם מתמחים ולהזמין מומחים להשתתף. תזכורות נשלחות אוטומטית יומיים לפני הפגישה ובבוקר יום הפגישה.</p>
                   </div>
                 </div>
               </div>

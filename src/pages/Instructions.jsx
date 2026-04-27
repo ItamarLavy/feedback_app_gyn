@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, User, Stethoscope, Shield, ChevronDown, ChevronUp, Star, ClipboardList, BarChart2, MessageSquare, LogIn, UserCheck, Mail } from 'lucide-react';
+import { BookOpen, User, Stethoscope, ChevronDown, ChevronUp, Star, ClipboardList, BarChart2, MessageSquare, LogIn, UserCheck, Mail, Shield } from 'lucide-react';
 
 const Section = ({ icon: Icon, title, color, children }) => {
   const [open, setOpen] = useState(true);
@@ -159,43 +159,6 @@ export default function Instructions() {
             <Step num="3" color="purple" icon={BarChart2} title="פגישות מנטורינג">
               <p>אם תוזמנת לפגישת מנטורינג עם מתמחה, תראה אותה בעמוד האישי שלך תחת <strong>"פגישות מנטורינג"</strong>.</p>
               <p>תזכורת תישלח אליך <strong>יומיים לפני</strong> הפגישה ו<strong>בבוקר יום הפגישה</strong>.</p>
-            </Step>
-          </div>
-        </Section>
-
-        {/* מנהלים */}
-        <Section icon={Shield} title="למנהלים" color="teal">
-          <div className="space-y-7">
-            <Step num="1" color="teal" icon={LogIn} title="כניסה לפאנל ניהול">
-              <p>התחבר עם חשבון הגוגל שלך. כמנהל, תגיע לדף הבית עם גישה לכל הפאנלים.</p>
-              <p>לחץ על <strong>"פאנל ניהול"</strong> כדי להיכנס.</p>
-            </Step>
-
-            <Step num="2" color="teal" icon={UserCheck} title="אישור בקשות גישה">
-              <p>כאשר משתמש חדש מתחבר עם גוגל ואין לו גישה, הבקשה שלו מופיעה בראש פאנל הניהול.</p>
-              <p>לאישור:</p>
-              <ul className="list-disc list-inside mt-1 space-y-0.5">
-                <li>בחר <strong>תפקיד</strong> – מתמחה או מומחה</li>
-                <li>בחר את <strong>הרשומה המתאימה</strong> מהרשימה הקיימת</li>
-                <li>לחץ <strong>"אשר"</strong> – המייל יתעדכן אוטומטית ברשומה</li>
-              </ul>
-              <p className="text-xs text-slate-400 mt-1">לאחר האישור, בפעם הבאה שהמשתמש יתחבר הוא יזוהה אוטומטית.</p>
-            </Step>
-
-            <Step num="3" color="teal" icon={Mail} title="עדכון מיילים מראש">
-              <p>ניתן גם לרשום את המייל של כל מתמחה/מומחה מראש דרך <strong>"עדכון מיילים מתמחים"</strong> או <strong>"עדכון מיילים מומחים"</strong> בפאנל הניהול.</p>
-              <p>כך הם יזוהו אוטומטית בכניסה הראשונה ללא צורך באישור ידני.</p>
-            </Step>
-
-            <Step num="4" color="teal" icon={BarChart2} title="ניהול שוטף">
-              <p>בפאנל הניהול תוכל:</p>
-              <ul className="list-disc list-inside mt-1 space-y-0.5">
-                <li>לראות את כל המשובים, לחפש ולסנן</li>
-                <li>ללחוץ על שם מתמחה לצפייה מפורטת</li>
-                <li>לתזמן פגישות מנטורינג</li>
-                <li>לצפות בסיכומי AI ובדוחות חריגים</li>
-                <li>למחוק משובים במידת הצורך</li>
-              </ul>
             </Step>
           </div>
         </Section>
