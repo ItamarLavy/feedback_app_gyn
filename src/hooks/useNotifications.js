@@ -234,6 +234,100 @@ export async function sendInternWeeklySummary(internId, internName, internEmail)
   });
 }
 
+// סיכום שישי בוקר למנהלים + הודעת אלוף לכולם
+export async function sendFridayManagerSummary(managerId, managerEmail) {
+  const now = new Date();
+  // רק ביום שישי (5) בין 8:00-9:00
+  if (getDay(now) !== 5 || getHours(now) < 8 || getHours(now) > 9) return;
+
+  // בדוק שלא שלחנו היום
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+  const existing = await base44.entities.Notification.filter({ recipient_user_id: managerId, type: 'weekly_summary_expert' });
+  const sentToday = existing.filter(n => n.sent_at && new Date(n.sent_at) >= todayStart);
+  if (sentToday.length > 0) return;
+
+  const weekStart = startOfWeek(now, { weekStartsOn: 0 });
+
+  // כל הפידבקים השבוע
+  const allFeedbacks = await base44.entities.Feedback.list();
+  const thisWeek = allFeedbacks.filter(f => f.intern_submitted_date && new Date(f.intern_submitted_date) >= weekStart);
+  const completedThisWeek = allFeedbacks.filter(f => f.expert_submitted_date && new Date(f.expert_submitted_date) >= weekStart && f.status === 'completed');
+
+  // כמה ביקש כל מתמחה
+  const internCounts = {};
+  thisWeek.forEach(f => {
+    if (!internCounts[f.intern_name]) internCounts[f.intern_name] = 0;
+    internCounts[f.intern_name]++;
+  });
+
+  // כמה מילא כל מומחה
+  const expertCounts = {};
+  completedThisWeek.forEach(f => {
+    if (!expertCounts[f.expert_name]) expertCounts[f.expert_name] = 0;
+    expertCounts[f.expert_name]++;
+  });
+
+  // אלופים
+  const topIntern = Object.entries(internCounts).sort((a, b) => b[1] - a[1])[0];
+  const topExpert = Object.entries(expertCounts).sort((a, b) => b[1] - a[1])[0];
+
+  // בנה הודעה מפורטת
+  const internLines = Object.entries(internCounts).map(([name, count]) => `• ${name}: ${count} בקשות`).join('\n');
+  const expertLines = Object.entries(expertCounts).map(([name, count]) => `• ${name}: ${count} משובים`).join('\n');
+
+  const message = `📋 סיכום שבועי - ${new Date().toLocaleDateString('he-IL')}\n\n` +
+    `🎓 בקשות משוב של מתמחים:\n${internLines || 'אין נתונים'}\n\n` +
+    `⭐ משובים שהושלמו על ידי מומחים:\n${expertLines || 'אין נתונים'}\n\n` +
+    (topIntern ? `🏆 מתמחה מצטיין: ${topIntern[0]} (${topIntern[1]} בקשות)\n` : '') +
+    (topExpert ? `🥇 ממשב מצטיין: ${topExpert[0]} (${topExpert[1]} משובים)` : '');
+
+  await createNotification({
+    recipientUserId: managerId,
+    recipientRole: 'manager',
+    type: 'weekly_summary_expert',
+    message,
+    email: managerEmail
+  });
+}
+
+// שלח הודעת אלוף לכולם ביום שישי 8:00
+export async function sendFridayChampionMessage(currentUserId, currentUserEmail) {
+  const now = new Date();
+  if (getDay(now) !== 5 || getHours(now) < 8 || getHours(now) > 9) return;
+
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+  const existing = await base44.entities.Notification.filter({ recipient_user_id: currentUserId, type: 'bravo_double' });
+  const sentToday = existing.filter(n => n.sent_at && new Date(n.sent_at) >= todayStart);
+  if (sentToday.length > 0) return;
+
+  const weekStart = startOfWeek(now, { weekStartsOn: 0 });
+  const allFeedbacks = await base44.entities.Feedback.list();
+  const thisWeek = allFeedbacks.filter(f => f.intern_submitted_date && new Date(f.intern_submitted_date) >= weekStart);
+  const completedThisWeek = allFeedbacks.filter(f => f.expert_submitted_date && new Date(f.expert_submitted_date) >= weekStart && f.status === 'completed');
+
+  const internCounts = {};
+  thisWeek.forEach(f => { internCounts[f.intern_name] = (internCounts[f.intern_name] || 0) + 1; });
+  const expertCounts = {};
+  completedThisWeek.forEach(f => { expertCounts[f.expert_name] = (expertCounts[f.expert_name] || 0) + 1; });
+
+  const topIntern = Object.entries(internCounts).sort((a, b) => b[1] - a[1])[0];
+  const topExpert = Object.entries(expertCounts).sort((a, b) => b[1] - a[1])[0];
+
+  if (!topIntern && !topExpert) return;
+
+  const message = `🏆 שבוע נהדר! ` +
+    (topIntern ? `${topIntern[0]} הוא/היא אלוף/ת המשובים השבוע! 🥇 ` : '') +
+    (topExpert ? `ו-${topExpert[0]} הוא/היא אלוף/ת הממשבים! 🥇` : '');
+
+  await createNotification({
+    recipientUserId: currentUserId,
+    recipientRole: 'intern',
+    type: 'bravo_double',
+    message,
+    email: currentUserEmail
+  });
+}
+
 // סיכום שבועי למומחה - ביום חמישי 15:00
 export async function sendExpertWeeklySummary(expertId, expertName, expertEmail) {
   const now = new Date();

@@ -14,7 +14,9 @@ import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
 import { format, differenceInDays, getDay, getHours } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/AuthContext';
-import { getOrCreateUserPoints, sendInternWeeklySummary } from '@/hooks/useNotifications';
+import { getOrCreateUserPoints, sendInternWeeklySummary, sendFridayChampionMessage } from '@/hooks/useNotifications';
+import AvatarSetup from '@/components/intern/AvatarSetup';
+import InternPersona from '@/components/intern/InternPersona';
 
 // מפתח כמויות הפרוצדורות הנדרשות
 const PROCEDURE_REQUIREMENTS = {
@@ -147,6 +149,7 @@ export default function InternProfile() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [showAvatarSetup, setShowAvatarSetup] = useState(false);
 
   const { data: intern } = useQuery({
     queryKey: ['intern', internId],
@@ -179,6 +182,11 @@ export default function InternProfile() {
     if (password === (intern?.password || '')) {
       setIsAuthenticated(true);
       setError('');
+
+      // אם מתמחה חדש (בלי כינוי/דמות) - הצג הגדרה
+      if (!intern.nickname || !intern.avatar) {
+        setShowAvatarSetup(true);
+      }
 
       // תזכורות בוקר וסיכום שבועי
       if (user?.id) {
@@ -239,6 +247,8 @@ export default function InternProfile() {
           // סיכום שבועי - חמישי 15:00
           await sendInternWeeklySummary(user.id, intern?.name, user.email);
           await getOrCreateUserPoints(user.id, intern?.name, 'intern');
+          // הודעת אלוף - שישי 8:00
+          await sendFridayChampionMessage(user.id, user.email);
         } catch(e) { console.warn('morning notification error', e); }
       }
     } else {
@@ -354,6 +364,13 @@ export default function InternProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100" dir="rtl">
+      {showAvatarSetup && (
+        <AvatarSetup
+          intern={intern}
+          onDone={(nick, av) => setShowAvatarSetup(false)}
+        />
+      )}
+      <InternPersona nickname={intern.nickname} avatar={intern.avatar} />
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

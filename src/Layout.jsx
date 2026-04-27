@@ -5,7 +5,9 @@ import { Stethoscope, Shield, Home, BookOpen, Notebook } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import PointsBadge from '@/components/notifications/PointsBadge';
 import NotificationBanner from '@/components/notifications/NotificationBanner';
-import { processPendingNotifications } from '@/hooks/useNotifications';
+import { processPendingNotifications, sendFridayManagerSummary, sendFridayChampionMessage } from '@/hooks/useNotifications';
+
+const MANAGER_NAMES = ['יובל לביא', 'רונית גלעד', 'צביקה שמעונוביץ'];
 import { useEffect } from 'react';
 
 export default function Layout({ children, currentPageName }) {
@@ -14,6 +16,12 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     if (isAuthenticated && user?.id) {
       processPendingNotifications(user.id, user.email).catch(() => {});
+      // שישי 8:00: הודעת אלוף לכל משתמש
+      sendFridayChampionMessage(user.id, user.email).catch(() => {});
+      // שישי 8:00: סיכום מנהלים
+      if (MANAGER_NAMES.some(name => user.full_name?.includes(name))) {
+        sendFridayManagerSummary(user.id, user.email).catch(() => {});
+      }
     }
   }, [isAuthenticated, user?.id]);
 
