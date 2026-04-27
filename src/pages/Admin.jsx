@@ -314,7 +314,7 @@ export default function Admin() {
         </Card>
 
         {/* Access Requests */}
-        <AccessRequestsPanel interns={interns} experts={experts} />
+        <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
 
         {/* Anomalous Reports */}
         <div className="mb-8">

@@ -57,6 +57,31 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
+      
+      // Check if user exists in interns or experts
+      if (currentUser?.email) {
+        const interns = await base44.entities.Intern.filter({ email: currentUser.email });
+        const experts = await base44.entities.Expert.filter({ email: currentUser.email });
+        
+        // If user not found in either list, create access request
+        if (interns.length === 0 && experts.length === 0) {
+          const existing = await base44.entities.AccessRequest.filter({ email: currentUser.email });
+          if (existing.length === 0) {
+            await base44.entities.AccessRequest.create({
+              email: currentUser.email,
+              full_name: currentUser.full_name || currentUser.email,
+              status: 'pending'
+            });
+          }
+          
+          // Set error to show pending access page
+          setAuthError({
+            type: 'user_not_registered',
+            message: 'Pending access approval'
+          });
+          setIsAuthenticated(false);
+        }
+      }
     } catch (error) {
       console.error('User auth check failed:', error);
       setIsLoadingAuth(false);

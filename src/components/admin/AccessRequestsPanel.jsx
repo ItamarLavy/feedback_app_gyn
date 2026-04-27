@@ -11,10 +11,10 @@ import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
-export default function AccessRequestsPanel({ interns, experts }) {
+export default function AccessRequestsPanel({ interns, experts, queryClient: externalQueryClient }) {
   const { user, isAuthenticated } = useAuth();
   const isManager = isAuthenticated && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
-  const queryClient = useQueryClient();
+  const queryClient = externalQueryClient || useQueryClient();
   const [assigning, setAssigning] = useState({}); // { [requestId]: { role, entityId } }
 
   const { data: requests = [] } = useQuery({
