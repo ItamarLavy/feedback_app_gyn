@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, UserCircle2, Lock, Calendar, Hash, Star, Plus, BarChart3, ClipboardList } from 'lucide-react';
-import ChangePassword from '../components/auth/ChangePassword';
+import { ArrowLeft, UserCircle2, Calendar, Hash, Star, Plus, BarChart3, ClipboardList } from 'lucide-react';
 import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
 import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
-import { format, differenceInDays, getDay, getHours } from 'date-fns';
+import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/AuthContext';
 import { getOrCreateUserPoints, sendInternWeeklySummary, sendFridayChampionMessage } from '@/hooks/useNotifications';
+
 import AvatarSetup from '@/components/intern/AvatarSetup';
 import InternPersona from '@/components/intern/InternPersona';
 
@@ -144,10 +143,6 @@ export default function InternProfile() {
   const internId = urlParams.get('id');
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [showAvatarSetup, setShowAvatarSetup] = useState(false);
 
@@ -163,150 +158,31 @@ export default function InternProfile() {
   const { data: feedbacks = [] } = useQuery({
     queryKey: ['intern-feedbacks', internId],
     queryFn: () => base44.entities.Feedback.filter({ intern_id: internId }, '-created_date'),
-    enabled: !!internId && isAuthenticated
+    enabled: !!internId
   });
 
   const { data: experts = [] } = useQuery({
     queryKey: ['experts'],
     queryFn: () => base44.entities.Expert.list(),
-    enabled: isAuthenticated
+    enabled: !!internId
   });
 
   const { data: manualCounts = [] } = useQuery({
     queryKey: ['manual-procedure-counts', internId],
     queryFn: () => base44.entities.ManualProcedureCount.filter({ intern_id: internId }),
-    enabled: !!internId && isAuthenticated
+    enabled: !!internId
   });
 
-  const handleLogin = async () => {
-    if (password === (intern?.password || '')) {
-      setIsAuthenticated(true);
-      setError('');
-
-      // אם מתמחה חדש (בלי כינוי/דמות) - הצג הגדרה
-      if (!intern.nickname || !intern.avatar) {
-        setShowAvatarSetup(true);
-      }
-
-      // תזכורות בוקר וסיכום שבועי
-      if (user?.id) {
-        const now = new Date();
-        const hour = getHours(now);
-        const day = getDay(now);
-
-        try {
-          // בוקר טוב - כל יום בין 7-10
-          if (hour >= 7 && hour < 10) {
-            const existing = await base44.entities.Notification.filter({
-              recipient_user_id: user.id,
-              type: 'intern_morning_prompt',
-              is_read: false
-            });
-            // בדוק שלא שלחנו היום
-            const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-            const sentToday = existing.filter(n => n.sent_at && new Date(n.sent_at) >= todayStart);
-            if (sentToday.length === 0) {
-              await base44.entities.Notification.create({
-                recipient_user_id: user.id,
-                recipient_role: 'intern',
-                type: 'intern_morning_prompt',
-                message: '🌅 בוקר טוב! על מה נבקש משוב היום?',
-                is_read: false,
-                sent_at: now.toISOString()
-              });
-            }
-          }
-
-          // בדוק 3 ימים ללא בקשת משוב
-          if (feedbacks.length > 0) {
-            const lastFeedback = feedbacks[0];
-            const daysSince = lastFeedback?.intern_submitted_date
-              ? differenceInDays(now, new Date(lastFeedback.intern_submitted_date))
-              : 999;
-            if (daysSince >= 3) {
-              const existing3 = await base44.entities.Notification.filter({
-                recipient_user_id: user.id,
-                type: 'intern_no_request_3days',
-                is_read: false
-              });
-              const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-              const sentToday3 = existing3.filter(n => n.sent_at && new Date(n.sent_at) >= todayStart);
-              if (sentToday3.length === 0) {
-                await base44.entities.Notification.create({
-                  recipient_user_id: user.id,
-                  recipient_role: 'intern',
-                  type: 'intern_no_request_3days',
-                  message: `⏳ מזמן לא ביקשת משוב… כבר ${daysSince} ימים. בוא נתקדם!`,
-                  is_read: false,
-                  sent_at: now.toISOString()
-                });
-              }
-            }
-          }
-
-          // סיכום שבועי - חמישי 15:00
-          await sendInternWeeklySummary(user.id, intern?.name, user.email);
-          await getOrCreateUserPoints(user.id, intern?.name, 'intern');
-          // הודעת אלוף - שישי 8:00
-          await sendFridayChampionMessage(user.id, user.email);
-        } catch(e) { console.warn('morning notification error', e); }
-      }
-    } else {
-      setError('סיסמה שגויה');
-    }
-  };
+  useEffect(() => {
+    if (!intern || !user?.id) return;
+    if (!intern.nickname || !intern.avatar) setShowAvatarSetup(true);
+    getOrCreateUserPoints(user.id, intern.name, 'intern').catch(() => {});
+    sendInternWeeklySummary(user.id, intern.name, user.email).catch(() => {});
+    sendFridayChampionMessage(user.id, user.email).catch(() => {});
+  }, [intern?.id, user?.id]);
 
   if (!intern) {
     return <div className="p-8 text-center">טוען...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
-        <Card className="w-full max-w-md border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-center flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-2xl">
-                {intern.name?.[0]}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-slate-800">{intern.name}</h2>
-                <p className="text-sm text-slate-500 font-normal mt-1">כניסה לעמוד אישי</p>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">הזן סיסמה</label>
-              <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                  className="pr-10"
-                  placeholder="5 תווים"
-                />
-              </div>
-              {error && <p className="text-sm text-red-600">{error}</p>}
-              <p className="text-xs text-slate-500">
-                הסיסמה האישית שקיבלת מהמנהל
-              </p>
-            </div>
-            <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700">
-              כניסה
-            </Button>
-            <Link
-              to={createPageUrl('Interns')}
-              className="block text-center text-sm text-blue-600 hover:text-blue-700"
-            >
-              חזרה לרשימת מתמחים
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
   }
 
   // חישוב סטטיסטיקות לפי קטגוריה
@@ -390,19 +266,6 @@ export default function InternProfile() {
             חזרה
             <ArrowLeft className="w-4 h-4" />
           </Link>
-        </div>
-
-        {/* Change Password - Collapsible */}
-        <div className="mb-8">
-          <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
-            <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
-              <Lock className="w-4 h-4" />
-              שינוי סיסמה
-            </summary>
-            <div className="px-4 pb-4 pt-2">
-              <ChangePassword entityType="intern" entityId={internId} />
-            </div>
-          </details>
         </div>
 
         {/* Manual Procedure Entry */}

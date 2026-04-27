@@ -1,72 +1,52 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent } from "@/components/ui/card";
-import { UserCircle2, ChevronLeft } from 'lucide-react';
+import { UserCircle2, ChevronLeft, Shield } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function Interns() {
+  const { user, isAuthenticated } = useAuth();
+
   const { data: interns = [] } = useQuery({
     queryKey: ['interns'],
-    queryFn: () => base44.entities.Intern.list()
+    queryFn: () => base44.entities.Intern.list(),
+    enabled: isAuthenticated
   });
 
-  const { data: feedbacks = [] } = useQuery({
-    queryKey: ['feedbacks'],
-    queryFn: () => base44.entities.Feedback.list()
-  });
+  // מצא את המתמחה שתואם למייל המחובר
+  const myIntern = interns.find(i => i.email === user?.email);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100" dir="rtl">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-bl from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-            <UserCircle2 className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">פאנל מתמחים</h1>
-            <p className="text-slate-500 text-sm">כניסה לעמוד אישי</p>
-          </div>
-        </div>
-
-        {/* Interns Grid */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {interns.map(intern => {
-            const internFeedbacks = feedbacks.filter(f => f.intern_id === intern.id);
-            
-            return (
-              <Link
-                key={intern.id}
-                to={createPageUrl('InternProfile') + `?id=${intern.id}`}
-              >
-                <Card className="border-0 shadow-lg bg-white hover:shadow-xl transition-all hover:scale-[1.02]">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-xl">
-                          {intern.name?.[0]}
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-slate-800 text-lg">{intern.name}</h3>
-                        </div>
-                      </div>
-                      <ChevronLeft className="w-5 h-5 text-slate-400" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
-
-          {interns.length === 0 && (
-            <div className="col-span-2 text-center py-12 text-slate-500">
-              אין מתמחים במערכת
-            </div>
-          )}
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
+        <div className="text-center p-8">
+          <Shield className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-600 text-lg font-medium">יש להתחבר כדי לגשת לעמוד זה</p>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (interns.length > 0 && !myIntern) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
+        <div className="text-center p-8 max-w-md">
+          <UserCircle2 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-700 text-lg font-medium mb-2">לא נמצא פרופיל מתמחה עבורך</p>
+          <p className="text-slate-500 text-sm">המייל שלך ({user?.email}) לא מופיע ברשימת המתמחים. פנה למנהל לשיוך החשבון שלך.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!myIntern) {
+    return <div className="p-8 text-center">טוען...</div>;
+  }
+
+  // הפנה ישירות לעמוד האישי
+  window.location.replace(createPageUrl('InternProfile') + `?id=${myIntern.id}`);
+  return null;
 }

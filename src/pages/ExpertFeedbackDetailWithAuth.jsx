@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -9,10 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, User, Calendar, Hash, Star, CheckCircle, AlertCircle, Send, Clock, MapPin, Lock } from 'lucide-react';
+import { ArrowLeft, User, Calendar, Hash, Star, CheckCircle, AlertCircle, Send, Clock, MapPin } from 'lucide-react';
 import { format, parseISO, isPast } from 'date-fns';
 import RatingCategory from '../components/feedback/RatingCategory';
-import ChangePassword from '../components/auth/ChangePassword';
 import { onFeedbackCompleted, getOrCreateUserPoints, sendExpertWeeklySummary, checkExpertWeeklyReminder } from '@/hooks/useNotifications';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -28,9 +27,6 @@ export default function ExpertFeedbackDetailWithAuth() {
   const expertId = urlParams.get('id');
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
   const [expertFeedback, setExpertFeedback] = useState({
     expert_knowledge_rating: 0,
@@ -53,7 +49,7 @@ export default function ExpertFeedbackDetailWithAuth() {
   const { data: allFeedbacks = [] } = useQuery({
     queryKey: ['feedbacks-for-expert', expertId],
     queryFn: () => base44.entities.Feedback.filter({ expert_id: expertId }, '-created_date'),
-    enabled: !!expertId && isAuthenticated
+    enabled: !!expertId
   });
 
   const { data: expertMeetings = [] } = useQuery({
@@ -64,7 +60,7 @@ export default function ExpertFeedbackDetailWithAuth() {
         m.invited_experts && m.invited_experts.some(e => e.id === expertId)
       );
     },
-    enabled: !!expertId && isAuthenticated
+    enabled: !!expertId
   });
 
   const updateFeedbackMutation = useMutation({
@@ -82,21 +78,12 @@ export default function ExpertFeedbackDetailWithAuth() {
     }
   });
 
-  const handleLogin = async () => {
-    if (password === (expert?.password || '')) {
-      setIsAuthenticated(true);
-      setError('');
-      if (user?.id) {
-        try {
-          await getOrCreateUserPoints(user.id, expert?.name, 'expert');
-          await sendExpertWeeklySummary(user.id, expert?.name, user.email);
-          await checkExpertWeeklyReminder(user.id, expert?.name, user.email);
-        } catch(e) { console.warn('expert notification error', e); }
-      }
-    } else {
-      setError('סיסמה שגויה');
-    }
-  };
+  useEffect(() => {
+    if (!expert || !user?.id) return;
+    getOrCreateUserPoints(user.id, expert.name, 'expert').catch(() => {});
+    sendExpertWeeklySummary(user.id, expert.name, user.email).catch(() => {});
+    checkExpertWeeklyReminder(user.id, expert.name, user.email).catch(() => {});
+  }, [expert?.id, user?.id]);
 
   const pendingFeedbacks = allFeedbacks.filter(f => f.status === 'pending_expert_review');
   const completedFeedbacks = allFeedbacks.filter(f => f.status === 'completed');
@@ -158,55 +145,6 @@ export default function ExpertFeedbackDetailWithAuth() {
     return <div className="p-8 text-center">טוען...</div>;
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
-        <Card className="w-full max-w-md border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-center flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold text-2xl">
-                {expert.name?.[0]}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-slate-800">{expert.name}</h2>
-                <p className="text-sm text-slate-500 font-normal mt-1">כניסה לעמוד אישי</p>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">הזן סיסמה</label>
-              <div className="relative">
-                <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                  className="pr-10"
-                  placeholder="5 תווים"
-                />
-              </div>
-              {error && <p className="text-sm text-red-600">{error}</p>}
-              <p className="text-xs text-slate-500">
-                הסיסמה האישית שקיבלת מהמנהל
-              </p>
-            </div>
-            <Button onClick={handleLogin} className="w-full bg-purple-600 hover:bg-purple-700">
-              כניסה
-            </Button>
-            <Link
-              to={createPageUrl('Experts')}
-              className="block text-center text-sm text-purple-600 hover:text-purple-700"
-            >
-              חזרה לרשימת מומחים
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   const upcomingMeetings = expertMeetings.filter(m => !isPast(parseISO(m.meeting_date)) && m.status === 'מתוכנן');
   const pastMeetings = expertMeetings.filter(m => isPast(parseISO(m.meeting_date)) || m.status === 'התקיים');
 
@@ -231,19 +169,6 @@ export default function ExpertFeedbackDetailWithAuth() {
             חזרה
             <ArrowLeft className="w-4 h-4" />
           </Link>
-        </div>
-
-        {/* Change Password - Collapsible */}
-        <div className="mb-8">
-          <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
-            <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
-              <Lock className="w-4 h-4" />
-              שינוי סיסמה
-            </summary>
-            <div className="px-4 pb-4 pt-2">
-              <ChangePassword entityType="expert" entityId={expertId} />
-            </div>
-          </details>
         </div>
 
         {/* Meetings - Collapsible */}
