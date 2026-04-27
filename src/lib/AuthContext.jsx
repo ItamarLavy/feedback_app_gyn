@@ -25,8 +25,10 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
       
-      // First, check if user is authenticated
-      if (base44.config.token) {
+      // Check if user is authenticated
+      const isAuth = await base44.auth.isAuthenticated();
+      
+      if (isAuth) {
         await checkUserAuth();
       } else {
         setIsLoadingAuth(false);
@@ -35,13 +37,10 @@ export const AuthProvider = ({ children }) => {
       
       setIsLoadingPublicSettings(false);
     } catch (error) {
-      console.error('Unexpected error:', error);
-      setAuthError({
-        type: 'unknown',
-        message: error.message || 'An unexpected error occurred'
-      });
-      setIsLoadingPublicSettings(false);
+      console.error('App state check failed:', error);
       setIsLoadingAuth(false);
+      setIsAuthenticated(false);
+      setIsLoadingPublicSettings(false);
     }
   };
 
