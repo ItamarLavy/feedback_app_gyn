@@ -85,7 +85,7 @@ export default function Home() {
     const weeklyRecord = userPoints?.[0]?.weekly_record || 0;
     
     return (
-      <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto" dir="rtl">
+      <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto overflow-x-hidden" dir="rtl">
         <div className="max-w-4xl mx-auto px-4 py-8">
           {/* Header with Points */}
           <div className="text-center mb-8">
@@ -122,7 +122,7 @@ export default function Home() {
 
           {/* Action Panel */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <Link to={targetUrl}>
+            {targetUrl && <Link to={targetUrl}>
               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
                 <CardContent className="p-8">
                   <div className="flex items-start gap-4">
@@ -144,7 +144,15 @@ export default function Home() {
                   </div>
                 </CardContent>
               </Card>
-            </Link>
+            </Link>}
+            {!targetUrl && (
+              <Card className="border-0 shadow-xl bg-slate-50">
+                <CardContent className="p-8 text-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-teal-600 mx-auto mb-3" />
+                  <p className="text-slate-600">טוען...</p>
+                </CardContent>
+              </Card>
+            )}
 
             <Link to={createPageUrl('Instructions')}>
               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
@@ -172,7 +180,7 @@ export default function Home() {
   
   if (isManager) {
     return (
-      <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto" dir="rtl">
+      <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto overflow-x-hidden" dir="rtl">
         <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-6">
