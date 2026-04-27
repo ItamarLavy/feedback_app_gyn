@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -36,10 +36,16 @@ export default function ExpertPasswords() {
   });
 
   const { data: userPoints = [] } = useQuery({
-    queryKey: ['userPoints-experts'],
-    queryFn: () => base44.entities.UserPoints.filter({ user_role: 'expert' }),
-    enabled: isAuthenticated
-  });
+     queryKey: ['userPoints-experts'],
+     queryFn: () => base44.entities.UserPoints.filter({ user_role: 'expert' }),
+     enabled: isAuthenticated
+   });
+
+   const { data: feedbacks = [] } = useQuery({
+     queryKey: ['feedbacks'],
+     queryFn: () => base44.entities.Feedback.list(),
+     enabled: isAuthenticated
+   });
 
   const handleSaveEmail = async (expertId) => {
     setSavingEmail(expertId);
@@ -117,6 +123,7 @@ export default function ExpertPasswords() {
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">#</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">שם המומחה</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">כתובת מייל</th>
+                    <th className="text-center py-3 px-4 font-semibold text-slate-700">משובים</th>
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">נקודות</th>
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">פעולה</th>
                   </tr>
@@ -131,6 +138,7 @@ export default function ExpertPasswords() {
                       <td className="py-3 px-4">
                         <Input type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="email@example.com" className="h-7 text-sm" onKeyDown={e => e.key === 'Enter' && handleAddExpert()} />
                       </td>
+                      <td className="py-3 px-4 text-center">—</td>
                       <td className="py-3 px-4 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={handleAddExpert}>
@@ -144,6 +152,7 @@ export default function ExpertPasswords() {
                   {experts.map((expert, index) => {
                     const isEditing = editingEmail === expert.id;
                     const points = userPoints.find(p => p.user_name === expert.name)?.total_points ?? null;
+                    const feedbackCount = feedbacks.filter(f => f.expert_id === expert.id).length;
                     return (
                       <tr key={expert.id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="py-3 px-4 text-slate-500">{index + 1}</td>
@@ -173,6 +182,12 @@ export default function ExpertPasswords() {
                               {expert.email ? <span>{expert.email}</span> : <span className="text-slate-300 italic">הוסף מייל</span>}
                             </button>
                           )}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <span className="flex items-center justify-center gap-1 font-semibold text-teal-600">
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            {feedbackCount}
+                          </span>
                         </td>
                         <td className="py-3 px-4 text-center">
                           {points !== null ? (
