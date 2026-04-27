@@ -22,6 +22,7 @@ import { format, differenceInHours } from 'date-fns';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
+const MANAGER_NAMES = ['יובל לביא', 'רונית גלעד', 'צביקה שמעונוביץ'];
 const RATING_KEYS = ['knowledge_rating', 'manual_skill_rating', 'professionalism_rating', 'independence_rating'];
 
 export default function Admin() {
@@ -166,6 +167,13 @@ export default function Admin() {
               מיילים מומחים
             </Link>
             <Link 
+              to={createPageUrl('ManagerEmails')}
+              className="flex items-center gap-2 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium text-sm"
+            >
+              <Key className="w-4 h-4" />
+              מיילים מנהלים
+            </Link>
+            <Link 
               to={createPageUrl('Home')}
               className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
             >
@@ -176,62 +184,72 @@ export default function Admin() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <Card className="border-0 shadow-lg bg-white">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center">
-                  <ClipboardList className="w-6 h-6 text-teal-600" />
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
+                  <ClipboardList className="w-5 h-5 text-teal-600" />
                 </div>
                 <div>
-                  <p className="text-slate-500 text-sm">סה"כ משובים</p>
-                  <p className="text-3xl font-bold text-slate-800">{totalFeedbacks}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-white">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
-                  <Star className="w-6 h-6 text-amber-600" />
-                </div>
-                <div>
-                  <p className="text-slate-500 text-sm">דירוג ממוצע מומחים</p>
-                  <p className="text-3xl font-bold text-slate-800">{avgRating}</p>
+                  <p className="text-slate-500 text-xs">סה"כ משובים</p>
+                  <p className="text-2xl font-bold text-slate-800">{totalFeedbacks}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className={`border-0 shadow-lg ${pendingExpertReviews > 0 ? 'bg-amber-50 border-2 border-amber-300' : 'bg-white'}`}>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  pendingExpertReviews > 0 ? 'bg-amber-200' : 'bg-orange-100'
-                }`}>
-                  <Clock className={`w-6 h-6 ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-orange-600'}`} />
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${pendingExpertReviews > 0 ? 'bg-amber-200' : 'bg-orange-100'}`}>
+                  <Clock className={`w-5 h-5 ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-orange-600'}`} />
                 </div>
                 <div>
-                  <p className="text-slate-500 text-sm">ממתינים למומחה</p>
-                  <p className={`text-3xl font-bold ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-slate-800'}`}>
-                    {pendingExpertReviews}
-                  </p>
+                  <p className="text-slate-500 text-xs">ממתינים למומחה</p>
+                  <p className={`text-2xl font-bold ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-slate-800'}`}>{pendingExpertReviews}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-0 shadow-lg bg-white">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                  <Users className="w-6 h-6 text-purple-600" />
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-slate-500 text-sm">מתמחים</p>
-                  <p className="text-3xl font-bold text-slate-800">{interns.length}</p>
+                  <p className="text-slate-500 text-xs">מתמחים</p>
+                  <p className="text-2xl font-bold text-slate-800">{interns.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg bg-white">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                  <Stethoscope className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs">מומחים</p>
+                  <p className="text-2xl font-bold text-slate-800">{experts.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg bg-white">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-teal-600" />
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs">מנהלים</p>
+                  <p className="text-2xl font-bold text-slate-800">{MANAGER_EMAILS.length}</p>
                 </div>
               </div>
             </CardContent>
