@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Notebook, Stethoscope, Shield, BookOpen } from 'lucide-react';
+import { Home, Notebook, Stethoscope, Shield, BookOpen, Settings } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { useTabNavigation } from '@/hooks/useTabNavigation';
 
@@ -14,11 +14,11 @@ export default function BottomNav({ currentPageName }) {
   const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
 
   const navItems = [
-    { label: 'דף הבית', icon: Home, path: createPageUrl('Home'), id: 'home', root: '/' },
     ...(user?.role === 'intern' ? [{ label: 'מתמחים', icon: Notebook, path: createPageUrl('Interns'), id: 'interns', root: '/Interns' }] : []),
     ...(user?.role === 'expert' ? [{ label: 'מומחים', icon: Stethoscope, path: createPageUrl('Experts'), id: 'experts', root: '/Experts' }] : []),
-    ...(isManager ? [{ label: 'ניהול', icon: Shield, path: createPageUrl('Admin'), id: 'admin', root: '/Admin' }] : []),
-    ...(isManager ? [{ label: 'הוראות', icon: BookOpen, path: createPageUrl('Instructions'), id: 'instructions', root: '/Instructions' }] : [])
+    { label: 'הגדרות', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' },
+    ...(isManager ? [{ label: 'הוראות', icon: BookOpen, path: createPageUrl('Instructions'), id: 'instructions', root: '/Instructions' }] : []),
+    ...(isManager ? [{ label: 'ניהול', icon: Shield, path: createPageUrl('Admin'), id: 'admin', root: '/Admin' }] : [])
   ];
 
   const handleNavClick = (item) => {
