@@ -31,7 +31,7 @@ export default function Layout({ children, currentPageName }) {
   }, [isAuthenticated, user?.id]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100">
       {/* Desktop Navigation */}
       <nav className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50" style={{ paddingTop: 'max(0px, env(safe-area-inset-top))' }}>
         <div className="max-w-6xl mx-auto px-4">

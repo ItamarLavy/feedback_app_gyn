@@ -152,12 +152,12 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-emerald-50/40 to-cyan-100 overflow-y-auto" dir="rtl">
       <div ref={pullToRefreshRef} className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-bl from-teal-500 to-teal-600 flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
               <Shield className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -178,11 +178,11 @@ export default function Admin() {
 
         {/* Stats Cards */}
          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-           <Card className="border-0 shadow-lg bg-white">
+           <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-emerald-50">
              <CardContent className="p-5">
                <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
-                   <ClipboardList className="w-5 h-5 text-teal-600" />
+                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center">
+                   <ClipboardList className="w-5 h-5 text-teal-700" />
                  </div>
                  <div>
                    <p className="text-slate-500 text-xs">סה"כ משובים</p>
@@ -192,11 +192,11 @@ export default function Admin() {
              </CardContent>
            </Card>
 
-           <Card className={`border-0 shadow-lg ${pendingExpertReviews > 0 ? 'bg-amber-50 border-2 border-amber-300' : 'bg-white'}`}>
+           <Card className={`border-0 shadow-lg ${pendingExpertReviews > 0 ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-400' : 'bg-gradient-to-br from-white to-yellow-50'}`}>
              <CardContent className="p-5">
                <div className="flex items-center gap-3">
-                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${pendingExpertReviews > 0 ? 'bg-amber-200' : 'bg-orange-100'}`}>
-                   <Clock className={`w-5 h-5 ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-orange-600'}`} />
+                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${pendingExpertReviews > 0 ? 'bg-gradient-to-br from-amber-300 to-orange-400' : 'bg-gradient-to-br from-orange-200 to-yellow-300'}`}>
+                   <Clock className={`w-5 h-5 ${pendingExpertReviews > 0 ? 'text-amber-800' : 'text-orange-700'}`} />
                  </div>
                  <div>
                    <p className="text-slate-500 text-xs">ממתינים למומחה</p>
@@ -207,11 +207,11 @@ export default function Admin() {
            </Card>
 
            <Link to={createPageUrl('InternPasswords')} className="no-underline">
-             <Card className="border-0 shadow-lg bg-white hover:shadow-xl hover:bg-blue-50 transition-all cursor-pointer h-full">
+             <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-cyan-50 hover:shadow-xl hover:bg-gradient-to-br hover:from-cyan-50 hover:to-sky-100 transition-all cursor-pointer h-full">
                <CardContent className="p-5">
                  <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                     <Users className="w-5 h-5 text-blue-600" />
+                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-200 to-sky-300 flex items-center justify-center">
+                     <Users className="w-5 h-5 text-cyan-700" />
                    </div>
                    <div>
                      <p className="text-slate-500 text-xs">מתמחים</p>
@@ -223,11 +223,11 @@ export default function Admin() {
            </Link>
 
            <Link to={createPageUrl('ExpertPasswords')} className="no-underline">
-             <Card className="border-0 shadow-lg bg-white hover:shadow-xl hover:bg-purple-50 transition-all cursor-pointer h-full">
+             <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50 hover:shadow-xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-violet-100 transition-all cursor-pointer h-full">
                <CardContent className="p-5">
                  <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                     <Stethoscope className="w-5 h-5 text-purple-600" />
+                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-200 to-violet-300 flex items-center justify-center">
+                     <Stethoscope className="w-5 h-5 text-purple-700" />
                    </div>
                    <div>
                      <p className="text-slate-500 text-xs">מומחים</p>
@@ -239,11 +239,11 @@ export default function Admin() {
            </Link>
 
            <Link to={createPageUrl('ManagerEmails')} className="no-underline">
-             <Card className="border-0 shadow-lg bg-white hover:shadow-xl hover:bg-teal-50 transition-all cursor-pointer h-full">
+             <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-teal-50 hover:shadow-xl hover:bg-gradient-to-br hover:from-teal-50 hover:to-emerald-100 transition-all cursor-pointer h-full">
                <CardContent className="p-5">
                  <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
-                     <Shield className="w-5 h-5 text-teal-600" />
+                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center">
+                     <Shield className="w-5 h-5 text-teal-700" />
                    </div>
                    <div>
                      <p className="text-slate-500 text-xs">מנהלים</p>
@@ -388,13 +388,13 @@ export default function Admin() {
 
 
         {/* Feedback Meetings Management */}
-         <Link to={createPageUrl('FeedbackMeetingsManagement')} className="mb-8">
-           <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
-             <CardContent className="p-8">
-               <div className="flex items-center justify-between">
-                 <div className="flex items-start gap-4 flex-1">
-                   <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors">
-                     <Calendar className="w-7 h-7 text-teal-600" />
+        <Link to={createPageUrl('FeedbackMeetingsManagement')} className="mb-8">
+          <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group bg-gradient-to-br from-white via-teal-50 to-emerald-50">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-all">
+                    <Calendar className="w-7 h-7 text-white" />
                    </div>
                    <div>
                      <h3 className="text-xl font-bold text-slate-800 mb-2">ניהול פגישות משוב</h3>
