@@ -85,8 +85,8 @@ export default function Home() {
     const weeklyRecord = userPoints?.[0]?.weekly_record || 0;
     
     return (
-      <div className="min-h-screen w-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
-        <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-8 w-full overflow-y-auto max-h-screen">
+      <div className="min-h-screen w-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
+        <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-8 w-full pb-40">
           {/* Header with Points */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-800 mb-4">
@@ -196,8 +196,8 @@ export default function Home() {
   
   if (isManager) {
     return (
-      <div className="min-h-screen w-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
-        <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-12 w-full overflow-y-auto max-h-screen">
+      <div className="min-h-screen w-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
+        <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-12 w-full pb-40">
           <div className="text-center mb-12">
              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-6">
                <Stethoscope className="w-10 h-10 text-white" />
