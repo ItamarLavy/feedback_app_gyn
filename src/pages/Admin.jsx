@@ -7,7 +7,6 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 import AnomalousReports from '../components/admin/AnomalousReports';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
-import SystemAISummary from '../components/admin/SystemAISummary';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import { 
@@ -318,11 +317,6 @@ export default function Admin() {
 
         {/* Access Requests */}
         <AccessRequestsPanel interns={interns} experts={experts} />
-
-        {/* System AI Summary */}
-        <div className="mb-8">
-          <SystemAISummary feedbacks={feedbacks} interns={interns} meetings={meetings} />
-        </div>
 
         {/* Anomalous Reports */}
         <div className="mb-8">
