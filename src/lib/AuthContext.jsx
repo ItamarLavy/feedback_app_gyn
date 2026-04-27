@@ -1,7 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { appParams } from '@/lib/app-params';
-import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 
 const AuthContext = createContext();
 
@@ -27,48 +25,15 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
       
-      // Create timeout promise - 5 seconds max (shorter for PWA)
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('App state check timeout')), 5000)
-      );
-      
-      // First, check app public settings (with token if available)
-      // This will tell us if auth is required, user not registered, etc.
-      const appClient = createAxiosClient({
-        baseURL: `/api/apps/public`,
-        headers: {
-          'X-App-Id': appParams.appId
-        },
-        token: appParams.token, // Include token if available
-        interceptResponses: true
-      });
-      
-      try {
-        const publicSettingsPromise = appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
-        const publicSettings = await Promise.race([publicSettingsPromise, timeoutPromise]);
-        setAppPublicSettings(publicSettings);
-        setIsLoadingPublicSettings(false);
-        
-        // If we got the app public settings successfully, check if user is authenticated
-        if (appParams.token) {
-          await checkUserAuth();
-        } else {
-          setIsLoadingAuth(false);
-          setIsAuthenticated(false);
-        }
-      } catch (appError) {
-        console.error('App state check failed:', appError);
-        setIsLoadingPublicSettings(false);
-        
-        // If timeout or any error, just let the app load with auth fallback
-        if (appParams.token) {
-          await checkUserAuth();
-        } else {
-          setIsLoadingAuth(false);
-          setIsAuthenticated(false);
-        }
-        return;
+      // First, check if user is authenticated
+      if (base44.config.token) {
+        await checkUserAuth();
+      } else {
+        setIsLoadingAuth(false);
+        setIsAuthenticated(false);
       }
+      
+      setIsLoadingPublicSettings(false);
     } catch (error) {
       console.error('Unexpected error:', error);
       setAuthError({
