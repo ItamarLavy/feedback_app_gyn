@@ -265,8 +265,8 @@ export default function InternDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
+      <div className="max-w-4xl mx-auto px-4 py-8 pb-40 md:pb-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
@@ -279,9 +279,9 @@ export default function InternDetails() {
             </div>
           </div>
           <Link 
-            to={createPageUrl('Admin')}
-            className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
-          >
+             to={createPageUrl('Admin')}
+             className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 transition-all shadow-md"
+           >
             חזרה לניהול
             <ArrowLeft className="w-4 h-4" />
           </Link>

@@ -241,7 +241,7 @@ export default function InternProfile() {
   });
 
   return (
-    <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 overflow-y-auto" dir="rtl">
+    <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
       {showAvatarSetup && (
         <AvatarSetup
           intern={intern}
@@ -249,13 +249,13 @@ export default function InternProfile() {
         />
       )}
       <InternPersona nickname={intern.nickname} avatar={intern.avatar} />
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 pb-40 md:pb-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-xl">
-              {intern.name?.[0]}
-            </div>
+         <div className="flex items-center justify-between mb-8">
+           <div className="flex items-center gap-3">
+             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center text-blue-800 font-semibold text-xl shadow-md">
+               {intern.name?.[0]}
+             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">{intern.name}</h1>
               <p className="text-slate-500 text-sm">עמוד אישי</p>
@@ -263,7 +263,7 @@ export default function InternProfile() {
           </div>
           <Link 
             to={createPageUrl('Interns')}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 transition-all"
           >
             חזרה
             <ArrowLeft className="w-4 h-4" />
@@ -298,9 +298,9 @@ export default function InternProfile() {
             </div>
           ) : (
             <Button
-              onClick={() => setShowFeedbackForm(true)}
-              className="w-full h-14 bg-gradient-to-l from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold text-lg"
-            >
+               onClick={() => setShowFeedbackForm(true)}
+               className="w-full h-14 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold text-lg shadow-lg"
+             >
               <Plus className="w-5 h-5 ml-2" />
               הוסף משוב עצמי חדש
             </Button>
@@ -309,8 +309,8 @@ export default function InternProfile() {
 
         {/* Progress Tracking - Collapsible */}
         <div className="mb-8">
-          <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
-            <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+          <details className="bg-white rounded-lg border border-slate-200 shadow-lg">
+            <summary className="px-4 py-3 cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 font-medium text-slate-800 flex items-center gap-2 transition-colors">
               <BarChart3 className="w-4 h-4" />
               מעקב התקדמות ({feedbacks.length} פרוצדורות)
             </summary>
@@ -392,8 +392,8 @@ export default function InternProfile() {
 
         {/* My Feedbacks - Collapsible */}
         <div className="mb-8">
-          <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
-            <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+          <details className="bg-white rounded-lg border border-slate-200 shadow-lg">
+            <summary className="px-4 py-3 cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 font-medium text-slate-800 flex items-center gap-2 transition-colors">
               <ClipboardList className="w-4 h-4" />
               המשובים שלי ({feedbacks.length})
             </summary>
