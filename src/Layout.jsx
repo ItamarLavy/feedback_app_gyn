@@ -9,12 +9,14 @@ import BottomNav from '@/components/mobile/BottomNav';
 import PageTransition from '@/components/mobile/PageTransition';
 import { processPendingNotifications, sendFridayManagerSummary, sendFridayChampionMessage } from '@/hooks/useNotifications';
 
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 const MANAGER_NAMES = ['יובל לביא', 'רונית גלעד', 'צביקה שמעונוביץ'];
 
 export default function Layout({ children, currentPageName }) {
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
 
   useEffect(() => {
     if (isAuthenticated && user?.id) {
@@ -89,28 +91,32 @@ export default function Layout({ children, currentPageName }) {
                 <Stethoscope className="w-4 h-4" />
                 <span className="hidden sm:inline">מומחים</span>
               </Link>
-              <Link
-                to={createPageUrl('Admin')}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                  currentPageName === 'Admin' || currentPageName === 'InternDetails' || currentPageName === 'InternPasswords' || currentPageName === 'ExpertPasswords'
-                    ? 'bg-teal-100 text-teal-700' 
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                <Shield className="w-4 h-4" />
-                <span className="hidden sm:inline">ניהול</span>
-              </Link>
-              <Link
-                to={createPageUrl('Instructions')}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                  currentPageName === 'Instructions'
-                    ? 'bg-teal-100 text-teal-700' 
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                <BookOpen className="w-4 h-4" />
-                <span className="hidden sm:inline">הוראות</span>
-              </Link>
+              {isManager && (
+                <Link
+                  to={createPageUrl('Admin')}
+                  className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    currentPageName === 'Admin' || currentPageName === 'InternDetails' || currentPageName === 'InternPasswords' || currentPageName === 'ExpertPasswords'
+                      ? 'bg-teal-100 text-teal-700' 
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <Shield className="w-4 h-4" />
+                  <span className="hidden sm:inline">ניהול</span>
+                </Link>
+              )}
+              {isManager && (
+                <Link
+                  to={createPageUrl('Instructions')}
+                  className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    currentPageName === 'Instructions'
+                      ? 'bg-teal-100 text-teal-700' 
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span className="hidden sm:inline">הוראות</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>

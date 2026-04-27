@@ -168,53 +168,67 @@ export default function Home() {
   }
 
   // מנהל – דף הבית המלא
-  return (
-    <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto" dir="rtl">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-6">
-            <Stethoscope className="w-10 h-10 text-white" />
+  const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
+  
+  if (isManager) {
+    return (
+      <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto" dir="rtl">
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-6">
+              <Stethoscope className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-slate-800 mb-3">
+              {userName ? `ברוך הבא, ${userName}` : 'מערכת משוב אגף נשים'}
+            </h1>
+            <p className="text-xl text-teal-700 font-medium mb-2">הדסה הר הצופים</p>
+            <p className="text-lg text-slate-600">מערכת לניהול ומעקב אחר התקדמות מתמחים</p>
           </div>
-          <h1 className="text-4xl font-bold text-slate-800 mb-3">
-            {userName ? `ברוך הבא, ${userName}` : 'מערכת משוב אגף נשים'}
-          </h1>
-          <p className="text-xl text-teal-700 font-medium mb-2">הדסה הר הצופים</p>
-          <p className="text-lg text-slate-600">מערכת לניהול ומעקב אחר התקדמות מתמחים</p>
-        </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Link to={createPageUrl('Admin')}>
-            <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
-              <CardContent className="p-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors">
-                    <Shield className="w-7 h-7 text-teal-600" />
+          <div className="grid md:grid-cols-2 gap-6">
+            <Link to={createPageUrl('Admin')}>
+              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors">
+                      <Shield className="w-7 h-7 text-teal-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל ניהול</h3>
+                      <p className="text-slate-600">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל ניהול</h3>
-                    <p className="text-slate-600">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+                </CardContent>
+              </Card>
+            </Link>
 
-          <Link to={createPageUrl('Instructions')}>
-            <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
-              <CardContent className="p-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
-                    <BookOpen className="w-7 h-7 text-amber-600" />
+            <Link to={createPageUrl('Instructions')}>
+              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                      <BookOpen className="w-7 h-7 text-amber-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">הוראות שימוש</h3>
+                      <p className="text-slate-600">מדריך מפורט לשימוש במערכת</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">הוראות שימוש</h3>
-                    <p className="text-slate-600">מדריך מפורט לשימוש במערכת</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
         </div>
+      </div>
+    );
+  }
+
+  // ברירת מחדל עבור משתמשים לא מוכרים
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
+      <div className="text-center px-4">
+        <Loader2 className="w-10 h-10 animate-spin text-teal-600 mx-auto mb-4" />
+        <p className="text-slate-600">טוען...</p>
       </div>
     </div>
   );
