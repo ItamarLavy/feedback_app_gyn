@@ -8,11 +8,109 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, Clock, Users, Plus, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, Users, Plus, Trash2, AlertCircle, CheckCircle, Send, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
+import { toast } from 'sonner';
+
+// ---- ניתן לשנות קישור השאלון כאן ----
+const QUESTIONNAIRE_URL = "https://drive.google.com/open?id=18fDG1GNHYrAYQKrIL6URXePl8FhYhSAkouHhDdVCJt8";
+const QUESTIONNAIRE_NAME = "שאלון הערכת מתמחה לקראת שיחת חתך";
+// -------------------------------------
+
+async function sendQuestionnaireEmails(internName, recipients) {
+  const promises = recipients
+    .filter(r => r.email)
+    .map(r =>
+      base44.integrations.Core.SendEmail({
+        to: r.email,
+        subject: `${QUESTIONNAIRE_NAME} - ${internName}`,
+        body: `שלום ${r.name},\n\nלקראת שיחת משוב עם ${internName}, אנא מלא/י את השאלון:\n\n${QUESTIONNAIRE_URL}\n\nתודה`
+      })
+    );
+  await Promise.all(promises);
+}
+
+function SendQuestionnairePanel({ meeting, interns, experts }) {
+  const [open, setOpen] = useState(false);
+  const [extraEmail, setExtraEmail] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const intern = interns.find(i => i.id === meeting.intern_id);
+
+  const buildRecipients = (extra = []) => {
+    const recipients = [];
+    if (intern?.email) recipients.push({ email: intern.email, name: intern.name });
+    (meeting.invited_experts || []).forEach(ie => {
+      const expert = experts.find(e => e.id === ie.id);
+      if (expert?.email) recipients.push({ email: expert.email, name: expert.name });
+    });
+    extra.filter(e => e).forEach(email => recipients.push({ email, name: email }));
+    return recipients;
+  };
+
+  const handleSend = async () => {
+    setSending(true);
+    const extraEmails = extraEmail.split(',').map(e => e.trim()).filter(Boolean);
+    const recipients = buildRecipients(extraEmails.map(e => ({ email: e, name: e })));
+    if (recipients.length === 0) {
+      toast.error('אין נמענים עם כתובת מייל');
+      setSending(false);
+      return;
+    }
+    await sendQuestionnaireEmails(meeting.intern_name, recipients);
+    toast.success(`השאלון נשלח ל-${recipients.length} נמענים`);
+    setExtraEmail('');
+    setSending(false);
+    setOpen(false);
+  };
+
+  return (
+    <div className="mt-2 border-t pt-2">
+      <button
+        className="flex items-center gap-1 text-xs text-teal-700 hover:underline"
+        onClick={() => setOpen(o => !o)}
+      >
+        <Send className="w-3 h-3" />
+        שליחת שאלון
+        {open ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+      </button>
+
+      {open && (
+        <div className="mt-2 space-y-2 bg-teal-50 rounded p-3">
+          <p className="text-xs text-slate-600">
+            ישלח ל: {buildRecipients().map(r => r.name).join(', ') || 'אין נמענים עם מייל'}
+          </p>
+          <div className="flex gap-2">
+            <Input
+              className="text-xs h-7"
+              placeholder="מיילים נוספים, מופרדים בפסיק"
+              value={extraEmail}
+              onChange={e => setExtraEmail(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <Button size="sm" className="h-7 text-xs bg-teal-600 hover:bg-teal-700" onClick={handleSend} disabled={sending}>
+              {sending ? 'שולח...' : 'שלח שאלון'}
+            </Button>
+            <a
+              href={QUESTIONNAIRE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-teal-600 flex items-center gap-1 hover:underline"
+            >
+              <ExternalLink className="w-3 h-3" />
+              פתח שאלון
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function FeedbackMeetingManager({ interns, experts }) {
   const [showForm, setShowForm] = useState(false);
+  const [sending, setSending] = useState(false);
   const [formData, setFormData] = useState({
     intern_id: '',
     meeting_date: '',
@@ -38,22 +136,19 @@ export default function FeedbackMeetingManager({ interns, experts }) {
 
   const deleteMeetingMutation = useMutation({
     mutationFn: (id) => base44.entities.FeedbackMeeting.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['feedback-meetings'] });
-    }
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['feedback-meetings'] })
   });
 
   const updateMeetingMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.FeedbackMeeting.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['feedback-meetings'] });
-    }
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['feedback-meetings'] })
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const selectedIntern = interns.find(i => i.id === formData.intern_id);
-    
+    setSending(true);
+
     createMeetingMutation.mutate({
       intern_id: formData.intern_id,
       intern_name: selectedIntern?.name,
@@ -63,6 +158,22 @@ export default function FeedbackMeetingManager({ interns, experts }) {
       invited_experts: formData.invited_experts,
       status: 'מתוכנן'
     });
+
+    // שליחת שאלון לכל המוזמנים
+    const recipients = [];
+    if (selectedIntern?.email) recipients.push({ email: selectedIntern.email, name: selectedIntern.name });
+    formData.invited_experts.forEach(ie => {
+      const expert = experts.find(e => e.id === ie.id);
+      if (expert?.email) recipients.push({ email: expert.email, name: expert.name });
+    });
+
+    if (recipients.length > 0) {
+      await sendQuestionnaireEmails(selectedIntern?.name, recipients);
+      toast.success(`הפגישה נקבעה והשאלון נשלח ל-${recipients.length} נמענים`);
+    } else {
+      toast.success('הפגישה נקבעה (לא נמצאו כתובות מייל לשליחה)');
+    }
+    setSending(false);
   };
 
   const toggleExpert = (expert) => {
@@ -81,37 +192,28 @@ export default function FeedbackMeetingManager({ interns, experts }) {
   };
 
   const handleStatusChange = (meeting, newStatus) => {
-    updateMeetingMutation.mutate({
-      id: meeting.id,
-      data: { ...meeting, status: newStatus }
-    });
+    updateMeetingMutation.mutate({ id: meeting.id, data: { ...meeting, status: newStatus } });
   };
 
-  // Check for reminders needed
   const upcomingMeetings = meetings.filter(m => {
     const daysUntil = differenceInDays(parseISO(m.meeting_date), new Date());
     return m.status === 'מתוכנן' && daysUntil >= 0 && daysUntil <= 2;
   });
 
-  // Check for 6-month reminders
   const internsWith6MonthReminder = interns.map(intern => {
-    const internMeetings = meetings.filter(m => 
-      m.intern_id === intern.id && m.status === 'התקיים'
-    ).sort((a, b) => new Date(b.meeting_date) - new Date(a.meeting_date));
-    
+    const internMeetings = meetings.filter(m => m.intern_id === intern.id && m.status === 'התקיים')
+      .sort((a, b) => new Date(b.meeting_date) - new Date(a.meeting_date));
     const lastMeeting = internMeetings[0];
     let needsReminder = false;
     let daysUntilDue = 0;
-    
     if (lastMeeting) {
       const monthsSince = differenceInDays(new Date(), parseISO(lastMeeting.meeting_date)) / 30;
-      needsReminder = monthsSince >= 5; // חודש לפני (5 חודשים)
+      needsReminder = monthsSince >= 5;
       daysUntilDue = 180 - differenceInDays(new Date(), parseISO(lastMeeting.meeting_date));
     } else {
-      needsReminder = true; // אין פגישה קודמת
+      needsReminder = true;
       daysUntilDue = 0;
     }
-    
     return { intern, needsReminder, lastMeeting, daysUntilDue };
   }).filter(item => item.needsReminder);
 
@@ -128,11 +230,11 @@ export default function FeedbackMeetingManager({ interns, experts }) {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {internsWith6MonthReminder.map(({ intern, lastMeeting, daysUntilDue }) => (
+              {internsWith6MonthReminder.map(({ intern, lastMeeting }) => (
                 <div key={intern.id} className="p-3 bg-white rounded-lg border border-amber-200">
                   <p className="font-medium text-slate-800">{intern.name}</p>
                   <p className="text-sm text-slate-600">
-                    {lastMeeting 
+                    {lastMeeting
                       ? `פגישה אחרונה: ${format(parseISO(lastMeeting.meeting_date), 'dd/MM/yyyy')} - יש לתאם פגישה חדשה`
                       : 'לא נקבעה פגישה עדיין - יש לתאם פגישת משוב ראשונה'}
                   </p>
@@ -180,14 +282,21 @@ export default function FeedbackMeetingManager({ interns, experts }) {
               <Calendar className="w-5 h-5 text-teal-600" />
               ניהול פגישות משוב
             </span>
-            <Button
-              size="sm"
-              onClick={() => setShowForm(!showForm)}
-              className="bg-teal-600 hover:bg-teal-700"
-            >
-              <Plus className="w-4 h-4 ml-1" />
-              קבע פגישה
-            </Button>
+            <div className="flex items-center gap-2">
+              <a
+                href={QUESTIONNAIRE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-xs text-teal-600 border border-teal-300 rounded px-2 py-1 hover:bg-teal-50"
+              >
+                <ExternalLink className="w-3 h-3" />
+                פתח שאלון
+              </a>
+              <Button size="sm" onClick={() => setShowForm(!showForm)} className="bg-teal-600 hover:bg-teal-700">
+                <Plus className="w-4 h-4 ml-1" />
+                קבע פגישה
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -195,18 +304,13 @@ export default function FeedbackMeetingManager({ interns, experts }) {
             <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-slate-50 rounded-lg">
               <div className="space-y-2">
                 <Label>מתמחה</Label>
-                <Select
-                  value={formData.intern_id}
-                  onValueChange={(value) => setFormData({ ...formData, intern_id: value })}
-                >
+                <Select value={formData.intern_id} onValueChange={(value) => setFormData({ ...formData, intern_id: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="בחר מתמחה" />
                   </SelectTrigger>
                   <SelectContent>
                     {interns.map(intern => (
-                      <SelectItem key={intern.id} value={intern.id}>
-                        {intern.name}
-                      </SelectItem>
+                      <SelectItem key={intern.id} value={intern.id}>{intern.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -232,7 +336,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
               </div>
 
               <div className="space-y-2">
-                <Label>מומחים מוזמנים</Label>
+                <Label>מומחים מוזמנים (יקבלו שאלון במייל)</Label>
                 <div className="space-y-2 max-h-40 overflow-y-auto p-2 bg-white rounded border">
                   {experts.map(expert => (
                     <div key={expert.id} className="flex items-center gap-2">
@@ -241,6 +345,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                         onCheckedChange={() => toggleExpert(expert)}
                       />
                       <label className="text-sm">{expert.name}</label>
+                      {!expert.email && <span className="text-xs text-slate-400">(אין מייל)</span>}
                     </div>
                   ))}
                 </div>
@@ -255,9 +360,16 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                 />
               </div>
 
+              <div className="p-3 bg-teal-50 rounded text-sm text-teal-800 flex items-start gap-2">
+                <Send className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>
+                  עם קביעת הפגישה יישלח שאלון <strong>{QUESTIONNAIRE_NAME}</strong> למתמחה ולמומחים המוזמנים שיש להם כתובת מייל במערכת.
+                </span>
+              </div>
+
               <div className="flex gap-2">
-                <Button type="submit" disabled={!formData.intern_id || !formData.meeting_date}>
-                  קבע פגישה ושלח הזמנות
+                <Button type="submit" disabled={!formData.intern_id || !formData.meeting_date || sending}>
+                  {sending ? 'קובע ושולח...' : 'קבע פגישה ושלח שאלון'}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                   ביטול
@@ -315,7 +427,6 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                       {meeting.location && (
                         <p className="text-sm text-slate-600 mt-1">📍 {meeting.location}</p>
                       )}
-
                       {meeting.invited_experts && meeting.invited_experts.length > 0 && (
                         <div className="flex items-center gap-2 mb-2 mt-2">
                           <Users className="w-4 h-4 text-slate-500" />
@@ -324,12 +435,14 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                           </span>
                         </div>
                       )}
-
                       {meeting.notes && (
                         <p className="text-sm text-slate-600 mb-2 border-t pt-2">{meeting.notes}</p>
                       )}
 
-                      <div className="flex gap-2">
+                      {/* שליחת שאלון */}
+                      <SendQuestionnairePanel meeting={meeting} interns={interns} experts={experts} />
+
+                      <div className="flex gap-2 mt-2">
                         {meeting.status === 'מתוכנן' && (
                           <>
                             <Button
@@ -351,9 +464,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                           </>
                         )}
                         {meeting.status === 'בוטל' && (
-                          <span className="text-sm font-medium text-slate-600">
-                            סטטוס: {meeting.status}
-                          </span>
+                          <span className="text-sm font-medium text-slate-600">סטטוס: {meeting.status}</span>
                         )}
                       </div>
                     </>
