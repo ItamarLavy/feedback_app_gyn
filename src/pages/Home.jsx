@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap } from 'lucide-react';
+import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap, Users } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/AuthContext';
@@ -180,7 +180,7 @@ export default function Home() {
   
   if (isManager) {
     return (
-      <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto overflow-x-hidden" dir="rtl">
+      <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto overflow-x-hidden" style={{ overflowX: 'hidden' }} dir="rtl">
         <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-6">
@@ -195,10 +195,10 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <Link to={createPageUrl('Admin')}>
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
+              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
                 <CardContent className="p-8">
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors">
+                    <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors flex-shrink-0">
                       <Shield className="w-7 h-7 text-teal-600" />
                     </div>
                     <div>
@@ -210,11 +210,43 @@ export default function Home() {
               </Card>
             </Link>
 
-            <Link to={createPageUrl('Instructions')}>
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
+            <Link to={createPageUrl('Interns')}>
+              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
                 <CardContent className="p-8">
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                    <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors flex-shrink-0">
+                      <Users className="w-7 h-7 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל מתמחים</h3>
+                      <p className="text-slate-600">ניהול מתמחים ומעקב התקדמות</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link to={createPageUrl('Experts')}>
+              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors flex-shrink-0">
+                      <Stethoscope className="w-7 h-7 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל מומחים</h3>
+                      <p className="text-slate-600">ניהול מומחים ובדיקת משובים</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link to={createPageUrl('Instructions')}>
+              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors flex-shrink-0">
                       <BookOpen className="w-7 h-7 text-amber-600" />
                     </div>
                     <div>
