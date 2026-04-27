@@ -27,9 +27,9 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
       
-      // Create timeout promise - 10 seconds max
+      // Create timeout promise - 5 seconds max (shorter for PWA)
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('App state check timeout')), 10000)
+        setTimeout(() => reject(new Error('App state check timeout')), 5000)
       );
       
       // First, check app public settings (with token if available)
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       // Now check if the user is authenticated with timeout
       setIsLoadingAuth(true);
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Auth check timeout')), 5000)
+        setTimeout(() => reject(new Error('Auth check timeout')), 3000)
       );
       
       const authPromise = base44.auth.me();
