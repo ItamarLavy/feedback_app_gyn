@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import PasswordModal from '../components/admin/PasswordModal';
+
 import AnomalousReports from '../components/admin/AnomalousReports';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import SystemAISummary from '../components/admin/SystemAISummary';
@@ -21,13 +21,12 @@ import { Badge } from "@/components/ui/badge";
 import { format, differenceInHours } from 'date-fns';
 import { useAuth } from '@/lib/AuthContext';
 
-const MANAGER_NAMES = ['יובל לביא', 'רונית גלעד', 'צביקה שמעונוביץ'];
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 const RATING_KEYS = ['knowledge_rating', 'manual_skill_rating', 'professionalism_rating', 'independence_rating'];
 
 export default function Admin() {
-  const { user } = useAuth();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(true);
+  const { user, isAuthenticated: isLoggedIn } = useAuth();
+  const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
   const [showAdminInstructions, setShowAdminInstructions] = useState(false);
@@ -42,7 +41,7 @@ export default function Admin() {
   // שלח התראות למנהלים על משובים שלא נענו מעל שבוע
   useEffect(() => {
     if (!isAuthenticated || feedbacks.length === 0 || !user?.id) return;
-    const isManager = MANAGER_NAMES.some(name => user.full_name?.includes(name));
+    const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
     if (!isManager) return;
 
     const checkOverdue = async () => {
@@ -128,14 +127,11 @@ export default function Admin() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
-        <PasswordModal
-          open={showPasswordModal}
-          onSuccess={() => {
-            setIsAuthenticated(true);
-            setShowPasswordModal(false);
-          }}
-          onClose={() => window.history.back()}
-        />
+        <div className="text-center p-8">
+          <Shield className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-600 text-lg font-medium">אין לך הרשאה לצפות בדף זה</p>
+          <p className="text-slate-400 text-sm mt-2">דף זה מיועד למנהלים בלבד</p>
+        </div>
       </div>
     );
   }
