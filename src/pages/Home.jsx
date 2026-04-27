@@ -214,12 +214,12 @@ export default function Home() {
                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
                  <CardContent className="p-8">
                    <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors flex-shrink-0">
-                       <Users className="w-7 h-7 text-blue-600" />
+                     <div className="w-14 h-14 rounded-xl bg-blue-200 flex items-center justify-center group-hover:bg-blue-300 transition-colors flex-shrink-0">
+                       <Users className="w-7 h-7 text-blue-800" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-800 mb-2">מלא משוב כמתמחה</h3>
-                       <p className="text-slate-600">שלח משוב עצמי על פרוצדורה</p>
+                       <h3 className="text-xl font-bold text-slate-900 mb-2">מלא משוב כמתמחה</h3>
+                       <p className="text-slate-800">שלח משוב עצמי על פרוצדורה</p>
                      </div>
                    </div>
                  </CardContent>
@@ -230,12 +230,12 @@ export default function Home() {
                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
                  <CardContent className="p-8">
                    <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors flex-shrink-0">
-                       <Stethoscope className="w-7 h-7 text-purple-600" />
+                     <div className="w-14 h-14 rounded-xl bg-purple-200 flex items-center justify-center group-hover:bg-purple-300 transition-colors flex-shrink-0">
+                       <Stethoscope className="w-7 h-7 text-purple-800" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-800 mb-2">מלא משוב כמומחה</h3>
-                       <p className="text-slate-600">בדוק משובים הממתינים</p>
+                       <h3 className="text-xl font-bold text-slate-900 mb-2">מלא משוב כמומחה</h3>
+                       <p className="text-slate-800">בדוק משובים הממתינים</p>
                      </div>
                    </div>
                  </CardContent>
@@ -246,12 +246,12 @@ export default function Home() {
                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
                  <CardContent className="p-8">
                    <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors flex-shrink-0">
-                       <Settings className="w-7 h-7 text-teal-600" />
+                     <div className="w-14 h-14 rounded-xl bg-teal-200 flex items-center justify-center group-hover:bg-teal-300 transition-colors flex-shrink-0">
+                       <Settings className="w-7 h-7 text-teal-800" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-800 mb-2">חשבון</h3>
-                       <p className="text-slate-600">עדכן את הפרטים שלך</p>
+                       <h3 className="text-xl font-bold text-slate-900 mb-2">חשבון</h3>
+                       <p className="text-slate-800">עדכן את הפרטים שלך</p>
                      </div>
                    </div>
                  </CardContent>
@@ -262,12 +262,12 @@ export default function Home() {
                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
                  <CardContent className="p-8">
                    <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors flex-shrink-0">
-                       <BookOpen className="w-7 h-7 text-amber-600" />
+                     <div className="w-14 h-14 rounded-xl bg-amber-200 flex items-center justify-center group-hover:bg-amber-300 transition-colors flex-shrink-0">
+                       <BookOpen className="w-7 h-7 text-amber-800" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-800 mb-2">הוראות שימוש</h3>
-                       <p className="text-slate-600">מדריך מפורט לשימוש במערכת</p>
+                       <h3 className="text-xl font-bold text-slate-900 mb-2">הוראות שימוש</h3>
+                       <p className="text-slate-800">מדריך מפורט לשימוש במערכת</p>
                      </div>
                    </div>
                  </CardContent>
@@ -282,8 +282,8 @@ export default function Home() {
                        <Shield className="w-7 h-7 text-white" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל ניהול</h3>
-                       <p className="text-slate-700 font-medium">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
+                       <h3 className="text-xl font-bold text-slate-900 mb-2">פאנל ניהול</h3>
+                       <p className="text-slate-800 font-medium">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
                      </div>
                    </div>
                  </CardContent>
