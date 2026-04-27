@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Calendar, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAuth } from '@/lib/AuthContext';
+
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 const ROTATION_TYPES = [
   "מיילדות - בסיס",
@@ -28,6 +31,8 @@ const ROTATION_TYPES = [
 ];
 
 export default function RotationManager({ intern, rotations }) {
+  const { user, isAuthenticated } = useAuth();
+  const isManager = isAuthenticated && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     rotation_type: '',
@@ -91,14 +96,16 @@ export default function RotationManager({ intern, rotations }) {
       <CardHeader>
         <CardTitle className="text-lg flex items-center justify-between">
           <span>תוכנית התמחות</span>
-          <Button
-            size="sm"
-            onClick={() => setShowForm(!showForm)}
-            className="bg-teal-600 hover:bg-teal-700"
-          >
-            <Plus className="w-4 h-4 ml-1" />
-            הוסף סבב
-          </Button>
+          {isManager && (
+            <Button
+              size="sm"
+              onClick={() => setShowForm(!showForm)}
+              className="bg-teal-600 hover:bg-teal-700"
+            >
+              <Plus className="w-4 h-4 ml-1" />
+              הוסף סבב
+            </Button>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -181,28 +188,34 @@ export default function RotationManager({ intern, rotations }) {
                         {rotation.end_date && ` - ${format(new Date(rotation.end_date), 'dd/MM/yyyy')}`}
                       </span>
                     </div>
-                    <Select
-                      value={rotation.status}
-                      onValueChange={(value) => handleStatusChange(rotation, value)}
-                    >
-                      <SelectTrigger className="w-40 h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="מתוכנן">מתוכנן</SelectItem>
-                        <SelectItem value="בביצוע">בביצוע</SelectItem>
-                        <SelectItem value="הושלם">הושלם</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {isManager ? (
+                      <Select
+                        value={rotation.status}
+                        onValueChange={(value) => handleStatusChange(rotation, value)}
+                      >
+                        <SelectTrigger className="w-40 h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="מתוכנן">מתוכנן</SelectItem>
+                          <SelectItem value="בביצוע">בביצוע</SelectItem>
+                          <SelectItem value="הושלם">הושלם</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded">{rotation.status}</span>
+                    )}
                   </div>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => handleDelete(rotation.id)}
-                    className="text-slate-400 hover:text-red-600"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  {isManager && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleDelete(rotation.id)}
+                      className="text-slate-400 hover:text-red-600"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
             );

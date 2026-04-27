@@ -11,6 +11,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar, Clock, Users, Plus, Trash2, AlertCircle, CheckCircle, Send, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/AuthContext';
+
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 // ---- ניתן לשנות קישור השאלון כאן ----
 const QUESTIONNAIRE_URL = "https://drive.google.com/open?id=18fDG1GNHYrAYQKrIL6URXePl8FhYhSAkouHhDdVCJt8";
@@ -109,6 +112,8 @@ function SendQuestionnairePanel({ meeting, interns, experts }) {
 }
 
 export default function FeedbackMeetingManager({ interns, experts }) {
+  const { user, isAuthenticated } = useAuth();
+  const isManager = isAuthenticated && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [showForm, setShowForm] = useState(false);
   const [sending, setSending] = useState(false);
   const [formData, setFormData] = useState({
@@ -292,10 +297,12 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                 <ExternalLink className="w-3 h-3" />
                 פתח שאלון
               </a>
-              <Button size="sm" onClick={() => setShowForm(!showForm)} className="bg-teal-600 hover:bg-teal-700">
-                <Plus className="w-4 h-4 ml-1" />
-                קבע פגישה
-              </Button>
+              {isManager && (
+                <Button size="sm" onClick={() => setShowForm(!showForm)} className="bg-teal-600 hover:bg-teal-700">
+                  <Plus className="w-4 h-4 ml-1" />
+                  קבע פגישה
+                </Button>
+              )}
             </div>
           </CardTitle>
         </CardHeader>
@@ -408,14 +415,16 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                         </>
                       )}
                     </div>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleDelete(meeting.id)}
-                      className={`text-slate-400 hover:text-red-600 ${meeting.status === 'התקיים' ? 'h-6 w-6' : ''}`}
-                    >
-                      <Trash2 className={meeting.status === 'התקיים' ? 'w-3 h-3' : 'w-4 h-4'} />
-                    </Button>
+                    {isManager && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleDelete(meeting.id)}
+                        className={`text-slate-400 hover:text-red-600 ${meeting.status === 'התקיים' ? 'h-6 w-6' : ''}`}
+                      >
+                        <Trash2 className={meeting.status === 'התקיים' ? 'w-3 h-3' : 'w-4 h-4'} />
+                      </Button>
+                    )}
                   </div>
 
                   {meeting.status !== 'התקיים' && (
@@ -443,7 +452,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                       <SendQuestionnairePanel meeting={meeting} interns={interns} experts={experts} />
 
                       <div className="flex gap-2 mt-2">
-                        {meeting.status === 'מתוכנן' && (
+                        {isManager && meeting.status === 'מתוכנן' && (
                           <>
                             <Button
                               size="sm"

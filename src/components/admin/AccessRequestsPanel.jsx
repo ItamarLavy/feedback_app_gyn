@@ -7,8 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserCheck, UserX, Clock, Mail } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAuth } from '@/lib/AuthContext';
+
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 export default function AccessRequestsPanel({ interns, experts }) {
+  const { user, isAuthenticated } = useAuth();
+  const isManager = isAuthenticated && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const queryClient = useQueryClient();
   const [assigning, setAssigning] = useState({}); // { [requestId]: { role, entityId } }
 
@@ -46,7 +51,7 @@ export default function AccessRequestsPanel({ interns, experts }) {
     queryClient.invalidateQueries({ queryKey: ['access-requests'] });
   };
 
-  if (requests.length === 0) return null;
+  if (requests.length === 0 || !isManager) return null;
 
   return (
     <Card className="border-2 border-orange-300 shadow-lg mb-8">

@@ -8,8 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Plus, Calendar, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAuth } from '@/lib/AuthContext';
+
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 export default function ManagerNotes({ intern }) {
+  const { user, isAuthenticated } = useAuth();
+  const isManager = isAuthenticated && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [showForm, setShowForm] = useState(false);
   const [noteContent, setNoteContent] = useState('');
   const [noteType, setNoteType] = useState('מחשבות כלליות');
@@ -64,14 +69,16 @@ export default function ManagerNotes({ intern }) {
             <FileText className="w-5 h-5 text-teal-600" />
             הערות מנהל
           </span>
-          <Button
-            size="sm"
-            onClick={() => setShowForm(!showForm)}
-            className="bg-teal-600 hover:bg-teal-700"
-          >
-            <Plus className="w-4 h-4 ml-1" />
-            הערה חדשה
-          </Button>
+          {isManager && (
+            <Button
+              size="sm"
+              onClick={() => setShowForm(!showForm)}
+              className="bg-teal-600 hover:bg-teal-700"
+            >
+              <Plus className="w-4 h-4 ml-1" />
+              הערה חדשה
+            </Button>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -129,14 +136,16 @@ export default function ManagerNotes({ intern }) {
                       <span>{format(new Date(note.created_date), 'dd/MM/yyyy HH:mm')}</span>
                     </div>
                   </div>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => handleDelete(note.id)}
-                    className="h-6 w-6 text-slate-400 hover:text-red-600"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
+                  {isManager && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleDelete(note.id)}
+                      className="h-6 w-6 text-slate-400 hover:text-red-600"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
                 </div>
                 <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.note_content}</p>
               </div>
