@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -18,6 +18,9 @@ export default function ExpertPasswords() {
   const [editingEmail, setEditingEmail] = useState(null);
   const [emailValue, setEmailValue] = useState('');
   const [savingEmail, setSavingEmail] = useState(null);
+  const [addingNew, setAddingNew] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
   const queryClient = useQueryClient();
 
   const { data: experts = [] } = useQuery({
@@ -38,6 +41,15 @@ export default function ExpertPasswords() {
     queryClient.invalidateQueries({ queryKey: ['experts'] });
     setEditingEmail(null);
     setSavingEmail(null);
+  };
+
+  const handleAddExpert = async () => {
+    if (!newName.trim()) return;
+    await base44.entities.Expert.create({ name: newName, email: newEmail });
+    queryClient.invalidateQueries({ queryKey: ['experts'] });
+    setAddingNew(false);
+    setNewName('');
+    setNewEmail('');
   };
 
   if (!isAuthenticated) {
@@ -80,9 +92,15 @@ export default function ExpertPasswords() {
         {/* Experts email list */}
         <Card className="border-0 shadow-xl mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="w-5 h-5 text-purple-500" />
-              רשימת מומחים
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Mail className="w-5 h-5 text-purple-500" />
+                רשימת מומחים
+              </div>
+              <Button size="sm" onClick={() => setAddingNew(true)} className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 ml-1" />
+                הוסף מומחה
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -97,6 +115,25 @@ export default function ExpertPasswords() {
                   </tr>
                 </thead>
                 <tbody>
+                  {addingNew && (
+                    <tr className="border-b border-purple-100 bg-purple-50">
+                      <td className="py-3 px-4 text-slate-400">+</td>
+                      <td className="py-3 px-4">
+                        <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="שם המומחה" className="h-7 text-sm" autoFocus />
+                      </td>
+                      <td className="py-3 px-4">
+                        <Input type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="email@example.com" className="h-7 text-sm" onKeyDown={e => e.key === 'Enter' && handleAddExpert()} />
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                          <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={handleAddExpert}>
+                            <Check className="w-3 h-3" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setAddingNew(false)}>✕</Button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                   {experts.map((expert, index) => {
                     const isEditing = editingEmail === expert.id;
                     return (
