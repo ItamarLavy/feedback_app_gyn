@@ -29,7 +29,7 @@ export default function BottomNav({ currentPageName }) {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white/80 backdrop-blur-lg border-t border-slate-200/50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 shadow-lg" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="flex items-center justify-around h-16" dir="rtl">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -38,12 +38,12 @@ export default function BottomNav({ currentPageName }) {
             <button
               key={item.id}
               onClick={() => handleNavClick(item)}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
-                isActive ? 'text-teal-600' : 'text-slate-600'
+              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all ${
+                isActive ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-teal-600' : 'text-slate-500'}`} />
-              <span className="text-xs font-medium">{item.label}</span>
+              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-white/70'}`} />
+              <span className={`text-xs font-medium ${isActive ? 'text-white' : 'text-white/70'}`}>{item.label}</span>
             </button>
           );
         })}

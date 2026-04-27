@@ -149,12 +149,12 @@ export default function ExpertFeedbackDetailWithAuth() {
   const pastMeetings = expertMeetings.filter(m => isPast(parseISO(m.meeting_date)) || m.status === 'התקיים');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-100" dir="rtl">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
+      <div className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold">
               {expert.name?.[0]}
             </div>
             <div>
@@ -164,7 +164,7 @@ export default function ExpertFeedbackDetailWithAuth() {
           </div>
           <Link 
             to={createPageUrl('Experts')}
-            className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
+            className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 transition-all"
           >
             חזרה
             <ArrowLeft className="w-4 h-4" />
@@ -174,8 +174,8 @@ export default function ExpertFeedbackDetailWithAuth() {
         {/* Meetings - Collapsible */}
         {(upcomingMeetings.length > 0 || pastMeetings.length > 0) && (
           <div className="mb-8">
-            <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
-              <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+            <details className="bg-white rounded-lg border border-slate-200 shadow-lg">
+              <summary className="px-4 py-3 cursor-pointer hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 font-medium text-slate-700 flex items-center gap-2 transition-colors">
                 <Calendar className="w-4 h-4" />
                 פגישות מנטורינג ({upcomingMeetings.length + pastMeetings.length})
               </summary>
@@ -189,7 +189,7 @@ export default function ExpertFeedbackDetailWithAuth() {
                     </h3>
                     <div className="space-y-3">
                       {upcomingMeetings.map(meeting => (
-                        <Card key={meeting.id} className="border-2 border-purple-300 bg-purple-50">
+                        <Card key={meeting.id} className="border-2 border-teal-300 bg-gradient-to-br from-teal-50 to-cyan-50 shadow-md">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between mb-2">
                               <div>
@@ -197,21 +197,21 @@ export default function ExpertFeedbackDetailWithAuth() {
                                   <User className="w-4 h-4 text-slate-600" />
                                   <span className="font-semibold text-slate-800">{meeting.intern_name}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-sm text-slate-600">
-                                  <Clock className="w-4 h-4" />
+                                <div className="flex items-center gap-2 text-sm text-slate-700 font-medium">
+                                  <Clock className="w-4 h-4 text-teal-600" />
                                   <span>{format(parseISO(meeting.meeting_date), 'dd/MM/yyyy HH:mm')}</span>
                                 </div>
                                 {meeting.location && (
-                                  <div className="flex items-center gap-2 text-sm text-slate-600 mt-1">
-                                    <MapPin className="w-4 h-4" />
+                                  <div className="flex items-center gap-2 text-sm text-slate-700 mt-1">
+                                    <MapPin className="w-4 h-4 text-teal-600" />
                                     <span>{meeting.location}</span>
                                   </div>
                                 )}
-                              </div>
-                              <Badge className="bg-purple-600">מתוכנן</Badge>
+                                </div>
+                                <Badge className="bg-gradient-to-r from-teal-500 to-cyan-500 text-white">מתוכנן</Badge>
                             </div>
                             {meeting.notes && (
-                              <p className="text-sm text-slate-600 mt-2 border-t border-purple-200 pt-2">{meeting.notes}</p>
+                              <p className="text-sm text-slate-700 mt-2 border-t border-teal-200 pt-2">{meeting.notes}</p>
                             )}
                           </CardContent>
                         </Card>
@@ -258,7 +258,7 @@ export default function ExpertFeedbackDetailWithAuth() {
             </h2>
             <div className="space-y-4">
               {pendingFeedbacks.map(feedback => (
-                <Card key={feedback.id} className="border-2 border-amber-300 bg-amber-50">
+                <Card key={feedback.id} className="border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-yellow-50 shadow-md">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -286,12 +286,12 @@ export default function ExpertFeedbackDetailWithAuth() {
                     </div>
 
                     {/* Intern Self-Feedback */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <p className="font-semibold text-blue-900 mb-3">משוב עצמי של המתמחה:</p>
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-300 rounded-lg p-4 shadow-sm">
+                      <p className="font-semibold text-blue-800 mb-3">משוב עצמי של המתמחה:</p>
                       <div className="grid grid-cols-2 gap-2 mb-3">
                         {feedback.intern_knowledge_rating > 0 && (
                           <div className="flex items-center gap-1 text-sm">
-                            <span className="text-slate-600">ידע:</span>
+                            <span className="text-slate-700 font-medium">ידע:</span>
                             <div className="flex">
                               {[...Array(5)].map((_, i) => (
                                 <Star key={i} className={`w-3 h-3 ${i < feedback.intern_knowledge_rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
@@ -331,14 +331,14 @@ export default function ExpertFeedbackDetailWithAuth() {
                         )}
                       </div>
                       {feedback.intern_verbal_feedback && (
-                        <p className="text-sm text-slate-700 border-t border-blue-200 pt-2">{feedback.intern_verbal_feedback}</p>
+                        <p className="text-sm text-slate-700 border-t border-blue-300 pt-2 font-medium">{feedback.intern_verbal_feedback}</p>
                       )}
                     </div>
 
                     {/* Expert Feedback Form */}
                     {editingId === feedback.id ? (
-                      <div className="bg-purple-50 border-2 border-purple-300 rounded-lg p-4 space-y-4">
-                        <p className="font-semibold text-purple-900">המשוב שלך:</p>
+                      <div className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-300 rounded-lg p-4 space-y-4 shadow-md">
+                        <p className="font-semibold text-teal-900">המשוב שלך:</p>
                         
                         <div className="grid md:grid-cols-2 gap-3">
                           {RATING_CATEGORIES.map((category) => (
@@ -365,7 +365,7 @@ export default function ExpertFeedbackDetailWithAuth() {
                         <div className="flex gap-2">
                           <Button 
                             onClick={() => handleSubmitExpertFeedback(feedback)}
-                            className="bg-purple-600 hover:bg-purple-700"
+                            className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
                           >
                             <Send className="w-4 h-4 ml-2" />
                             שלח משוב
@@ -381,7 +381,7 @@ export default function ExpertFeedbackDetailWithAuth() {
                     ) : (
                       <Button 
                         onClick={() => handleStartEdit(feedback)}
-                        className="w-full bg-purple-600 hover:bg-purple-700"
+                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
                       >
                         מלא משוב
                       </Button>
@@ -396,34 +396,34 @@ export default function ExpertFeedbackDetailWithAuth() {
         {/* Completed Feedbacks - Collapsible */}
         {completedFeedbacks.length > 0 && (
           <div className="mb-8">
-            <details className="bg-white rounded-lg border border-slate-200 shadow-sm">
-              <summary className="px-4 py-3 cursor-pointer hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-2">
+            <details className="bg-white rounded-lg border border-slate-200 shadow-lg">
+              <summary className="px-4 py-3 cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 font-medium text-slate-700 flex items-center gap-2 transition-colors">
                 <CheckCircle className="w-4 h-4 text-green-600" />
                 משובים שהושלמו ({completedFeedbacks.length})
               </summary>
               <div className="px-4 pb-4 pt-2 space-y-3">
                 {completedFeedbacks.map(feedback => (
-                  <div key={feedback.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <div key={feedback.id} className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200 shadow-sm">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Hash className="w-4 h-4 text-slate-500" />
+                        <Hash className="w-4 h-4 text-slate-600" />
                         <span className="font-mono text-teal-700 font-semibold">{feedback.procedure_id_code}</span>
                         <span className="text-slate-400">•</span>
-                        <User className="w-4 h-4 text-slate-500" />
-                        <span className="text-slate-700">{feedback.intern_name}</span>
+                        <User className="w-4 h-4 text-slate-600" />
+                        <span className="text-slate-800 font-medium">{feedback.intern_name}</span>
                       </div>
-                      <Badge className="bg-green-600">הושלם</Badge>
+                      <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">הושלם</Badge>
                     </div>
-                    
-                    <div className="text-sm text-slate-700 mb-2">
-                      <span className="font-medium">{feedback.procedure_category}</span>
+
+                    <div className="text-sm text-slate-800 mb-2">
+                      <span className="font-semibold">{feedback.procedure_category}</span>
                       <span className="text-slate-400 mx-2">•</span>
-                      <span>{feedback.procedure_type}</span>
+                      <span className="text-slate-700">{feedback.procedure_type}</span>
                     </div>
 
                     {feedback.procedure_date && (
-                      <div className="flex items-center gap-1 text-sm text-slate-500 mb-2">
-                        <Calendar className="w-3 h-3" />
+                      <div className="flex items-center gap-1 text-sm text-slate-700 font-medium mb-2">
+                        <Calendar className="w-3 h-3 text-green-600" />
                         <span>{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
                       </div>
                     )}

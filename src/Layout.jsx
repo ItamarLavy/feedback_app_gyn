@@ -77,12 +77,12 @@ export default function Layout({ children, currentPageName }) {
       </nav>
 
       {/* Mobile Header with Back Button */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200/50" style={{ paddingTop: 'max(0px, env(safe-area-inset-top))' }}>
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 shadow-md" style={{ paddingTop: 'max(0px, env(safe-area-inset-top))' }}>
         <div className="flex items-center justify-between h-16 px-4" dir="rtl">
           {!isHomePage && (
             <Link
               to={createPageUrl('Home')}
-              className="flex items-center gap-2 text-teal-600 hover:text-teal-700"
+              className="flex items-center gap-2 text-white hover:text-slate-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="text-sm font-medium">חזור</span>
@@ -90,10 +90,10 @@ export default function Layout({ children, currentPageName }) {
           )}
           {isHomePage && (
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-bl from-teal-500 to-teal-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
                 <Stethoscope className="w-4 h-4 text-white" />
               </div>
-              <span className="font-bold text-slate-800 text-sm">משוב הדסה</span>
+              <span className="font-bold text-white text-sm">משוב הדסה</span>
             </div>
           )}
           {isAuthenticated && user?.id && (
@@ -108,7 +108,7 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       {/* Mobile Main Content */}
-      <main className="md:hidden pt-20 pb-20">
+      <main className="md:hidden pt-20 pb-20 bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100">
         <PageTransition>
           {children}
         </PageTransition>
