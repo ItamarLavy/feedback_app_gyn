@@ -8,6 +8,7 @@ import AnomalousReports from '../components/admin/AnomalousReports';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import SystemAISummary from '../components/admin/SystemAISummary';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
+import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
   Star, Search, Filter, Clock, Key, BookOpen, Hash, Calendar, User, Stethoscope, Trash2
@@ -159,14 +160,14 @@ export default function Admin() {
               className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm"
             >
               <Key className="w-4 h-4" />
-              סיסמאות מתמחים
+              מיילים מתמחים
             </Link>
             <Link 
               to={createPageUrl('ExpertPasswords')}
               className="flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-sm"
             >
               <Key className="w-4 h-4" />
-              סיסמאות מומחים
+              מיילים מומחים
             </Link>
             <Link 
               to={createPageUrl('Home')}
@@ -282,10 +283,12 @@ export default function Admin() {
                     2
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">ניהול מתמחים ומומחים</h4>
+                    <h4 className="font-semibold text-slate-800 mb-1">אישור בקשות גישה</h4>
                     <p className="text-sm text-slate-600">
-                      לחץ על שם מתמחה כדי לראות את המידע המפורט שלו. 
-                      תוכל לצפות בסיסמאות המתמחים והמומחים דרך הכפתורים המתאימים.
+                      כאשר משתמש חדש נכנס עם גוגל ואין לו גישה, הבקשה שלו תופיע בראש הדף. בחר תפקיד (מתמחה/מומחה), בחר את הרשומה המתאימה, ולחץ "אשר" – המייל יתעדכן אוטומטית.
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      ניתן גם להוסיף מיילים מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>.
                     </p>
                   </div>
                 </div>
@@ -305,6 +308,9 @@ export default function Admin() {
             </CardContent>
           </Card>
         )}
+
+        {/* Access Requests */}
+        <AccessRequestsPanel interns={interns} experts={experts} />
 
         {/* System AI Summary */}
         <div className="mb-8">

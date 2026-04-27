@@ -48,6 +48,7 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Admin from './pages/Admin';
+import PendingAccess from './pages/PendingAccess';
 import ExpertFeedbackDetail from './pages/ExpertFeedbackDetail';
 import ExpertFeedbackDetailWithAuth from './pages/ExpertFeedbackDetailWithAuth';
 import ExpertPasswords from './pages/ExpertPasswords';
@@ -63,6 +64,7 @@ import __Layout from './Layout.jsx';
 
 export const PAGES = {
     "Admin": Admin,
+    "PendingAccess": PendingAccess,
     "ExpertFeedbackDetail": ExpertFeedbackDetail,
     "ExpertFeedbackDetailWithAuth": ExpertFeedbackDetailWithAuth,
     "ExpertPasswords": ExpertPasswords,

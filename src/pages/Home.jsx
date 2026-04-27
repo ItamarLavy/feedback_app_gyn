@@ -1,10 +1,62 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Notebook, Users, Shield, BookOpen } from 'lucide-react';
+import { Stethoscope, Notebook, Users, Shield, BookOpen, Loader2 } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from '@/lib/AuthContext';
+import { base44 } from '@/api/base44Client';
+
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 export default function Home() {
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [checking, setChecking] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.email) return;
+    checkUserRole();
+  }, [isAuthenticated, user?.email]);
+
+  const checkUserRole = async () => {
+    setChecking(true);
+    const email = user.email;
+
+    // מנהל?
+    if (MANAGER_EMAILS.includes(email) || user.role === 'admin') {
+      setChecking(false);
+      return; // נשאר בדף הבית עם כל הכפתורים
+    }
+
+    // מתמחה?
+    const interns = await base44.entities.Intern.filter({ email });
+    if (interns.length > 0) {
+      navigate(createPageUrl('InternProfile') + `?id=${interns[0].id}`);
+      return;
+    }
+
+    // מומחה?
+    const experts = await base44.entities.Expert.filter({ email });
+    if (experts.length > 0) {
+      navigate(createPageUrl('ExpertFeedbackDetailWithAuth') + `?id=${experts[0].id}`);
+      return;
+    }
+
+    // לא מוכר – שלח לדף המתנה
+    navigate(createPageUrl('PendingAccess'));
+  };
+
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" dir="rtl">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-teal-600 mx-auto mb-4" />
+          <p className="text-slate-600">מאמת הרשאות...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
       <div className="max-w-4xl mx-auto px-4 py-12">

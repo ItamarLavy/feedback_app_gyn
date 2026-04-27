@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, User, Stethoscope, Lock, Key, ChevronDown, ChevronUp, AlertTriangle, Star, ClipboardList, BarChart2, MessageSquare } from 'lucide-react';
+import { BookOpen, User, Stethoscope, Shield, ChevronDown, ChevronUp, Star, ClipboardList, BarChart2, MessageSquare, LogIn, UserCheck, Mail } from 'lucide-react';
 
 const Section = ({ icon: Icon, title, color, children }) => {
   const [open, setOpen] = useState(true);
   const colors = {
     blue: 'bg-blue-50 border-blue-200 text-blue-900',
     purple: 'bg-purple-50 border-purple-200 text-purple-900',
-    amber: 'bg-amber-50 border-amber-200 text-amber-900',
+    teal: 'bg-teal-50 border-teal-200 text-teal-900',
   };
   return (
     <Card className="border-0 shadow-xl mb-6">
@@ -32,6 +32,7 @@ const Step = ({ num, color, icon: Icon, title, children }) => {
   const colors = {
     blue: 'bg-blue-100 text-blue-700',
     purple: 'bg-purple-100 text-purple-700',
+    teal: 'bg-teal-100 text-teal-700',
   };
   return (
     <div className="flex gap-4">
@@ -63,17 +64,48 @@ export default function Instructions() {
           <p className="text-slate-500 text-base">מדריך מפורט למערכת המשוב – אגף נשים, הדסה</p>
         </div>
 
+        {/* כניסה למערכת - כולם */}
+        <Card className="border-2 border-teal-300 bg-teal-50 shadow-xl mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-teal-900">
+              <LogIn className="w-6 h-6" />
+              כניסה למערכת
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 text-sm text-teal-900">
+              <div className="flex items-start gap-2">
+                <Mail className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>כניסה עם חשבון גוגל:</strong> לחץ על "כניסה" והתחבר עם חשבון הגוגל המוסדי שלך (@hadassah.org.il או כל מייל שרשמת אצל המנהל).
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <UserCheck className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>זיהוי אוטומטי:</strong> המערכת מזהה אותך לפי כתובת המייל ומפנה אותך ישירות לפאנל המתאים – מתמחה, מומחה, או מנהל.
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Shield className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>כניסה ראשונה:</strong> אם זו כניסתך הראשונה ועדיין אין לך גישה, תועבר לדף המתנה. המנהל יאשר ויקשר את המייל שלך לפרופיל הנכון – ולאחר מכן תוכל להיכנס רגיל.
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* מתמחים */}
         <Section icon={User} title="למתמחים" color="blue">
           <div className="space-y-7">
-            <Step num="1" color="blue" icon={Key} title="כניסה לפרופיל האישי">
-              <p>גש ללשונית <strong>מתמחים</strong> בסרגל הניווט העליון.</p>
-              <p>בחר את שמך מהרשימה ← הזן את <strong>הסיסמה האישית שלך</strong> (5 תווים: אותיות אנגלית קטנות ומספרים).</p>
-              <p className="text-slate-400 text-xs">הסיסמה הראשונית ניתנת על ידי המנהל. ניתן לשנות אותה בכל עת מהעמוד האישי.</p>
+            <Step num="1" color="blue" icon={LogIn} title="כניסה לפרופיל האישי">
+              <p>התחבר עם חשבון הגוגל שלך. המערכת תזהה אותך ותפנה אותך ישירות לעמוד האישי שלך.</p>
+              <p className="text-slate-400 text-xs">המייל שלך צריך להיות רשום אצל המנהל. אם לא – תועבר לדף המתנה.</p>
             </Step>
 
             <Step num="2" color="blue" icon={ClipboardList} title="הגשת בקשת משוב לאחר פרוצדורה">
-              <p>לאחר ביצוע פרוצדורה, לחץ על <strong>"בקש משוב חדש"</strong> בעמוד האישי שלך.</p>
+              <p>לאחר ביצוע פרוצדורה, לחץ על <strong>"הוסף משוב עצמי חדש"</strong> בעמוד האישי שלך.</p>
               <p>מלא את הפרטים הבאים:</p>
               <ul className="list-disc list-inside mt-1 space-y-0.5 text-slate-600">
                 <li><strong>מומחה מדריך</strong> – מי ליווה אותך בפרוצדורה</li>
@@ -108,10 +140,9 @@ export default function Instructions() {
         {/* מומחים */}
         <Section icon={Stethoscope} title="למומחים" color="purple">
           <div className="space-y-7">
-            <Step num="1" color="purple" icon={Key} title="כניסה לפרופיל האישי">
-              <p>גש ללשונית <strong>מומחים</strong> בסרגל הניווט העליון.</p>
-              <p>בחר את שמך מהרשימה ← הזן את <strong>הסיסמה האישית שלך</strong>.</p>
-              <p>המערכת תציג מיד כמה משובים ממתינים לטיפולך.</p>
+            <Step num="1" color="purple" icon={LogIn} title="כניסה לפרופיל האישי">
+              <p>התחבר עם חשבון הגוגל שלך. המערכת תזהה אותך ותפנה אותך ישירות לפאנל המומחים שלך.</p>
+              <p>תראה מיד כמה משובים ממתינים לטיפולך.</p>
             </Step>
 
             <Step num="2" color="purple" icon={MessageSquare} title="מילוי משוב ממתין">
@@ -121,7 +152,7 @@ export default function Instructions() {
                 <li>פרטי הפרוצדורה שדיווח עליה המתמחה</li>
                 <li>הדירוג העצמי והמשוב המילולי שלו/ה</li>
               </ul>
-              <p className="mt-1">לאחר מכן מלא את <strong>הדירוג שלך</strong> (ידע, מיומנות, תקשורת, עצמאות, מקצועיות) ואת <strong>המשוב המילולי</strong> שלך ולחץ <strong>"שמור משוב"</strong>.</p>
+              <p className="mt-1">לאחר מכן מלא את <strong>הדירוג שלך</strong> ואת <strong>המשוב המילולי</strong> שלך ולחץ <strong>"שמור משוב"</strong>.</p>
               <p className="text-xs text-slate-400 mt-1">💡 המתמחה מקבל התראה ונקודות ברגע שתסיים למלא.</p>
             </Step>
 
@@ -132,43 +163,42 @@ export default function Instructions() {
           </div>
         </Section>
 
-        {/* הערות חשובות */}
-        <Card className="border-2 border-amber-300 bg-amber-50 shadow-xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-amber-900">
-              <Lock className="w-6 h-6" />
-              סיסמאות ואבטחה
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4 text-sm text-amber-900">
-              <li className="flex items-start gap-2">
-                <Key className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span>
-                  <strong>סיסמה ראשונית:</strong> כל מתמחה ומומחה מקבל סיסמה ראשונית מהמנהל (5 תווים: אותיות אנגלית קטנות ומספרים בלבד).
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Key className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span>
-                  <strong>שינוי סיסמה:</strong> בכל עמוד אישי (מתמחה/מומחה) מופיעה אפשרות <strong>"שינוי סיסמה"</strong>. מומלץ לשנות את הסיסמה הראשונית בכניסה הראשונה.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600" />
-                <span>
-                  <strong>שכחת סיסמה?</strong> אין שחזור עצמי. יש לפנות למנהל שיוכל לאפס/לצפות בסיסמה הנוכחית דרך לוח הניהול.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600" />
-                <span>
-                  <strong>שמור את הסיסמה בסוד!</strong> הסיסמה היא אישית ומזהה אותך במערכת – אל תשתף אותה עם אחרים.
-                </span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+        {/* מנהלים */}
+        <Section icon={Shield} title="למנהלים" color="teal">
+          <div className="space-y-7">
+            <Step num="1" color="teal" icon={LogIn} title="כניסה לפאנל ניהול">
+              <p>התחבר עם חשבון הגוגל שלך. כמנהל, תגיע לדף הבית עם גישה לכל הפאנלים.</p>
+              <p>לחץ על <strong>"פאנל ניהול"</strong> כדי להיכנס.</p>
+            </Step>
+
+            <Step num="2" color="teal" icon={UserCheck} title="אישור בקשות גישה">
+              <p>כאשר משתמש חדש מתחבר עם גוגל ואין לו גישה, הבקשה שלו מופיעה בראש פאנל הניהול.</p>
+              <p>לאישור:</p>
+              <ul className="list-disc list-inside mt-1 space-y-0.5">
+                <li>בחר <strong>תפקיד</strong> – מתמחה או מומחה</li>
+                <li>בחר את <strong>הרשומה המתאימה</strong> מהרשימה הקיימת</li>
+                <li>לחץ <strong>"אשר"</strong> – המייל יתעדכן אוטומטית ברשומה</li>
+              </ul>
+              <p className="text-xs text-slate-400 mt-1">לאחר האישור, בפעם הבאה שהמשתמש יתחבר הוא יזוהה אוטומטית.</p>
+            </Step>
+
+            <Step num="3" color="teal" icon={Mail} title="עדכון מיילים מראש">
+              <p>ניתן גם לרשום את המייל של כל מתמחה/מומחה מראש דרך <strong>"עדכון מיילים מתמחים"</strong> או <strong>"עדכון מיילים מומחים"</strong> בפאנל הניהול.</p>
+              <p>כך הם יזוהו אוטומטית בכניסה הראשונה ללא צורך באישור ידני.</p>
+            </Step>
+
+            <Step num="4" color="teal" icon={BarChart2} title="ניהול שוטף">
+              <p>בפאנל הניהול תוכל:</p>
+              <ul className="list-disc list-inside mt-1 space-y-0.5">
+                <li>לראות את כל המשובים, לחפש ולסנן</li>
+                <li>ללחוץ על שם מתמחה לצפייה מפורטת</li>
+                <li>לתזמן פגישות מנטורינג</li>
+                <li>לצפות בסיכומי AI ובדוחות חריגים</li>
+                <li>למחוק משובים במידת הצורך</li>
+              </ul>
+            </Step>
+          </div>
+        </Section>
 
       </div>
     </div>
