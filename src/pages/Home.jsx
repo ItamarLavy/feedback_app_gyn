@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap, Users } from 'lucide-react';
+import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap, Users, Settings } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/AuthContext';
@@ -153,6 +153,22 @@ export default function Home() {
                 </CardContent>
               </Card>
             )}
+
+            <Link to="/UserSettings">
+              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+                <CardContent className="p-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-slate-200 flex items-center justify-center group-hover:bg-slate-300 transition-colors">
+                      <Settings className="w-7 h-7 text-slate-700" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">הגדרות</h3>
+                      <p className="text-slate-600">עדכן את הפרטים שלך</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
 
             <Link to={createPageUrl('Instructions')}>
               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
