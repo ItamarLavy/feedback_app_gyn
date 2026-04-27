@@ -6,34 +6,15 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Key, Copy, Mail, Check, Shield } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
-// פונקציה ליצירת סיסמה דטרמיניסטית מה-ID
-function generatePassword(internId) {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let password = '';
-  let hash = 0;
-  
-  for (let i = 0; i < internId.length; i++) {
-    hash = internId.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  
-  for (let i = 0; i < 5; i++) {
-    hash = ((hash << 5) - hash) + i;
-    const index = Math.abs(hash) % chars.length;
-    password += chars[index];
-  }
-  
-  return password;
-}
-
 export default function InternPasswords() {
   const { user, isAuthenticated: isLoggedIn } = useAuth();
   const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
-  const [copiedId, setCopiedId] = useState(null);
   const [editingEmail, setEditingEmail] = useState(null);
   const [emailValue, setEmailValue] = useState('');
   const [savingEmail, setSavingEmail] = useState(null);
@@ -45,18 +26,18 @@ export default function InternPasswords() {
     enabled: isAuthenticated
   });
 
+  const { data: accessRequests = [] } = useQuery({
+    queryKey: ['accessRequests'],
+    queryFn: () => base44.entities.AccessRequest.list(),
+    enabled: isAuthenticated
+  });
+
   const handleSaveEmail = async (internId) => {
     setSavingEmail(internId);
     await base44.entities.Intern.update(internId, { email: emailValue });
     queryClient.invalidateQueries({ queryKey: ['interns'] });
     setEditingEmail(null);
     setSavingEmail(null);
-  };
-
-  const handleCopy = (displayPassword, internId) => {
-    navigator.clipboard.writeText(displayPassword);
-    setCopiedId(internId);
-    setTimeout(() => setCopiedId(null), 2000);
   };
 
   if (!isAuthenticated) {
@@ -70,6 +51,9 @@ export default function InternPasswords() {
     );
   }
 
+  const internEmails = new Set(interns.map(i => i.email).filter(Boolean));
+  const pendingRequests = accessRequests.filter(r => !internEmails.has(r.email));
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -77,14 +61,14 @@ export default function InternPasswords() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-bl from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-              <Key className="w-6 h-6 text-white" />
+              <Users className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">סיסמאות מתמחים</h1>
-              <p className="text-slate-500 text-sm">טבלת סיסמאות גישה</p>
+              <h1 className="text-2xl font-bold text-slate-800">מיילים מתמחים</h1>
+              <p className="text-slate-500 text-sm">רשימת כתובות מייל של מתמחים</p>
             </div>
           </div>
-          <Link 
+          <Link
             to={createPageUrl('Admin')}
             className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
           >
@@ -93,9 +77,13 @@ export default function InternPasswords() {
           </Link>
         </div>
 
-        <Card className="border-0 shadow-xl">
+        {/* Interns email list */}
+        <Card className="border-0 shadow-xl mb-6">
           <CardHeader>
-            <CardTitle>סיסמאות גישה לעמוד אישי</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-blue-500" />
+              רשימת מתמחים
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -104,25 +92,18 @@ export default function InternPasswords() {
                   <tr className="border-b-2 border-slate-200">
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">#</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">שם המתמחה</th>
-                    <th className="text-right py-3 px-4 font-semibold text-slate-700">סיסמה</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">כתובת מייל</th>
-                    <th className="text-center py-3 px-4 font-semibold text-slate-700">פעולות</th>
+                    <th className="text-center py-3 px-4 font-semibold text-slate-700">פעולה</th>
                   </tr>
                 </thead>
                 <tbody>
                   {interns.map((intern, index) => {
-                    const password = generatePassword(intern.id);
                     const isEditing = editingEmail === intern.id;
                     return (
                       <tr key={intern.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-4 text-slate-600">{index + 1}</td>
+                        <td className="py-3 px-4 text-slate-500">{index + 1}</td>
                         <td className="py-3 px-4 font-medium text-slate-800">{intern.name}</td>
-                        <td className="py-3 px-4">
-                          <code className="bg-slate-100 px-3 py-1 rounded font-mono text-blue-700">
-                            {intern.password || password}
-                          </code>
-                        </td>
-                        <td className="py-3 px-4 min-w-[200px]">
+                        <td className="py-3 px-4 min-w-[240px]">
                           {isEditing ? (
                             <div className="flex items-center gap-1">
                               <Input
@@ -132,6 +113,7 @@ export default function InternPasswords() {
                                 placeholder="email@example.com"
                                 className="h-7 text-sm"
                                 autoFocus
+                                onKeyDown={e => e.key === 'Enter' && handleSaveEmail(intern.id)}
                               />
                               <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={() => handleSaveEmail(intern.id)} disabled={savingEmail === intern.id}>
                                 <Check className="w-3 h-3" />
@@ -148,21 +130,11 @@ export default function InternPasswords() {
                           )}
                         </td>
                         <td className="py-3 px-4 text-center">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleCopy(intern.password || password, intern.id)}
-                            className="text-blue-600 hover:text-blue-700"
-                          >
-                            {copiedId === intern.id ? (
-                              <span className="text-green-600">✓ הועתק</span>
-                            ) : (
-                              <>
-                                <Copy className="w-4 h-4 ml-1" />
-                                העתק
-                              </>
-                            )}
-                          </Button>
+                          {!isEditing && (
+                            <Button variant="ghost" size="sm" onClick={() => { setEditingEmail(intern.id); setEmailValue(intern.email || ''); }} className="text-blue-600 hover:text-blue-700 text-xs">
+                              עדכן
+                            </Button>
+                          )}
                         </td>
                       </tr>
                     );
@@ -170,16 +142,35 @@ export default function InternPasswords() {
                 </tbody>
               </table>
             </div>
-
-            <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <p className="text-sm text-amber-800">
-                <strong>שים לב:</strong> הסיסמאות המוצגות כאן הן הסיסמאות הנוכחיות במערכת - 
-                אם מתמחה שינה סיסמה, הסיסמה המעודכנת תוצג כאן. 
-                הסיסמאות הראשוניות נוצרות אוטומטית. יש להעביר לכל מתמחה את הסיסמה האישית שלו.
-              </p>
-            </div>
           </CardContent>
         </Card>
+
+        {/* Pending requests not in interns list */}
+        {pendingRequests.length > 0 && (
+          <Card className="border-0 shadow-xl border-l-4 border-amber-400">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-amber-700">
+                <AlertCircle className="w-5 h-5" />
+                בקשות גישה שאינן ברשימת המתמחים ({pendingRequests.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {pendingRequests.map(req => (
+                  <div key={req.id} className="flex items-center justify-between bg-amber-50 rounded-lg px-4 py-2">
+                    <div>
+                      <span className="font-medium text-slate-800">{req.full_name}</span>
+                      <span className="text-slate-500 text-sm mr-2">{req.email}</span>
+                    </div>
+                    <Badge className={req.status === 'pending' ? 'bg-amber-500' : req.status === 'approved' ? 'bg-green-600' : 'bg-red-500'}>
+                      {req.status === 'pending' ? 'ממתין' : req.status === 'approved' ? 'אושר' : 'נדחה'}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
