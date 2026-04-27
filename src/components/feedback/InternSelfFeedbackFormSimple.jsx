@@ -74,18 +74,18 @@ const RATING_LABELS_1_5 = ['1 - מינימלי', '2', '3', '4', '5 - מצוין'
 
 function RatingRow({ label, value, onChange }) {
    return (
-     <div className="space-y-1">
-       <Label className="text-slate-900 text-sm font-medium">{label}</Label>
+     <div className="space-y-2">
+       <Label className="text-sm text-gray-700 font-normal">{label}</Label>
        <div className="flex gap-2">
          {[1, 2, 3, 4, 5].map(n => (
            <button
              key={n}
              type="button"
              onClick={() => onChange(n)}
-             className={`flex-1 py-2 rounded text-sm font-semibold border transition-colors ${
+             className={`flex-1 py-2 text-sm border rounded ${
                value === n
-                 ? 'bg-teal-600 text-white border-teal-600'
-                 : 'bg-white text-slate-900 border-teal-300 hover:border-teal-500 hover:bg-teal-50'
+                 ? 'bg-gray-900 text-white border-gray-900'
+                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
              }`}
            >
              {n}
@@ -224,9 +224,9 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
     formData.form_type && (hasRating || formData.intern_independence !== null);
 
   return (
-    <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-teal-200 shadow-xl">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold text-slate-900">הזנת משוב עצמי חדש</CardTitle>
+    <Card className="bg-white border border-gray-200 shadow-sm">
+      <CardHeader className="pb-4 border-b border-gray-100">
+        <CardTitle className="text-lg font-medium text-gray-900">משוב חדש</CardTitle>
       </CardHeader>
       <CardContent>
         <AnimatePresence mode="wait">
@@ -254,9 +254,9 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
 
               {/* מומחה */}
               <div className="space-y-2">
-                <Label className="font-medium text-slate-900">מומחה מדריך</Label>
+                <Label className="text-sm font-normal text-gray-700">מומחה מדריך</Label>
                 <Select value={formData.expert_id} onValueChange={v => set('expert_id', v)}>
-                  <SelectTrigger className="h-12 bg-white border-2 border-teal-300 text-slate-900">
+                  <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
                     <SelectValue placeholder="בחר מומחה" />
                   </SelectTrigger>
                   <SelectContent>
@@ -268,9 +268,9 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
               {/* קטגוריה + פרוצדורה */}
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="font-medium text-slate-900">קטגוריה</Label>
+                  <Label className="text-sm font-normal text-gray-700">קטגוריה</Label>
                   <Select value={formData.procedure_category} onValueChange={v => setFormData(p => ({ ...p, procedure_category: v, procedure_type: '' }))}>
-                    <SelectTrigger className="h-12 bg-white border-2 border-teal-300 text-slate-900">
+                    <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
                       <SelectValue placeholder="בחר קטגוריה" />
                     </SelectTrigger>
                     <SelectContent>
@@ -279,12 +279,12 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-medium text-slate-900">פרוצדורה</Label>
+                  <Label className="text-sm font-normal text-gray-700">פרוצדורה</Label>
                   <Select value={formData.procedure_type} onValueChange={v => {
                     const autoFormType = getFormTypeForProcedure(v);
                     setFormData(p => ({ ...p, procedure_type: v, form_type: autoFormType || p.form_type }));
                   }} disabled={!formData.procedure_category}>
-                    <SelectTrigger className="h-12 bg-white border-2 border-teal-300 text-slate-900">
+                    <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
                       <SelectValue placeholder="בחר פרוצדורה" />
                     </SelectTrigger>
                     <SelectContent>
@@ -296,16 +296,9 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
 
               {/* סוג טופס */}
               <div className="space-y-2">
-                <Label className="font-medium flex items-center gap-2 text-slate-900">
-                  סוג הערכה
-                  {formData.form_type && getFormTypeForProcedure(formData.procedure_type) && (
-                    <span className="flex items-center gap-1 text-xs font-normal text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                      <Zap className="w-3 h-3" />נבחר אוטומטית
-                    </span>
-                  )}
-                </Label>
+                <Label className="text-sm font-normal text-gray-700">סוג הערכה</Label>
                 <Select value={formData.form_type} onValueChange={v => set('form_type', v)}>
-                  <SelectTrigger className="h-12 bg-white border-2 border-teal-300 text-slate-900">
+                  <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
                     <SelectValue placeholder="בחר סוג הערכה" />
                   </SelectTrigger>
                   <SelectContent>
@@ -316,16 +309,14 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
 
               {/* תאריך */}
               <div className="space-y-2">
-                <Label className="font-medium flex items-center gap-2 text-slate-900">
-                  <Calendar className="w-4 h-4" />תאריך ביצוע
-                </Label>
-                <Input type="date" value={formData.procedure_date} onChange={e => set('procedure_date', e.target.value)} className="h-12 bg-white border-2 border-teal-300 text-slate-900" />
+                <Label className="text-sm font-normal text-gray-700">תאריך ביצוע</Label>
+                <Input type="date" value={formData.procedure_date} onChange={e => set('procedure_date', e.target.value)} className="h-10 bg-white border border-gray-300 text-gray-900" />
               </div>
 
               {/* שדות דירוג לפי סוג טופס */}
               {formData.form_type && (
-                <div className="space-y-4 bg-gradient-to-r from-teal-100 to-cyan-100 rounded-xl p-4 border border-teal-300">
-                  <p className="text-sm font-semibold text-teal-900">הערכה עצמית</p>
+                <div className="space-y-4 bg-gray-50 p-4 border border-gray-200">
+                  <p className="text-sm text-gray-700">הערכה עצמית</p>
 
                   {showOverall && (
                     <RatingRow
@@ -349,20 +340,20 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
                   )}
 
                   {showIndependence && (
-                    <div className="space-y-1">
-                      <Label className="text-slate-900 text-sm font-medium">
+                    <div className="space-y-2">
+                      <Label className="text-sm text-gray-700 font-normal">
                         {formType === 'procedural' ? 'האם אני מסוגל לבצע זאת באופן עצמאי?' : 'האם אני מסוגל לנהל זאת באופן עצמאי?'}
                       </Label>
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
                         {[{ val: true, label: 'כן' }, { val: false, label: 'לא' }].map(opt => (
                           <button
                             key={String(opt.val)}
                             type="button"
                             onClick={() => set('intern_independence', opt.val)}
-                            className={`flex-1 py-2 rounded border text-sm font-semibold transition-colors ${
+                            className={`flex-1 py-2 text-sm border rounded ${
                               formData.intern_independence === opt.val
-                                ? 'bg-teal-600 text-white border-teal-600'
-                                : 'bg-white text-slate-900 border-teal-300 hover:border-teal-500 hover:bg-teal-50'
+                                ? 'bg-gray-900 text-white border-gray-900'
+                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                             }`}
                           >
                             {opt.label}
@@ -376,21 +367,20 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
 
               {/* הערות */}
               <div className="space-y-2">
-                <Label className="font-medium text-slate-900">הערות (אופציונלי)</Label>
+                <Label className="text-sm font-normal text-gray-700">הערות (אופציונלי)</Label>
                 <Textarea
                   value={formData.intern_verbal_feedback}
                   onChange={e => set('intern_verbal_feedback', e.target.value)}
-                  placeholder="כתוב על החוויה שלך, מה למדת, מה היה מאתגר..."
-                  className="min-h-[80px] bg-white border-2 border-teal-300 text-slate-900"
+                  placeholder="כתוב על החוויה שלך..."
+                  className="min-h-[80px] bg-white border border-gray-300 text-gray-900"
                 />
               </div>
 
               <Button
                 type="submit"
                 disabled={!isValid || isSubmitting}
-                className="w-full h-12 bg-gradient-to-l from-teal-600 to-cyan-500 hover:from-teal-700 hover:to-cyan-600 text-white font-semibold"
+                className="w-full h-10 bg-gray-900 hover:bg-gray-800 text-white font-normal"
               >
-                <Send className="w-5 h-5 ml-2" />
                 {isSubmitting ? 'שומר...' : 'שלח משוב'}
               </Button>
             </motion.form>
