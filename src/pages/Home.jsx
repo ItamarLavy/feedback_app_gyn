@@ -131,13 +131,13 @@ export default function Home() {
                         ? 'bg-gradient-to-br from-blue-200 to-cyan-200 group-hover:from-blue-300 group-hover:to-cyan-300' 
                         : 'bg-gradient-to-br from-purple-200 to-pink-200 group-hover:from-purple-300 group-hover:to-pink-300'
                     }`}>
-                      <Stethoscope className={`w-7 h-7 ${isIntern ? 'text-blue-700' : 'text-purple-700'}`} />
+                      <Stethoscope className={`w-7 h-7 ${isIntern ? 'text-blue-800' : 'text-purple-800'}`} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">
                         {isIntern ? 'מלא משוב כמתמחה' : 'מלא משוב כמומחה'}
                       </h3>
-                      <p className="text-slate-700 font-medium">
+                      <p className="text-slate-800 font-medium">
                         {isIntern ? 'שלח משוב עצמי על פרוצדורה' : 'בדוק משובים הממתינים'}
                       </p>
                     </div>
@@ -155,15 +155,15 @@ export default function Home() {
             )}
 
             <Link to="/UserSettings">
-              <Card className="border-2 border-slate-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-slate-100 to-gray-100">
+              <Card className="border-2 border-slate-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-slate-50 to-slate-100">
                 <CardContent className="p-8">
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-slate-300 to-gray-400 flex items-center justify-center group-hover:from-slate-400 group-hover:to-gray-500 transition-colors shadow-md">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center group-hover:from-slate-500 group-hover:to-slate-600 transition-colors shadow-md">
                       <Settings className="w-7 h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">הגדרות</h3>
-                      <p className="text-slate-700 font-medium">עדכן את הפרטים שלך</p>
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">הגדרות</h3>
+                      <p className="text-slate-800 font-medium">עדכן את הפרטים שלך</p>
                     </div>
                   </div>
                 </CardContent>
