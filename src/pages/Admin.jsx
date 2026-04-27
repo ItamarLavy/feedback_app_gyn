@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -35,6 +35,7 @@ export default function Admin() {
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
   const pullToRefreshRef = usePullToRefresh(['feedbacks']);
+  const accessRequestsRef = useRef(null);
 
   const { data: feedbacks = [] } = useQuery({
     queryKey: ['feedbacks'],
@@ -156,14 +157,23 @@ export default function Admin() {
       <div ref={pullToRefreshRef} className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
-              <Shield className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-between flex-1">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-800">פאנל ניהול</h1>
+                <p className="text-slate-500 text-sm">צפייה בכל המשובים</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800">פאנל ניהול</h1>
-              <p className="text-slate-500 text-sm">צפייה בכל המשובים</p>
-            </div>
+            <Button
+              onClick={() => accessRequestsRef.current?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium gap-2"
+            >
+              <Mail className="w-4 h-4" />
+              בקשות חדשות
+            </Button>
           </div>
           <div className="flex items-center gap-3">
             <Link 
@@ -314,7 +324,9 @@ export default function Admin() {
         </Card>
 
         {/* Access Requests */}
-        <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
+        <div ref={accessRequestsRef}>
+          <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
+        </div>
 
         {/* Anomalous Reports */}
         <div className="mb-8">
