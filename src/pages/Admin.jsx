@@ -182,77 +182,83 @@ export default function Admin() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <Card className="border-0 shadow-lg bg-white">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
-                  <ClipboardList className="w-5 h-5 text-teal-600" />
-                </div>
-                <div>
-                  <p className="text-slate-500 text-xs">סה"כ משובים</p>
-                  <p className="text-2xl font-bold text-slate-800">{totalFeedbacks}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+           <Card className="border-0 shadow-lg bg-white">
+             <CardContent className="p-5">
+               <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
+                   <ClipboardList className="w-5 h-5 text-teal-600" />
+                 </div>
+                 <div>
+                   <p className="text-slate-500 text-xs">סה"כ משובים</p>
+                   <p className="text-2xl font-bold text-slate-800">{totalFeedbacks}</p>
+                 </div>
+               </div>
+             </CardContent>
+           </Card>
 
-          <Card className={`border-0 shadow-lg ${pendingExpertReviews > 0 ? 'bg-amber-50 border-2 border-amber-300' : 'bg-white'}`}>
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${pendingExpertReviews > 0 ? 'bg-amber-200' : 'bg-orange-100'}`}>
-                  <Clock className={`w-5 h-5 ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-orange-600'}`} />
-                </div>
-                <div>
-                  <p className="text-slate-500 text-xs">ממתינים למומחה</p>
-                  <p className={`text-2xl font-bold ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-slate-800'}`}>{pendingExpertReviews}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+           <Card className={`border-0 shadow-lg ${pendingExpertReviews > 0 ? 'bg-amber-50 border-2 border-amber-300' : 'bg-white'}`}>
+             <CardContent className="p-5">
+               <div className="flex items-center gap-3">
+                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${pendingExpertReviews > 0 ? 'bg-amber-200' : 'bg-orange-100'}`}>
+                   <Clock className={`w-5 h-5 ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-orange-600'}`} />
+                 </div>
+                 <div>
+                   <p className="text-slate-500 text-xs">ממתינים למומחה</p>
+                   <p className={`text-2xl font-bold ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-slate-800'}`}>{pendingExpertReviews}</p>
+                 </div>
+               </div>
+             </CardContent>
+           </Card>
 
-          <Card className="border-0 shadow-lg bg-white">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-slate-500 text-xs">מתמחים</p>
-                  <p className="text-2xl font-bold text-slate-800">{interns.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+           <Link to={createPageUrl('InternPasswords')} className="no-underline">
+             <Card className="border-0 shadow-lg bg-white hover:shadow-xl hover:bg-blue-50 transition-all cursor-pointer h-full">
+               <CardContent className="p-5">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                     <Users className="w-5 h-5 text-blue-600" />
+                   </div>
+                   <div>
+                     <p className="text-slate-500 text-xs">מתמחים</p>
+                     <p className="text-2xl font-bold text-slate-800">{interns.length}</p>
+                   </div>
+                 </div>
+               </CardContent>
+             </Card>
+           </Link>
 
-          <Card className="border-0 shadow-lg bg-white">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                  <Stethoscope className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-slate-500 text-xs">מומחים</p>
-                  <p className="text-2xl font-bold text-slate-800">{experts.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+           <Link to={createPageUrl('ExpertPasswords')} className="no-underline">
+             <Card className="border-0 shadow-lg bg-white hover:shadow-xl hover:bg-purple-50 transition-all cursor-pointer h-full">
+               <CardContent className="p-5">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                     <Stethoscope className="w-5 h-5 text-purple-600" />
+                   </div>
+                   <div>
+                     <p className="text-slate-500 text-xs">מומחים</p>
+                     <p className="text-2xl font-bold text-slate-800">{experts.length}</p>
+                   </div>
+                 </div>
+               </CardContent>
+             </Card>
+           </Link>
 
-          <Card className="border-0 shadow-lg bg-white">
-            <CardContent className="p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-teal-600" />
-                </div>
-                <div>
-                  <p className="text-slate-500 text-xs">מנהלים</p>
-                  <p className="text-2xl font-bold text-slate-800">{MANAGER_EMAILS.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+           <Link to={createPageUrl('ManagerEmails')} className="no-underline">
+             <Card className="border-0 shadow-lg bg-white hover:shadow-xl hover:bg-teal-50 transition-all cursor-pointer h-full">
+               <CardContent className="p-5">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center">
+                     <Shield className="w-5 h-5 text-teal-600" />
+                   </div>
+                   <div>
+                     <p className="text-slate-500 text-xs">מנהלים</p>
+                     <p className="text-2xl font-bold text-slate-800">{MANAGER_EMAILS.length}</p>
+                   </div>
+                 </div>
+               </CardContent>
+             </Card>
+           </Link>
+         </div>
 
         {/* Admin Instructions - Collapsible */}
         <Card className="border-0 shadow-lg mb-8">
