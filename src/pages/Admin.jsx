@@ -157,8 +157,8 @@ export default function Admin() {
   }
 
   return (
-    <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto" dir="rtl">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto" dir="rtl">
+      <div ref={pullToRefreshRef} className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
