@@ -156,17 +156,17 @@ export default function Admin() {
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-emerald-50/40 to-cyan-100 overflow-y-auto" dir="rtl">
       <div ref={pullToRefreshRef} className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center justify-between flex-1">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-800">פאנל ניהול</h1>
-                <p className="text-slate-500 text-sm">צפייה בכל המשובים</p>
-              </div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
+              <Shield className="w-6 h-6 text-white" />
             </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800">פאנל ניהול</h1>
+              <p className="text-slate-500 text-sm">צפייה בכל המשובים</p>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row gap-3 md:items-center">
             <Button
               onClick={() => accessRequestsRef.current?.scrollIntoView({ behavior: 'smooth' })}
               className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium gap-2"
@@ -174,11 +174,9 @@ export default function Admin() {
               <Mail className="w-4 h-4" />
               בקשות חדשות
             </Button>
-          </div>
-          <div className="flex items-center gap-3">
             <Link 
               to={createPageUrl('Home')}
-              className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
+              className="flex items-center justify-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
             >
               חזרה לדף הבית
               <ArrowLeft className="w-4 h-4" />
