@@ -157,21 +157,21 @@ export default function Admin() {
               className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm"
             >
               <Key className="w-4 h-4" />
-              מיילים מתמחים
+              פרטים מתמחים
             </Link>
             <Link 
               to={createPageUrl('ExpertPasswords')}
               className="flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-sm"
             >
               <Key className="w-4 h-4" />
-              מיילים מומחים
+              פרטים מומחים
             </Link>
             <Link 
               to={createPageUrl('ManagerEmails')}
               className="flex items-center gap-2 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium text-sm"
             >
               <Key className="w-4 h-4" />
-              מיילים מנהלים
+              פרטים מנהלים
             </Link>
             <Link 
               to={createPageUrl('Home')}

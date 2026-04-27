@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -32,6 +32,12 @@ export default function InternPasswords() {
   const { data: accessRequests = [] } = useQuery({
     queryKey: ['accessRequests'],
     queryFn: () => base44.entities.AccessRequest.list(),
+    enabled: isAuthenticated
+  });
+
+  const { data: userPoints = [] } = useQuery({
+    queryKey: ['userPoints-interns'],
+    queryFn: () => base44.entities.UserPoints.filter({ user_role: 'intern' }),
     enabled: isAuthenticated
   });
 
@@ -111,6 +117,7 @@ export default function InternPasswords() {
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">#</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">שם המתמחה</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">כתובת מייל</th>
+                    <th className="text-center py-3 px-4 font-semibold text-slate-700">נקודות</th>
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">פעולה</th>
                   </tr>
                 </thead>
@@ -136,6 +143,7 @@ export default function InternPasswords() {
                   )}
                   {interns.map((intern, index) => {
                     const isEditing = editingEmail === intern.id;
+                    const points = userPoints.find(p => p.user_name === intern.name)?.total_points ?? null;
                     return (
                       <tr key={intern.id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="py-3 px-4 text-slate-500">{index + 1}</td>
@@ -164,6 +172,16 @@ export default function InternPasswords() {
                               <Mail className="w-3 h-3 text-slate-400 group-hover:text-blue-400" />
                               {intern.email ? <span>{intern.email}</span> : <span className="text-slate-300 italic">הוסף מייל</span>}
                             </button>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {points !== null ? (
+                            <span className="flex items-center justify-center gap-1 font-semibold text-amber-600">
+                              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                              {points}
+                            </span>
+                          ) : (
+                            <span className="text-slate-300 text-xs">—</span>
                           )}
                         </td>
                         <td className="py-3 px-4 text-center">
