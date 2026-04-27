@@ -16,7 +16,7 @@ export default function BottomNav({ currentPageName }) {
   const navItems = [
     ...(user?.role === 'intern' ? [{ label: 'מתמחים', icon: Notebook, path: createPageUrl('Interns'), id: 'interns', root: '/Interns' }] : []),
     ...(user?.role === 'expert' ? [{ label: 'מומחים', icon: Stethoscope, path: createPageUrl('Experts'), id: 'experts', root: '/Experts' }] : []),
-    { label: 'הגדרות', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' },
+    { label: 'חשבון', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' },
     ...(isManager ? [{ label: 'הוראות', icon: BookOpen, path: createPageUrl('Instructions'), id: 'instructions', root: '/Instructions' }] : []),
     ...(isManager ? [{ label: 'ניהול', icon: Shield, path: createPageUrl('Admin'), id: 'admin', root: '/Admin' }] : [])
   ];
