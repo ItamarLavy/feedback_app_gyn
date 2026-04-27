@@ -21,7 +21,12 @@ export function usePullToRefresh(queryKey) {
     };
 
     const handleTouchMove = (e) => {
-      if (!isDraggingRef.current || container.scrollTop > 0) {
+      if (!isDraggingRef.current) {
+        return;
+      }
+
+      // Allow normal scroll when already scrolled down
+      if (container.scrollTop > 0) {
         isDraggingRef.current = false;
         return;
       }
@@ -48,6 +53,9 @@ export function usePullToRefresh(queryKey) {
         `;
         
         container.style.transform = `translateY(${Math.min(currentY, 80)}px)`;
+      } else {
+        // Finger moved up - end pull and allow normal scroll
+        isDraggingRef.current = false;
       }
     };
 
