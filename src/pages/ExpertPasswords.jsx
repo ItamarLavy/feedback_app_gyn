@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -22,7 +21,6 @@ export default function ExpertPasswords() {
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
-  const [selectedExpert, setSelectedExpert] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: experts = [] } = useQuery({
@@ -147,16 +145,12 @@ export default function ExpertPasswords() {
                     const isEditing = editingEmail === expert.id;
                     const points = userPoints.find(p => p.user_name === expert.name)?.total_points ?? null;
                     return (
-                      <tr 
-                        key={expert.id} 
-                        className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
-                        onClick={() => !isEditing && setSelectedExpert(expert)}
-                      >
+                      <tr key={expert.id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="py-3 px-4 text-slate-500">{index + 1}</td>
                         <td className="py-3 px-4 font-medium text-slate-800">{expert.name}</td>
                         <td className="py-3 px-4 min-w-[240px]">
                           {isEditing ? (
-                            <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                            <div className="flex items-center gap-1">
                               <Input
                                 type="email"
                                 value={emailValue}
@@ -172,7 +166,7 @@ export default function ExpertPasswords() {
                             </div>
                           ) : (
                             <button
-                              onClick={(e) => { e.stopPropagation(); setEditingEmail(expert.id); setEmailValue(expert.email || ''); }}
+                              onClick={() => { setEditingEmail(expert.id); setEmailValue(expert.email || ''); }}
                               className="flex items-center gap-1 text-sm text-slate-600 hover:text-purple-600 group"
                             >
                               <Mail className="w-3 h-3 text-slate-400 group-hover:text-purple-400" />
@@ -190,7 +184,7 @@ export default function ExpertPasswords() {
                             <span className="text-slate-300 text-xs">—</span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-center" onClick={e => e.stopPropagation()}>
+                        <td className="py-3 px-4 text-center">
                           {!isEditing && (
                             <Button variant="ghost" size="sm" onClick={() => { setEditingEmail(expert.id); setEmailValue(expert.email || ''); }} className="text-purple-600 hover:text-purple-700 text-xs">
                               עדכן
@@ -232,39 +226,6 @@ export default function ExpertPasswords() {
             </CardContent>
           </Card>
           )}
-
-          {/* Modal - Expert Details */}
-          <Dialog open={!!selectedExpert} onOpenChange={(open) => !open && setSelectedExpert(null)}>
-          <DialogContent className="max-w-sm" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold text-sm">
-                  {selectedExpert?.name?.[0]}
-                </div>
-                {selectedExpert?.name}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
-                <Mail className="w-5 h-5 text-purple-500 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-slate-500">כתובת מייל</p>
-                  <p className="font-mono text-sm text-slate-700 break-all">{selectedExpert?.email || '—'}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
-                <Star className="w-5 h-5 text-amber-500 fill-amber-500 flex-shrink-0" />
-                <div>
-                  <p className="text-xs text-slate-500">נקודות</p>
-                  <p className="font-semibold text-slate-800">{userPoints.find(p => p.user_name === selectedExpert?.name)?.total_points ?? '—'}</p>
-                </div>
-              </div>
-              <Button onClick={() => setSelectedExpert(null)} className="w-full bg-purple-600 hover:bg-purple-700">
-                סגור
-              </Button>
-            </div>
-          </DialogContent>
-          </Dialog>
           </div>
           </div>
           );

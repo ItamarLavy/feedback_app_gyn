@@ -320,7 +320,7 @@ export default function Admin() {
           <AnomalousReports feedbacks={feedbacks} interns={interns} />
         </div>
 
-        {/* Interns List - Clickable */}
+        {/* Interns List */}
          <Card className="border-0 shadow-lg mb-8">
            <CardHeader>
              <CardTitle className="text-lg">מתמחים</CardTitle>
@@ -345,13 +345,11 @@ export default function Admin() {
                    ? (Date.now() - new Date(lastFeedback.created_date).getTime()) > 7 * 24 * 60 * 60 * 1000
                    : internFeedbacks.length > 0;
 
-                 const points = userPoints.find(p => p.user_name === intern.name)?.total_points ?? null;
-
                  return (
-                   <button
+                   <Link
                      key={intern.id}
-                     onClick={() => { setSelectedModal('interns'); setSelectedItem(intern); }}
-                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border text-left ${
+                     to={createPageUrl('InternDetails') + `?id=${intern.id}`}
+                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border ${
                        needsReminder 
                          ? 'bg-amber-50 hover:bg-amber-100 border-amber-200 hover:border-amber-300' 
                          : 'bg-slate-50 hover:bg-teal-50 border-slate-100 hover:border-teal-200'
@@ -360,29 +358,23 @@ export default function Admin() {
                      {needsReminder && (
                        <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
                      )}
-                     <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold flex-shrink-0">
+                     <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold">
                        {intern.name?.[0]}
                      </div>
-                     <div className="flex-1 min-w-0">
+                     <div className="flex-1">
                        <p className="font-medium text-slate-800">{intern.name}</p>
                        <div className="flex items-center gap-1 text-sm text-slate-500">
                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                          <span>{avg}</span>
                          <span className="text-slate-300 mx-1">•</span>
                          <span>{internFeedbacks.length} משובים</span>
-                         {points !== null && (
-                           <>
-                             <span className="text-slate-300 mx-1">•</span>
-                             <span className="font-semibold text-amber-600">{points} נק'</span>
-                           </>
-                         )}
                        </div>
                        {needsReminder && (
                          <p className="text-xs text-amber-700 mt-1">עבר שבוע מהמשוב האחרון</p>
                        )}
                        <InternProgressBadges feedbacks={internFeedbacks} />
                      </div>
-                   </button>
+                   </Link>
                  );
                })}
                {interns.length === 0 && (
@@ -392,88 +384,7 @@ export default function Admin() {
            </CardContent>
          </Card>
 
-        {/* Experts List - Clickable */}
-         <Card className="border-0 shadow-lg mb-8">
-           <CardHeader>
-             <CardTitle className="text-lg">מומחים</CardTitle>
-           </CardHeader>
-           <CardContent>
-             <div className="flex flex-wrap gap-3">
-               {experts.map(expert => {
-                 const expertFeedbacks = feedbacks.filter(f => f.expert_id === expert.id);
-                 const expertRatings = [];
-                 expertFeedbacks.forEach(f => {
-                   ['expert_knowledge_rating', 'expert_manual_skill_rating', 'expert_professionalism_rating', 'expert_independence_rating'].forEach(key => {
-                     if (f[key] && f[key] > 0) expertRatings.push(f[key]);
-                   });
-                 });
-                 const avg = expertRatings.length > 0
-                   ? (expertRatings.reduce((a, b) => a + b, 0) / expertRatings.length).toFixed(1)
-                   : '-';
 
-                 const points = userPoints.find(p => p.user_name === expert.name)?.total_points ?? null;
-
-                 return (
-                   <button
-                     key={expert.id}
-                     onClick={() => { setSelectedModal('experts'); setSelectedItem(expert); }}
-                     className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border bg-slate-50 hover:bg-purple-50 border-slate-100 hover:border-purple-200 text-left"
-                   >
-                     <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold flex-shrink-0">
-                       {expert.name?.[0]}
-                     </div>
-                     <div className="flex-1 min-w-0">
-                       <p className="font-medium text-slate-800">{expert.name}</p>
-                       <div className="flex items-center gap-1 text-sm text-slate-500">
-                         <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                         <span>{avg}</span>
-                         <span className="text-slate-300 mx-1">•</span>
-                         <span>{expertFeedbacks.length} משובים</span>
-                         {points !== null && (
-                           <>
-                             <span className="text-slate-300 mx-1">•</span>
-                             <span className="font-semibold text-amber-600">{points} נק'</span>
-                           </>
-                         )}
-                       </div>
-                     </div>
-                   </button>
-                 );
-               })}
-               {experts.length === 0 && (
-                 <p className="text-slate-500">אין מומחים במערכת</p>
-               )}
-             </div>
-           </CardContent>
-         </Card>
-
-        {/* Managers List - Clickable */}
-         <Card className="border-0 shadow-lg mb-8">
-           <CardHeader>
-             <CardTitle className="text-lg">מנהלים</CardTitle>
-           </CardHeader>
-           <CardContent>
-             <div className="flex flex-wrap gap-3">
-               {managers.map(manager => (
-                 <button
-                   key={manager.id}
-                   onClick={() => { setSelectedModal('managers'); setSelectedItem(manager); }}
-                   className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border bg-slate-50 hover:bg-teal-50 border-slate-100 hover:border-teal-200 text-left"
-                 >
-                   <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold flex-shrink-0">
-                     {manager.name?.[0]}
-                   </div>
-                   <div className="flex-1 min-w-0">
-                     <p className="font-medium text-slate-800">{manager.name}</p>
-                   </div>
-                 </button>
-               ))}
-               {managers.length === 0 && (
-                 <p className="text-slate-500">אין מנהלים במערכת</p>
-               )}
-             </div>
-           </CardContent>
-         </Card>
 
         {/* Feedback Meeting Manager */}
          <div className="mb-8">
@@ -559,97 +470,7 @@ export default function Admin() {
           )}
         </div>
 
-        {/* Modal - Intern Details */}
-        <Dialog open={selectedModal === 'interns'} onOpenChange={(open) => !open && setSelectedModal(null)}>
-          <DialogContent className="max-w-sm" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold text-sm">
-                  {selectedItem?.name?.[0]}
-                </div>
-                {selectedItem?.name}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
-                <Mail className="w-5 h-5 text-teal-500 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-slate-500">כתובת מייל</p>
-                  <p className="font-mono text-sm text-slate-700 break-all">{selectedItem?.email || '—'}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
-                <Star className="w-5 h-5 text-amber-500 fill-amber-500 flex-shrink-0" />
-                <div>
-                  <p className="text-xs text-slate-500">נקודות</p>
-                  <p className="font-semibold text-slate-800">{userPoints.find(p => p.user_name === selectedItem?.name)?.total_points ?? '—'}</p>
-                </div>
-              </div>
-              <Button onClick={() => { setSelectedModal(null); setSelectedItem(null); }} className="w-full bg-teal-600 hover:bg-teal-700">
-                סגור
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
 
-        {/* Modal - Expert Details */}
-        <Dialog open={selectedModal === 'experts'} onOpenChange={(open) => !open && setSelectedModal(null)}>
-          <DialogContent className="max-w-sm" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold text-sm">
-                  {selectedItem?.name?.[0]}
-                </div>
-                {selectedItem?.name}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
-                <Mail className="w-5 h-5 text-purple-500 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-slate-500">כתובת מייל</p>
-                  <p className="font-mono text-sm text-slate-700 break-all">{selectedItem?.email || '—'}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
-                <Star className="w-5 h-5 text-amber-500 fill-amber-500 flex-shrink-0" />
-                <div>
-                  <p className="text-xs text-slate-500">נקודות</p>
-                  <p className="font-semibold text-slate-800">{userPoints.find(p => p.user_name === selectedItem?.name)?.total_points ?? '—'}</p>
-                </div>
-              </div>
-              <Button onClick={() => { setSelectedModal(null); setSelectedItem(null); }} className="w-full bg-purple-600 hover:bg-purple-700">
-                סגור
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Modal - Manager Details */}
-        <Dialog open={selectedModal === 'managers'} onOpenChange={(open) => !open && setSelectedModal(null)}>
-          <DialogContent className="max-w-sm" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold text-sm">
-                  {selectedItem?.name?.[0]}
-                </div>
-                {selectedItem?.name}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
-                <Mail className="w-5 h-5 text-teal-500 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-slate-500">כתובת מייל</p>
-                  <p className="font-mono text-sm text-slate-700 break-all">{selectedItem?.email || '—'}</p>
-                </div>
-              </div>
-              <Button onClick={() => { setSelectedModal(null); setSelectedItem(null); }} className="w-full bg-teal-600 hover:bg-teal-700">
-                סגור
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
