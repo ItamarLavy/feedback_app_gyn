@@ -1,39 +1,41 @@
 {
-  "name": "משוב הדסה",
+  "name": "מערכת משוב אגף נשים - הדסה",
   "short_name": "משוב הדסה",
-  "description": "מערכת משוב אגף נשים - הדסה הר הצופים",
+  "description": "מערכת לניהול ומעקב אחר התקדמות מתמחים",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#ffffff",
-  "theme_color": "#0d9488",
   "dir": "rtl",
+  "lang": "he",
+  "theme_color": "#0d9488",
+  "background_color": "#ffffff",
+  "categories": ["medical"],
   "icons": [
     {
-      "src": "https://base44.com/logo_v2.svg",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230d9488' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='Arial'>ה</text></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "https://base44.com/logo_v2.svg",
-      "sizes": "512x512",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230d9488' width='180' height='180'/><text x='50%' y='50%' font-size='110' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='Arial'>ה</text></svg>",
+      "sizes": "180x180",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["medical"],
   "shortcuts": [
     {
       "name": "דף הבית",
-      "short_name": "הבית",
-      "description": "חזור לדף הבית",
+      "short_name": "בית",
+      "description": "עבור לדף הבית",
       "url": "/",
       "icons": [
         {
-          "src": "https://base44.com/logo_v2.svg",
-          "sizes": "192x192"
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%230d9488' width='96' height='96'/><text x='50%' y='50%' font-size='60' font-weight='bold' text-anchor='middle' dominant-baseline='central' fill='white' font-family='Arial'>ה</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
         }
       ]
     }
