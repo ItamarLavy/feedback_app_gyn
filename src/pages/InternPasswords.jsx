@@ -6,8 +6,10 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Key, Copy, Mail, Check } from 'lucide-react';
-import PasswordModal from '../components/admin/PasswordModal';
+import { ArrowLeft, Key, Copy, Mail, Check, Shield } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
+
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 // פונקציה ליצירת סיסמה דטרמיניסטית מה-ID
 function generatePassword(internId) {
@@ -29,8 +31,8 @@ function generatePassword(internId) {
 }
 
 export default function InternPasswords() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(true);
+  const { user, isAuthenticated: isLoggedIn } = useAuth();
+  const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [copiedId, setCopiedId] = useState(null);
   const [editingEmail, setEditingEmail] = useState(null);
   const [emailValue, setEmailValue] = useState('');
@@ -60,14 +62,10 @@ export default function InternPasswords() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
-        <PasswordModal
-          open={showPasswordModal}
-          onSuccess={() => {
-            setIsAuthenticated(true);
-            setShowPasswordModal(false);
-          }}
-          onClose={() => window.history.back()}
-        />
+        <div className="text-center p-8">
+          <Shield className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-600 text-lg font-medium">אין לך הרשאה לצפות בדף זה</p>
+        </div>
       </div>
     );
   }
