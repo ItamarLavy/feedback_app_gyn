@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/AuthContext';
 import { base44 } from '@/api/base44Client';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
@@ -16,6 +17,7 @@ export default function Home() {
   const [targetUrl, setTargetUrl] = useState(null);
   const [userType, setUserType] = useState(null); // 'manager' | 'intern' | 'expert' | 'unknown'
   const [userName, setUserName] = useState('');
+  const pullToRefreshRef = usePullToRefresh(['user']);
 
   useEffect(() => {
     if (!isAuthenticated || !user?.email) {
@@ -96,7 +98,7 @@ export default function Home() {
 
   // מנהל – דף הבית המלא
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
+    <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 overflow-y-auto" dir="rtl">
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-6">

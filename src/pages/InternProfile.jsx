@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -145,6 +146,7 @@ export default function InternProfile() {
   const { user } = useAuth();
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [showAvatarSetup, setShowAvatarSetup] = useState(false);
+  const pullToRefreshRef = usePullToRefresh(['intern-feedbacks', internId]);
 
   const { data: intern } = useQuery({
     queryKey: ['intern', internId],
@@ -239,7 +241,7 @@ export default function InternProfile() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100" dir="rtl">
+    <div ref={pullToRefreshRef} className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 overflow-y-auto" dir="rtl">
       {showAvatarSetup && (
         <AvatarSetup
           intern={intern}
