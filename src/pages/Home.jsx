@@ -209,87 +209,71 @@ export default function Home() {
             <p className="text-lg text-slate-600">מערכת לניהול ומעקב אחר התקדמות מתמחים</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Link to={createPageUrl('Admin')}>
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors flex-shrink-0">
-                      <Shield className="w-7 h-7 text-teal-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל ניהול</h3>
-                      <p className="text-slate-600">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <Link to={createPageUrl('Interns')}>
+               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+                 <CardContent className="p-8">
+                   <div className="flex items-start gap-4">
+                     <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors flex-shrink-0">
+                       <Users className="w-7 h-7 text-teal-600" />
+                     </div>
+                     <div>
+                       <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל ניהול</h3>
+                       <p className="text-slate-600">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
+                     </div>
+                   </div>
+                 </CardContent>
+               </Card>
+             </Link>
 
-            <Link to={createPageUrl('Interns')}>
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors flex-shrink-0">
-                      <Users className="w-7 h-7 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">מלא משוב כמתמחה</h3>
-                      <p className="text-slate-600">שלח משוב עצמי על פרוצדורה</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+             <Link to={createPageUrl('Experts')}>
+               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+                 <CardContent className="p-8">
+                   <div className="flex items-start gap-4">
+                     <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors flex-shrink-0">
+                       <Stethoscope className="w-7 h-7 text-purple-600" />
+                     </div>
+                     <div>
+                       <h3 className="text-xl font-bold text-slate-800 mb-2">מלא משוב כמומחה</h3>
+                       <p className="text-slate-600">בדוק משובים הממתינים</p>
+                     </div>
+                   </div>
+                 </CardContent>
+               </Card>
+             </Link>
 
-            <Link to={createPageUrl('Experts')}>
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors flex-shrink-0">
-                      <Stethoscope className="w-7 h-7 text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">מלא משוב כמומחה</h3>
-                      <p className="text-slate-600">בדוק משובים הממתינים</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+             <Link to={createPageUrl('Instructions')}>
+               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+                 <CardContent className="p-8">
+                   <div className="flex items-start gap-4">
+                     <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors flex-shrink-0">
+                       <BookOpen className="w-7 h-7 text-amber-600" />
+                     </div>
+                     <div>
+                       <h3 className="text-xl font-bold text-slate-800 mb-2">הוראות שימוש</h3>
+                       <p className="text-slate-600">מדריך מפורט לשימוש במערכת</p>
+                     </div>
+                   </div>
+                 </CardContent>
+               </Card>
+             </Link>
 
-            <Link to={createPageUrl('Instructions')}>
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors flex-shrink-0">
-                      <BookOpen className="w-7 h-7 text-amber-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">הוראות שימוש</h3>
-                      <p className="text-slate-600">מדריך מפורט לשימוש במערכת</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-
-            <Link to="/UserSettings">
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-slate-200 flex items-center justify-center group-hover:bg-slate-300 transition-colors flex-shrink-0">
-                      <Settings className="w-7 h-7 text-slate-700" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">הגדרות</h3>
-                      <p className="text-slate-600">עדכן את הפרטים שלך</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-            </div>
+             <Link to="/UserSettings">
+               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+                 <CardContent className="p-8">
+                   <div className="flex items-start gap-4">
+                     <div className="w-14 h-14 rounded-xl bg-slate-200 flex items-center justify-center group-hover:bg-slate-300 transition-colors flex-shrink-0">
+                       <Settings className="w-7 h-7 text-slate-700" />
+                     </div>
+                     <div>
+                       <h3 className="text-xl font-bold text-slate-800 mb-2">הגדרות</h3>
+                       <p className="text-slate-600">עדכן את הפרטים שלך</p>
+                     </div>
+                   </div>
+                 </CardContent>
+               </Card>
+             </Link>
+             </div>
             </div>
             </div>
             );
