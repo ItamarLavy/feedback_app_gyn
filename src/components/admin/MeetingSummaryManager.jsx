@@ -6,15 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Upload, Trash2, Sparkles, Loader2, Plus, X, ExternalLink } from 'lucide-react';
+import { FileText, Upload, Trash2, Sparkles, Loader2, Plus, X, ExternalLink, FolderOpen, Briefcase, Layers } from 'lucide-react';
 import { format } from 'date-fns';
+
+const BUCKETS = {
+  meeting_summary: { label: 'סיכומי פגישה', icon: FolderOpen, color: 'bg-blue-50 border-blue-200 text-blue-800', badge: 'bg-blue-100 text-blue-700' },
+  professional: { label: 'מסמכים מקצועיים', icon: Briefcase, color: 'bg-green-50 border-green-200 text-green-800', badge: 'bg-green-100 text-green-700' },
+  misc: { label: 'שונות', icon: Layers, color: 'bg-slate-50 border-slate-200 text-slate-700', badge: 'bg-slate-100 text-slate-600' },
+};
 
 export default function MeetingSummaryManager({ intern, feedbacks = [], manualCounts = [] }) {
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [classifying, setClassifying] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSummary, setAiSummary] = useState('');
-  const [form, setForm] = useState({ title: '', meeting_date: '', notes: '', file_url: '', file_name: '' });
+  const [activeBucket, setActiveBucket] = useState('all');
+  const [form, setForm] = useState({ title: '', meeting_date: '', notes: '', file_url: '', file_name: '', bucket: '' });
   const queryClient = useQueryClient();
 
   const { data: summaries = [] } = useQuery({
@@ -48,8 +56,29 @@ export default function MeetingSummaryManager({ intern, feedbacks = [], manualCo
     if (!file) return;
     setUploading(true);
     const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setForm(f => ({ ...f, file_url, file_name: file.name }));
     setUploading(false);
+
+    // סיווג אוטומטי לפי שם הקובץ + AI
+    setClassifying(true);
+    const classResult = await base44.integrations.Core.InvokeLLM({
+      prompt: `סווג את המסמך הבא לאחד משלושה סלים בלבד. 
+שם הקובץ: "${file.name}"
+
+הסלים האפשריים:
+- "meeting_summary" – סיכום פגישה, פגישת מנטורינג, דו"ח פגישה
+- "professional" – מסמך מקצועי כגון הכשרה, תעודה, קורס, צו, אישור, מילואים, מסמך רפואי
+- "misc" – כל דבר אחר
+
+ענה במילה אחת בלבד: meeting_summary או professional או misc`,
+      response_json_schema: {
+        type: 'object',
+        properties: { bucket: { type: 'string' } }
+      }
+    });
+    const bucket = ['meeting_summary', 'professional', 'misc'].includes(classResult?.bucket)
+      ? classResult.bucket : 'misc';
+    setForm(f => ({ ...f, file_url, file_name: file.name, bucket }));
+    setClassifying(false);
   };
 
   const handleSubmit = () => {
@@ -61,7 +90,8 @@ export default function MeetingSummaryManager({ intern, feedbacks = [], manualCo
       title: form.title,
       file_url: form.file_url,
       file_name: form.file_name,
-      notes: form.notes
+      notes: form.notes,
+      bucket: form.bucket || 'misc'
     });
   };
 
@@ -125,16 +155,18 @@ ${pendingMeeting ? `תאריך: ${pendingMeeting.meeting_date ? format(new Date(
     setAiLoading(false);
   };
 
+  const filteredSummaries = activeBucket === 'all' ? summaries : summaries.filter(s => (s.bucket || 'misc') === activeBucket);
+
   return (
     <Card className="border-0 shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-indigo-600" />
-            סיכומי פגישות ({summaries.length})
+            מסמכים ({summaries.length})
           </div>
           <Button size="sm" onClick={() => setShowForm(s => !s)} variant="outline">
-            {showForm ? <X className="w-4 h-4" /> : <><Plus className="w-4 h-4 ml-1" />הוסף סיכום</>}
+            {showForm ? <X className="w-4 h-4" /> : <><Plus className="w-4 h-4 ml-1" />הוסף מסמך</>}
           </Button>
         </CardTitle>
       </CardHeader>
@@ -144,7 +176,7 @@ ${pendingMeeting ? `תאריך: ${pendingMeeting.meeting_date ? format(new Date(
         {showForm && (
           <div className="border border-indigo-200 rounded-xl p-4 bg-indigo-50 space-y-3">
             <Input
-              placeholder="כותרת הפגישה (לדוגמה: פגישת מנטורינג רבעונית)"
+              placeholder="כותרת (לדוגמה: פגישת מנטורינג רבעונית)"
               value={form.title}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
             />
@@ -154,21 +186,38 @@ ${pendingMeeting ? `תאריך: ${pendingMeeting.meeting_date ? format(new Date(
               onChange={e => setForm(f => ({ ...f, meeting_date: e.target.value }))}
             />
             <Textarea
-              placeholder="הערות / נושאים שעלו בפגישה..."
+              placeholder="הערות נוספות..."
               value={form.notes}
               onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
               rows={3}
             />
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 cursor-pointer text-sm text-indigo-700 bg-white border border-indigo-200 rounded-lg px-3 py-2 hover:bg-indigo-50">
-                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                {form.file_name || 'העלה קובץ סיכום (PDF/Word/תמונה)'}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer text-sm text-indigo-700 bg-white border border-indigo-200 rounded-lg px-3 py-2 hover:bg-indigo-50 w-fit">
+                {uploading || classifying ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {uploading ? 'מעלה...' : classifying ? 'מסווג מסמך...' : (form.file_name || 'העלה קובץ (PDF/Word/תמונה)')}
                 <input type="file" className="hidden" onChange={handleFileUpload} accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg" />
               </label>
-              {form.file_name && <span className="text-xs text-green-600">✓ {form.file_name}</span>}
+              {form.file_name && form.bucket && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-green-600">✓ {form.file_name}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${BUCKETS[form.bucket]?.badge}`}>
+                    {BUCKETS[form.bucket]?.label}
+                  </span>
+                  {/* אפשרות תיקון ידני */}
+                  <select
+                    value={form.bucket}
+                    onChange={e => setForm(f => ({ ...f, bucket: e.target.value }))}
+                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white"
+                  >
+                    {Object.entries(BUCKETS).map(([key, b]) => (
+                      <option key={key} value={key}>{b.label}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleSubmit} disabled={!form.meeting_date || createMutation.isPending} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+              <Button onClick={handleSubmit} disabled={!form.meeting_date || createMutation.isPending || classifying} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
                 {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'שמור'}
               </Button>
               <Button onClick={() => setShowForm(false)} variant="ghost" size="sm">ביטול</Button>
@@ -176,34 +225,64 @@ ${pendingMeeting ? `תאריך: ${pendingMeeting.meeting_date ? format(new Date(
           </div>
         )}
 
-        {/* רשימת סיכומים */}
+        {/* סלים */}
         {summaries.length > 0 && (
-          <div className="space-y-2">
-            {summaries.map(s => (
-              <div key={s.id} className="flex items-start justify-between bg-slate-50 rounded-lg p-3 border border-slate-200">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge variant="outline" className="text-xs">{s.meeting_date}</Badge>
-                    {s.title && <span className="font-medium text-slate-800 text-sm">{s.title}</span>}
-                    {s.file_url && (
-                      <a href={s.file_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800">
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
+          <>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => setActiveBucket('all')}
+                className={`text-xs px-3 py-1 rounded-full border transition-colors ${activeBucket === 'all' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+              >
+                הכל ({summaries.length})
+              </button>
+              {Object.entries(BUCKETS).map(([key, b]) => {
+                const count = summaries.filter(s => (s.bucket || 'misc') === key).length;
+                if (count === 0) return null;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveBucket(key)}
+                    className={`text-xs px-3 py-1 rounded-full border transition-colors flex items-center gap-1 ${activeBucket === key ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+                  >
+                    {count > 0 && <span>({count})</span>}
+                    {b.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="space-y-2">
+              {filteredSummaries.map(s => {
+                const bucket = BUCKETS[s.bucket || 'misc'];
+                const BucketIcon = bucket.icon;
+                return (
+                  <div key={s.id} className={`flex items-start justify-between rounded-lg p-3 border ${bucket.color}`}>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <BucketIcon className="w-3.5 h-3.5 opacity-70" />
+                        <Badge variant="outline" className="text-xs">{s.meeting_date}</Badge>
+                        {s.title && <span className="font-medium text-sm">{s.title}</span>}
+                        {s.file_url && (
+                          <a href={s.file_url} target="_blank" rel="noopener noreferrer" className="opacity-60 hover:opacity-100">
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+                      {s.notes && <p className="text-xs opacity-70 line-clamp-2">{s.notes}</p>}
+                      {s.file_name && <p className="text-xs opacity-60 mt-1">📎 {s.file_name}</p>}
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(s.id)} className="text-red-400 hover:text-red-600 flex-shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
-                  {s.notes && <p className="text-xs text-slate-500 line-clamp-2">{s.notes}</p>}
-                  {s.file_name && <p className="text-xs text-indigo-500 mt-1">📎 {s.file_name}</p>}
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(s.id)} className="text-red-400 hover:text-red-600 flex-shrink-0">
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          </>
         )}
 
         {summaries.length === 0 && !showForm && (
-          <p className="text-sm text-slate-400 text-center py-4">אין סיכומי פגישות עדיין</p>
+          <p className="text-sm text-slate-400 text-center py-4">אין מסמכים עדיין</p>
         )}
 
         {/* כפתור AI */}
