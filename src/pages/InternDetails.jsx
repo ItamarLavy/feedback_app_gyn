@@ -12,6 +12,7 @@ import MyFeedbackMeetings from '../components/intern/MyFeedbackMeetings';
 import ManagerNotes from '../components/admin/ManagerNotes';
 import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
 import { User, ArrowLeft, ClipboardList, ListChecks } from 'lucide-react';
+import MeetingSummaryManager from '../components/admin/MeetingSummaryManager';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -312,6 +313,11 @@ export default function InternDetails() {
         {/* Manager Notes */}
         <div className="mb-8">
           <ManagerNotes intern={intern} />
+        </div>
+
+        {/* Meeting Summaries + AI */}
+        <div className="mb-8">
+          <MeetingSummaryManager intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} />
         </div>
 
         {/* Manual Procedure Entry */}

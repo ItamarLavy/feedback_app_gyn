@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Key, Copy } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Key, Copy, Mail, Check } from 'lucide-react';
 import PasswordModal from '../components/admin/PasswordModal';
 
 // פונקציה ליצירת סיסמה דטרמיניסטית מה-ID (זהה למתמחים)
@@ -31,12 +32,24 @@ export default function ExpertPasswords() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
+  const [editingEmail, setEditingEmail] = useState(null);
+  const [emailValue, setEmailValue] = useState('');
+  const [savingEmail, setSavingEmail] = useState(null);
+  const queryClient = useQueryClient();
 
   const { data: experts = [] } = useQuery({
     queryKey: ['experts'],
     queryFn: () => base44.entities.Expert.list(),
     enabled: isAuthenticated
   });
+
+  const handleSaveEmail = async (expertId) => {
+    setSavingEmail(expertId);
+    await base44.entities.Expert.update(expertId, { email: emailValue });
+    queryClient.invalidateQueries({ queryKey: ['experts'] });
+    setEditingEmail(null);
+    setSavingEmail(null);
+  };
 
   const handleCopy = (password, expertId) => {
     navigator.clipboard.writeText(password);
@@ -94,12 +107,14 @@ export default function ExpertPasswords() {
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">#</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">שם המומחה</th>
                     <th className="text-right py-3 px-4 font-semibold text-slate-700">סיסמה נוכחית</th>
+                    <th className="text-right py-3 px-4 font-semibold text-slate-700">כתובת מייל</th>
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">פעולות</th>
                   </tr>
                 </thead>
                 <tbody>
                   {experts.map((expert, index) => {
                     const password = expert.password || generatePassword(expert.id);
+                    const isEditing = editingEmail === expert.id;
                     return (
                       <tr key={expert.id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="py-3 px-4 text-slate-600">{index + 1}</td>
@@ -108,6 +123,31 @@ export default function ExpertPasswords() {
                           <code className="bg-slate-100 px-3 py-1 rounded font-mono text-purple-700">
                             {password}
                           </code>
+                        </td>
+                        <td className="py-3 px-4 min-w-[200px]">
+                          {isEditing ? (
+                            <div className="flex items-center gap-1">
+                              <Input
+                                type="email"
+                                value={emailValue}
+                                onChange={e => setEmailValue(e.target.value)}
+                                placeholder="email@example.com"
+                                className="h-7 text-sm"
+                                autoFocus
+                              />
+                              <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={() => handleSaveEmail(expert.id)} disabled={savingEmail === expert.id}>
+                                <Check className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => { setEditingEmail(expert.id); setEmailValue(expert.email || ''); }}
+                              className="flex items-center gap-1 text-sm text-slate-600 hover:text-purple-600 group"
+                            >
+                              <Mail className="w-3 h-3 text-slate-400 group-hover:text-purple-400" />
+                              {expert.email ? <span>{expert.email}</span> : <span className="text-slate-300 italic">הוסף מייל</span>}
+                            </button>
+                          )}
                         </td>
                         <td className="py-3 px-4 text-center">
                           <Button
