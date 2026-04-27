@@ -6,7 +6,6 @@ import { createPageUrl } from '@/utils';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 import AnomalousReports from '../components/admin/AnomalousReports';
-import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import { 
@@ -98,11 +97,7 @@ export default function Admin() {
     enabled: isAuthenticated
   });
 
-  const { data: managers = [] } = useQuery({
-    queryKey: ['managers'],
-    queryFn: () => base44.entities.Manager.list(),
-    enabled: isAuthenticated
-  });
+
 
   const { data: userPoints = [] } = useQuery({
     queryKey: ['userPoints'],
@@ -392,10 +387,25 @@ export default function Admin() {
 
 
 
-        {/* Feedback Meeting Manager */}
-         <div className="mb-8">
-           <FeedbackMeetingManager interns={interns} experts={experts} />
-         </div>
+        {/* Feedback Meetings Management */}
+         <Link to={createPageUrl('FeedbackMeetingsManagement')} className="mb-8">
+           <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group">
+             <CardContent className="p-8">
+               <div className="flex items-center justify-between">
+                 <div className="flex items-start gap-4 flex-1">
+                   <div className="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center group-hover:bg-teal-200 transition-colors">
+                     <Calendar className="w-7 h-7 text-teal-600" />
+                   </div>
+                   <div>
+                     <h3 className="text-xl font-bold text-slate-800 mb-2">ניהול פגישות משוב</h3>
+                     <p className="text-slate-600">תזמון וניהול פגישות משוב עם מתמחים ומומחים</p>
+                   </div>
+                 </div>
+                 <ArrowLeft className="w-5 h-5 text-slate-400" />
+               </div>
+             </CardContent>
+           </Card>
+         </Link>
 
         {/* Filters */}
         <div className="space-y-4">
