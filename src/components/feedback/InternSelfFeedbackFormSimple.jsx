@@ -152,6 +152,13 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
 
     const created = await base44.entities.Feedback.create(dataToSave);
 
+    // הוסף נקודות למתמחה
+    if (user?.id) {
+      try {
+        await addPoints(user.id, 5);
+      } catch(e) { console.warn('points error', e); }
+    }
+
     // שלח תזכורת למומחה + תזמן תזכורות עתידיות
     const expertObj = experts.find(ex => ex.id === formData.expert_id);
     // מצא את ה-User של המומחה לפי שם
