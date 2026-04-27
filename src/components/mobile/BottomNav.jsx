@@ -13,13 +13,16 @@ export default function BottomNav({ currentPageName }) {
   const { handleTabPress, isTabActive } = useTabNavigation();
   const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
 
-  const navItems = [
-    ...(user?.role === 'intern' ? [{ label: 'מתמחים', icon: Notebook, path: createPageUrl('Interns'), id: 'interns', root: '/Interns' }] : []),
-    ...(user?.role === 'expert' ? [{ label: 'מומחים', icon: Stethoscope, path: createPageUrl('Experts'), id: 'experts', root: '/Experts' }] : []),
-    { label: 'חשבון', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' },
-    ...(isManager ? [{ label: 'הוראות', icon: BookOpen, path: createPageUrl('Instructions'), id: 'instructions', root: '/Instructions' }] : []),
-    ...(isManager ? [{ label: 'ניהול', icon: Shield, path: createPageUrl('Admin'), id: 'admin', root: '/Admin' }] : [])
-  ];
+  const navItems = isManager 
+    ? [
+        { label: 'דף הבית', icon: Home, path: '/', id: 'home', root: '/' },
+        { label: 'ניהול', icon: Shield, path: createPageUrl('Admin'), id: 'admin', root: '/Admin' },
+        { label: 'חשבון', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' }
+      ]
+    : [
+        { label: 'דף הבית', icon: Home, path: '/', id: 'home', root: '/' },
+        { label: 'חשבון', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' }
+      ];
 
   const handleNavClick = (item) => {
     handleTabPress(item.path, item.root);
