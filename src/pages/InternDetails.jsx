@@ -3,7 +3,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import PasswordModal from '../components/admin/PasswordModal';
 import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import InternStats from '../components/admin/InternStats';
 import RotationManager from '../components/admin/RotationManager';
@@ -11,11 +10,14 @@ import RotationMap from '../components/intern/RotationMap';
 import MyFeedbackMeetings from '../components/intern/MyFeedbackMeetings';
 import ManagerNotes from '../components/admin/ManagerNotes';
 import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
-import { User, ArrowLeft, ClipboardList, ListChecks } from 'lucide-react';
+import { User, ArrowLeft, ClipboardList, ListChecks, Shield } from 'lucide-react';
 import MeetingSummaryManager from '../components/admin/MeetingSummaryManager';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from '@/lib/AuthContext';
+
+const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 // מפתח כמויות הפרוצדורות הנדרשות
 const PROCEDURE_REQUIREMENTS = {
@@ -139,8 +141,8 @@ const PROCEDURE_REQUIREMENTS = {
 };
 
 export default function InternDetails() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(true);
+  const { user, isAuthenticated: isLoggedIn } = useAuth();
+  const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [showDetailedProgress, setShowDetailedProgress] = useState(false);
   const queryClient = useQueryClient();
   
@@ -153,7 +155,7 @@ export default function InternDetails() {
       const interns = await base44.entities.Intern.filter({ id: internId });
       return interns[0];
     },
-    enabled: isAuthenticated && !!internId
+    enabled: !!internId
   });
 
   const { data: feedbacks = [] } = useQuery({
@@ -161,7 +163,7 @@ export default function InternDetails() {
     queryFn: async () => {
       return base44.entities.Feedback.filter({ intern_id: internId }, '-created_date');
     },
-    enabled: isAuthenticated && !!internId
+    enabled: !!internId
   });
 
   const { data: rotations = [] } = useQuery({
@@ -169,7 +171,7 @@ export default function InternDetails() {
     queryFn: async () => {
       return base44.entities.Rotation.filter({ intern_id: internId }, 'start_date');
     },
-    enabled: isAuthenticated && !!internId
+    enabled: !!internId
   });
 
   const { data: meetings = [] } = useQuery({
@@ -177,19 +179,19 @@ export default function InternDetails() {
     queryFn: async () => {
       return base44.entities.FeedbackMeeting.filter({ intern_id: internId }, '-meeting_date');
     },
-    enabled: isAuthenticated && !!internId
+    enabled: !!internId
   });
 
   const { data: managerNotes = [] } = useQuery({
     queryKey: ['manager-notes', internId],
     queryFn: () => base44.entities.ManagerNote.filter({ intern_id: internId }, '-created_date'),
-    enabled: isAuthenticated && !!internId
+    enabled: !!internId
   });
 
   const { data: manualCounts = [] } = useQuery({
     queryKey: ['manual-procedure-counts', internId],
     queryFn: () => base44.entities.ManualProcedureCount.filter({ intern_id: internId }),
-    enabled: isAuthenticated && !!internId
+    enabled: !!internId
   });
 
   const handleDeleteFeedback = async (feedbackId) => {
@@ -253,14 +255,11 @@ export default function InternDetails() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 flex items-center justify-center" dir="rtl">
-        <PasswordModal
-          open={showPasswordModal}
-          onSuccess={() => {
-            setIsAuthenticated(true);
-            setShowPasswordModal(false);
-          }}
-          onClose={() => window.history.back()}
-        />
+        <div className="text-center p-8">
+          <Shield className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <p className="text-slate-600 text-lg font-medium">אין לך הרשאה לצפות בדף זה</p>
+          <p className="text-slate-400 text-sm mt-2">דף זה מיועד למנהלים בלבד</p>
+        </div>
       </div>
     );
   }
