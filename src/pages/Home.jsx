@@ -95,24 +95,24 @@ export default function Home() {
             
             {/* Points Display */}
             <div className="grid grid-cols-2 gap-4 mb-8">
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-yellow-50 to-amber-50">
+              <Card className="border-2 border-yellow-300 shadow-lg bg-gradient-to-br from-yellow-50 to-amber-50 hover:shadow-xl transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-center gap-3">
-                    <Zap className="w-8 h-8 text-amber-500" />
+                    <Zap className="w-8 h-8 text-amber-500 fill-amber-400" />
                     <div>
-                      <p className="text-slate-600 text-sm">סה"כ נקודות</p>
-                      <p className="text-3xl font-bold text-amber-600">{points}</p>
+                      <p className="text-slate-700 text-sm font-medium">סה"כ נקודות</p>
+                      <p className="text-3xl font-bold text-amber-700">{points}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50">
+              <Card className="border-2 border-teal-300 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50 hover:shadow-xl transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-center gap-3">
-                    <Zap className="w-8 h-8 text-teal-500" />
+                    <Zap className="w-8 h-8 text-teal-500 fill-teal-400" />
                     <div>
-                      <p className="text-slate-600 text-sm">השבוע</p>
-                      <p className="text-3xl font-bold text-teal-600">{weeklyRecord}</p>
+                      <p className="text-slate-700 text-sm font-medium">השבוע</p>
+                      <p className="text-3xl font-bold text-teal-700">{weeklyRecord}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -123,21 +123,21 @@ export default function Home() {
           {/* Action Panel */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             {targetUrl && <Link to={targetUrl}>
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+              <Card className="border-2 border-blue-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-blue-50 to-cyan-50">
                 <CardContent className="p-8">
                   <div className="flex items-start gap-4">
-                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center group-hover:bg-opacity-20 transition-colors ${
+                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center group-hover:shadow-lg transition-all ${
                       isIntern 
-                        ? 'bg-blue-100 group-hover:bg-blue-200' 
-                        : 'bg-purple-100 group-hover:bg-purple-200'
+                        ? 'bg-gradient-to-br from-blue-200 to-cyan-200 group-hover:from-blue-300 group-hover:to-cyan-300' 
+                        : 'bg-gradient-to-br from-purple-200 to-pink-200 group-hover:from-purple-300 group-hover:to-pink-300'
                     }`}>
-                      <Stethoscope className={`w-7 h-7 ${isIntern ? 'text-blue-600' : 'text-purple-600'}`} />
+                      <Stethoscope className={`w-7 h-7 ${isIntern ? 'text-blue-700' : 'text-purple-700'}`} />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-slate-800 mb-2">
                         {isIntern ? 'מלא משוב כמתמחה' : 'מלא משוב כמומחה'}
                       </h3>
-                      <p className="text-slate-600">
+                      <p className="text-slate-700 font-medium">
                         {isIntern ? 'שלח משוב עצמי על פרוצדורה' : 'בדוק משובים הממתינים'}
                       </p>
                     </div>
@@ -155,15 +155,15 @@ export default function Home() {
             )}
 
             <Link to="/UserSettings">
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+              <Card className="border-2 border-slate-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-slate-100 to-gray-100">
                 <CardContent className="p-8">
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-slate-200 flex items-center justify-center group-hover:bg-slate-300 transition-colors">
-                      <Settings className="w-7 h-7 text-slate-700" />
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-slate-300 to-gray-400 flex items-center justify-center group-hover:from-slate-400 group-hover:to-gray-500 transition-colors shadow-md">
+                      <Settings className="w-7 h-7 text-white" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-slate-800 mb-2">הגדרות</h3>
-                      <p className="text-slate-600">עדכן את הפרטים שלך</p>
+                      <p className="text-slate-700 font-medium">עדכן את הפרטים שלך</p>
                     </div>
                   </div>
                 </CardContent>
@@ -171,15 +171,15 @@ export default function Home() {
             </Link>
 
             <Link to={createPageUrl('Instructions')}>
-              <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+              <Card className="border-2 border-amber-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-amber-50 to-yellow-50">
                 <CardContent className="p-8">
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
-                      <BookOpen className="w-7 h-7 text-amber-600" />
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-200 to-yellow-300 flex items-center justify-center group-hover:from-amber-300 group-hover:to-yellow-400 transition-colors shadow-md">
+                      <BookOpen className="w-7 h-7 text-amber-800" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-slate-800 mb-2">הוראות שימוש</h3>
-                      <p className="text-slate-600">מדריך מפורט לשימוש במערכת</p>
+                      <p className="text-slate-700 font-medium">מדריך מפורט לשימוש במערכת</p>
                     </div>
                   </div>
                 </CardContent>
@@ -275,15 +275,15 @@ export default function Home() {
              </Link>
 
              <Link to={createPageUrl('Admin')}>
-               <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full">
+               <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
                  <CardContent className="p-8">
                    <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-slate-200 flex items-center justify-center group-hover:bg-slate-300 transition-colors flex-shrink-0">
-                       <Shield className="w-7 h-7 text-slate-700" />
+                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
+                       <Shield className="w-7 h-7 text-white" />
                      </div>
                      <div>
                        <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל ניהול</h3>
-                       <p className="text-slate-600">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
+                       <p className="text-slate-700 font-medium">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
                      </div>
                    </div>
                  </CardContent>

@@ -5,14 +5,14 @@ import { BookOpen, User, Stethoscope, ChevronDown, ChevronUp, Star, ClipboardLis
 const Section = ({ icon: Icon, title, color, children }) => {
   const [open, setOpen] = useState(true);
   const colors = {
-    blue: 'bg-blue-50 border-blue-200 text-blue-900',
-    purple: 'bg-purple-50 border-purple-200 text-purple-900',
-    teal: 'bg-teal-50 border-teal-200 text-teal-900',
+    blue: 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-300 text-blue-900',
+    purple: 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-300 text-purple-900',
+    teal: 'bg-gradient-to-r from-teal-50 to-emerald-50 border-teal-300 text-teal-900',
   };
   return (
-    <Card className="border-0 shadow-xl mb-6">
+    <Card className="border-2 shadow-lg mb-6">
       <CardHeader
-        className={`${colors[color]} border-b-2 cursor-pointer select-none`}
+        className={`${colors[color]} border-b-2 cursor-pointer select-none transition-colors hover:shadow-md`}
         onClick={() => setOpen(o => !o)}
       >
         <CardTitle className="flex items-center justify-between">
@@ -30,9 +30,9 @@ const Section = ({ icon: Icon, title, color, children }) => {
 
 const Step = ({ num, color, icon: Icon, title, children }) => {
   const colors = {
-    blue: 'bg-blue-100 text-blue-700',
-    purple: 'bg-purple-100 text-purple-700',
-    teal: 'bg-teal-100 text-teal-700',
+    blue: 'bg-gradient-to-br from-blue-100 to-cyan-100 text-blue-800',
+    purple: 'bg-gradient-to-br from-purple-100 to-pink-100 text-purple-800',
+    teal: 'bg-gradient-to-br from-teal-100 to-emerald-100 text-teal-800',
   };
   return (
     <div className="flex gap-4">
@@ -52,8 +52,8 @@ const Step = ({ num, color, icon: Icon, title, children }) => {
 
 export default function Instructions() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
+      <div className="max-w-4xl mx-auto px-4 py-8 pb-40 md:pb-8">
 
         {/* Header */}
         <div className="text-center mb-10">
@@ -65,9 +65,9 @@ export default function Instructions() {
         </div>
 
         {/* כניסה למערכת - כולם */}
-        <Card className="border-2 border-teal-300 bg-teal-50 shadow-xl mb-6">
+        <Card className="border-2 border-teal-300 bg-gradient-to-r from-teal-50 to-cyan-50 shadow-lg mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-teal-900">
+            <CardTitle className="flex items-center gap-3 text-teal-900 font-bold">
               <LogIn className="w-6 h-6" />
               כניסה למערכת
             </CardTitle>
