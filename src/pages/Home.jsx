@@ -234,8 +234,8 @@ export default function Home() {
                       <Users className="w-7 h-7 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל מתמחים</h3>
-                      <p className="text-slate-600">ניהול מתמחים ומעקב התקדמות</p>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">מלא משוב כמתמחה</h3>
+                      <p className="text-slate-600">שלח משוב עצמי על פרוצדורה</p>
                     </div>
                   </div>
                 </CardContent>
@@ -250,8 +250,8 @@ export default function Home() {
                       <Stethoscope className="w-7 h-7 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">פאנל מומחים</h3>
-                      <p className="text-slate-600">ניהול מומחים ובדיקת משובים</p>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">מלא משוב כמומחה</h3>
+                      <p className="text-slate-600">בדוק משובים הממתינים</p>
                     </div>
                   </div>
                 </CardContent>
