@@ -52,7 +52,7 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
     queryClient.invalidateQueries({ queryKey: ['access-requests'] });
   };
 
-  if (requests.length === 0 || !isManager) return null;
+  if (!isManager) return null;
 
   return (
     <Card className="border-2 border-orange-300 shadow-lg mb-8">
@@ -60,10 +60,16 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
         <CardTitle className="flex items-center gap-3 text-orange-900">
           <Clock className="w-5 h-5" />
           בקשות גישה ממתינות
-          <Badge className="bg-orange-500">{requests.length}</Badge>
+          {requests.length > 0 && <Badge className="bg-orange-500">{requests.length}</Badge>}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 space-y-4">
+      <CardContent className="p-4">
+        {requests.length === 0 ? (
+          <div className="text-center py-8 text-slate-500">
+            אין בקשות גישה ממתינות כרגע
+          </div>
+        ) : (
+          <div className="space-y-4">
         {requests.map(req => {
           const cfg = assigning[req.id] || {};
           const entityList = cfg.role === 'intern' ? interns : cfg.role === 'expert' ? experts : [];
@@ -140,9 +146,11 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
                 </Button>
               </div>
             </div>
-          );
-        })}
-      </CardContent>
-    </Card>
-  );
-}
+            );
+            })}
+            </div>
+            )}
+            </CardContent>
+            </Card>
+            );
+            }
