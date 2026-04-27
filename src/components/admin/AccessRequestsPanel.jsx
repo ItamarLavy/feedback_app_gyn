@@ -14,7 +14,8 @@ const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org
 export default function AccessRequestsPanel({ interns, experts, queryClient: externalQueryClient }) {
   const { user, isAuthenticated } = useAuth();
   const isManager = isAuthenticated && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
-  const queryClient = externalQueryClient || useQueryClient();
+  const internalQueryClient = useQueryClient();
+  const queryClient = externalQueryClient || internalQueryClient;
   const [assigning, setAssigning] = useState({}); // { [requestId]: { role, entityId } }
 
   const { data: requests = [] } = useQuery({
