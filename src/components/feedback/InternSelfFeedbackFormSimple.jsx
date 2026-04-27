@@ -5,9 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Send, CheckCircle, Calendar, Hash } from 'lucide-react';
+import { Send, CheckCircle, Calendar, Hash, Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getFormTypeForProcedure } from '@/lib/epaFormTypeMapping';
 
 const PROCEDURE_CATEGORIES = {
   "OB": [
@@ -228,7 +229,10 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">פרוצדורה</Label>
-                  <Select value={formData.procedure_type} onValueChange={v => set('procedure_type', v)} disabled={!formData.procedure_category}>
+                  <Select value={formData.procedure_type} onValueChange={v => {
+                    const autoFormType = getFormTypeForProcedure(v);
+                    setFormData(p => ({ ...p, procedure_type: v, form_type: autoFormType || p.form_type }));
+                  }} disabled={!formData.procedure_category}>
                     <SelectTrigger className="h-12 bg-white border-slate-200">
                       <SelectValue placeholder="בחר פרוצדורה" />
                     </SelectTrigger>
@@ -241,7 +245,14 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
 
               {/* סוג טופס */}
               <div className="space-y-2">
-                <Label className="font-medium">סוג הערכה</Label>
+                <Label className="font-medium flex items-center gap-2">
+                  סוג הערכה
+                  {formData.form_type && getFormTypeForProcedure(formData.procedure_type) && (
+                    <span className="flex items-center gap-1 text-xs font-normal text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <Zap className="w-3 h-3" />נבחר אוטומטית
+                    </span>
+                  )}
+                </Label>
                 <Select value={formData.form_type} onValueChange={v => set('form_type', v)}>
                   <SelectTrigger className="h-12 bg-white border-slate-200">
                     <SelectValue placeholder="בחר סוג הערכה" />
