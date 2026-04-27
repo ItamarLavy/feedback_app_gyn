@@ -22,6 +22,11 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
       
+      // Create timeout promise - 10 seconds max
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('App state check timeout')), 10000)
+      );
+      
       // First, check app public settings (with token if available)
       // This will tell us if auth is required, user not registered, etc.
       const appClient = createAxiosClient({
@@ -34,7 +39,8 @@ export const AuthProvider = ({ children }) => {
       });
       
       try {
-        const publicSettings = await appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
+        const publicSettingsPromise = appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
+        const publicSettings = await Promise.race([publicSettingsPromise, timeoutPromise]);
         setAppPublicSettings(publicSettings);
         
         // If we got the app public settings successfully, check if user is authenticated
@@ -47,6 +53,18 @@ export const AuthProvider = ({ children }) => {
         setIsLoadingPublicSettings(false);
       } catch (appError) {
         console.error('App state check failed:', appError);
+        
+        // If timeout, just allow the app to load with auth fallback
+        if (appError.message === 'App state check timeout') {
+          setIsLoadingPublicSettings(false);
+          if (appParams.token) {
+            await checkUserAuth();
+          } else {
+            setIsLoadingAuth(false);
+            setIsAuthenticated(false);
+          }
+          return;
+        }
         
         // Handle app-level errors
         if (appError.status === 403 && appError.data?.extra_data?.reason) {
@@ -89,9 +107,14 @@ export const AuthProvider = ({ children }) => {
 
   const checkUserAuth = async () => {
     try {
-      // Now check if the user is authenticated
+      // Now check if the user is authenticated with timeout
       setIsLoadingAuth(true);
-      const currentUser = await base44.auth.me();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Auth check timeout')), 5000)
+      );
+      
+      const authPromise = base44.auth.me();
+      const currentUser = await Promise.race([authPromise, timeoutPromise]);
       setUser(currentUser);
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
