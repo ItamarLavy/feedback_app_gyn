@@ -14,7 +14,12 @@ export const AuthProvider = ({ children }) => {
   const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
 
   useEffect(() => {
-    checkAppState();
+    // Start auth check immediately but don't block rendering
+    const timer = setTimeout(() => {
+      checkAppState();
+    }, 0);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const checkAppState = async () => {
@@ -42,6 +47,7 @@ export const AuthProvider = ({ children }) => {
         const publicSettingsPromise = appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
         const publicSettings = await Promise.race([publicSettingsPromise, timeoutPromise]);
         setAppPublicSettings(publicSettings);
+        setIsLoadingPublicSettings(false);
         
         // If we got the app public settings successfully, check if user is authenticated
         if (appParams.token) {
@@ -50,49 +56,18 @@ export const AuthProvider = ({ children }) => {
           setIsLoadingAuth(false);
           setIsAuthenticated(false);
         }
-        setIsLoadingPublicSettings(false);
       } catch (appError) {
         console.error('App state check failed:', appError);
-        
-        // If timeout, just allow the app to load with auth fallback
-        if (appError.message === 'App state check timeout') {
-          setIsLoadingPublicSettings(false);
-          if (appParams.token) {
-            await checkUserAuth();
-          } else {
-            setIsLoadingAuth(false);
-            setIsAuthenticated(false);
-          }
-          return;
-        }
-        
-        // Handle app-level errors
-        if (appError.status === 403 && appError.data?.extra_data?.reason) {
-          const reason = appError.data.extra_data.reason;
-          if (reason === 'auth_required') {
-            setAuthError({
-              type: 'auth_required',
-              message: 'Authentication required'
-            });
-          } else if (reason === 'user_not_registered') {
-            setAuthError({
-              type: 'user_not_registered',
-              message: 'User not registered for this app'
-            });
-          } else {
-            setAuthError({
-              type: reason,
-              message: appError.message
-            });
-          }
-        } else {
-          setAuthError({
-            type: 'unknown',
-            message: appError.message || 'Failed to load app'
-          });
-        }
         setIsLoadingPublicSettings(false);
-        setIsLoadingAuth(false);
+        
+        // If timeout or any error, just let the app load with auth fallback
+        if (appParams.token) {
+          await checkUserAuth();
+        } else {
+          setIsLoadingAuth(false);
+          setIsAuthenticated(false);
+        }
+        return;
       }
     } catch (error) {
       console.error('Unexpected error:', error);

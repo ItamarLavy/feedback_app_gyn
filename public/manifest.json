@@ -1,0 +1,41 @@
+{
+  "name": "משוב הדסה",
+  "short_name": "משוב הדסה",
+  "description": "מערכת משוב אגף נשים - הדסה הר הצופים",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#0d9488",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "https://base44.com/logo_v2.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "https://base44.com/logo_v2.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["medical"],
+  "shortcuts": [
+    {
+      "name": "דף הבית",
+      "short_name": "הבית",
+      "description": "חזור לדף הבית",
+      "url": "/",
+      "icons": [
+        {
+          "src": "https://base44.com/logo_v2.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
