@@ -11,8 +11,10 @@ import { ArrowLeft, UserCircle2, Lock, Calendar, Hash, Star, Plus, BarChart3, Cl
 import ChangePassword from '../components/auth/ChangePassword';
 import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
 import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
-import { format } from 'date-fns';
+import { format, differenceInDays, getDay, getHours } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/lib/AuthContext';
+import { getOrCreateUserPoints, sendInternWeeklySummary } from '@/hooks/useNotifications';
 
 // מפתח כמויות הפרוצדורות הנדרשות
 const PROCEDURE_REQUIREMENTS = {
@@ -139,6 +141,7 @@ export default function InternProfile() {
   const urlParams = new URLSearchParams(window.location.search);
   const internId = urlParams.get('id');
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -172,10 +175,72 @@ export default function InternProfile() {
     enabled: !!internId && isAuthenticated
   });
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (password === (intern?.password || '')) {
       setIsAuthenticated(true);
       setError('');
+
+      // תזכורות בוקר וסיכום שבועי
+      if (user?.id) {
+        const now = new Date();
+        const hour = getHours(now);
+        const day = getDay(now);
+
+        try {
+          // בוקר טוב - כל יום בין 7-10
+          if (hour >= 7 && hour < 10) {
+            const existing = await base44.entities.Notification.filter({
+              recipient_user_id: user.id,
+              type: 'intern_morning_prompt',
+              is_read: false
+            });
+            // בדוק שלא שלחנו היום
+            const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+            const sentToday = existing.filter(n => n.sent_at && new Date(n.sent_at) >= todayStart);
+            if (sentToday.length === 0) {
+              await base44.entities.Notification.create({
+                recipient_user_id: user.id,
+                recipient_role: 'intern',
+                type: 'intern_morning_prompt',
+                message: '🌅 בוקר טוב! על מה נבקש משוב היום?',
+                is_read: false,
+                sent_at: now.toISOString()
+              });
+            }
+          }
+
+          // בדוק 3 ימים ללא בקשת משוב
+          if (feedbacks.length > 0) {
+            const lastFeedback = feedbacks[0];
+            const daysSince = lastFeedback?.intern_submitted_date
+              ? differenceInDays(now, new Date(lastFeedback.intern_submitted_date))
+              : 999;
+            if (daysSince >= 3) {
+              const existing3 = await base44.entities.Notification.filter({
+                recipient_user_id: user.id,
+                type: 'intern_no_request_3days',
+                is_read: false
+              });
+              const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+              const sentToday3 = existing3.filter(n => n.sent_at && new Date(n.sent_at) >= todayStart);
+              if (sentToday3.length === 0) {
+                await base44.entities.Notification.create({
+                  recipient_user_id: user.id,
+                  recipient_role: 'intern',
+                  type: 'intern_no_request_3days',
+                  message: `⏳ מזמן לא ביקשת משוב… כבר ${daysSince} ימים. בוא נתקדם!`,
+                  is_read: false,
+                  sent_at: now.toISOString()
+                });
+              }
+            }
+          }
+
+          // סיכום שבועי - חמישי 15:00
+          await sendInternWeeklySummary(user.id, intern?.name, user.email);
+          await getOrCreateUserPoints(user.id, intern?.name, 'intern');
+        } catch(e) { console.warn('morning notification error', e); }
+      }
     } else {
       setError('סיסמה שגויה');
     }

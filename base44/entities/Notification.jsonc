@@ -1,0 +1,71 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "recipient_user_id": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05de\u05e9\u05ea\u05de\u05e9 \u05d4\u05de\u05e7\u05d1\u05dc"
+    },
+    "recipient_role": {
+      "type": "string",
+      "enum": [
+        "intern",
+        "expert",
+        "manager"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "feedback_request",
+        "reminder_24h",
+        "reminder_48h",
+        "reminder_1week",
+        "manager_alert_overdue",
+        "intern_morning_prompt",
+        "intern_no_request_3days",
+        "bravo_first",
+        "bravo_double",
+        "weekly_summary_intern",
+        "weekly_record_intern",
+        "weekly_summary_expert",
+        "new_week_expert_reminder"
+      ]
+    },
+    "feedback_id": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05de\u05e9\u05d5\u05d1 \u05d4\u05e7\u05e9\u05d5\u05e8"
+    },
+    "intern_name": {
+      "type": "string"
+    },
+    "expert_name": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    },
+    "email_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "scheduled_for": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u05de\u05ea\u05d9 \u05dc\u05e9\u05dc\u05d5\u05d7"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "recipient_user_id",
+    "type",
+    "message"
+  ]
+}

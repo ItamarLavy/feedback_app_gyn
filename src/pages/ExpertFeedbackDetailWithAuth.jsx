@@ -13,6 +13,8 @@ import { ArrowLeft, User, Calendar, Hash, Star, CheckCircle, AlertCircle, Send, 
 import { format, parseISO, isPast } from 'date-fns';
 import RatingCategory from '../components/feedback/RatingCategory';
 import ChangePassword from '../components/auth/ChangePassword';
+import { onFeedbackCompleted, getOrCreateUserPoints, sendExpertWeeklySummary, checkExpertWeeklyReminder } from '@/hooks/useNotifications';
+import { useAuth } from '@/lib/AuthContext';
 
 const RATING_CATEGORIES = [
   { key: 'expert_knowledge_rating', label: 'ידע', description: 'רמת הידע התיאורטי והקליני' },
@@ -25,6 +27,7 @@ export default function ExpertFeedbackDetailWithAuth() {
   const urlParams = new URLSearchParams(window.location.search);
   const expertId = urlParams.get('id');
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -79,10 +82,17 @@ export default function ExpertFeedbackDetailWithAuth() {
     }
   });
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (password === (expert?.password || '')) {
       setIsAuthenticated(true);
       setError('');
+      if (user?.id) {
+        try {
+          await getOrCreateUserPoints(user.id, expert?.name, 'expert');
+          await sendExpertWeeklySummary(user.id, expert?.name, user.email);
+          await checkExpertWeeklyReminder(user.id, expert?.name, user.email);
+        } catch(e) { console.warn('expert notification error', e); }
+      }
     } else {
       setError('סיסמה שגויה');
     }
@@ -102,7 +112,7 @@ export default function ExpertFeedbackDetailWithAuth() {
     });
   };
 
-  const handleSubmitExpertFeedback = (feedback) => {
+  const handleSubmitExpertFeedback = async (feedback) => {
     const hasAtLeastOneRating = expertFeedback.expert_knowledge_rating > 0 ||
                                  expertFeedback.expert_manual_skill_rating > 0 ||
                                  expertFeedback.expert_professionalism_rating > 0 ||
@@ -126,6 +136,22 @@ export default function ExpertFeedbackDetailWithAuth() {
         status: 'completed'
       }
     });
+
+    // נקודות + ניקוי תזכורות
+    try {
+      const allUsers = await base44.entities.User.list();
+      const internUser = allUsers.find(u => u.full_name === feedback.intern_name);
+      await onFeedbackCompleted({
+        feedbackId: feedback.id,
+        internId: feedback.intern_id,
+        internName: feedback.intern_name,
+        expertId,
+        expertName: expert?.name,
+        internEmail: internUser?.email,
+        expertEmail: user?.email,
+        requestedAt: feedback.intern_submitted_date
+      });
+    } catch(e) { console.warn('points/notification error', e); }
   };
 
   if (!expert) {

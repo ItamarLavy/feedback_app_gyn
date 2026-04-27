@@ -17,11 +17,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { format } from 'date-fns';
+import { format, differenceInHours } from 'date-fns';
+import { useAuth } from '@/lib/AuthContext';
 
+const MANAGER_NAMES = ['יובל לביא', 'רונית גלעד', 'צביקה שמעונוביץ'];
 const RATING_KEYS = ['knowledge_rating', 'manual_skill_rating', 'professionalism_rating', 'independence_rating'];
 
 export default function Admin() {
+  const { user } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,6 +37,43 @@ export default function Admin() {
     queryFn: () => base44.entities.Feedback.list('-created_date'),
     enabled: isAuthenticated
   });
+
+  // שלח התראות למנהלים על משובים שלא נענו מעל שבוע
+  useEffect(() => {
+    if (!isAuthenticated || feedbacks.length === 0 || !user?.id) return;
+    const isManager = MANAGER_NAMES.some(name => user.full_name?.includes(name));
+    if (!isManager) return;
+
+    const checkOverdue = async () => {
+      const overdue = feedbacks.filter(f =>
+        f.status === 'pending_expert_review' &&
+        f.intern_submitted_date &&
+        differenceInHours(new Date(), new Date(f.intern_submitted_date)) > 168
+      );
+      for (const f of overdue) {
+        const alreadyAlerted = await base44.entities.Notification.filter({
+          recipient_user_id: user.id,
+          type: 'manager_alert_overdue',
+          feedback_id: f.id,
+          is_read: false
+        });
+        if (alreadyAlerted.length === 0) {
+          await base44.entities.Notification.create({
+            recipient_user_id: user.id,
+            recipient_role: 'manager',
+            type: 'manager_alert_overdue',
+            message: `🚨 ${f.intern_name} ביקש משוב מ-${f.expert_name} לפני ${Math.round(differenceInHours(new Date(), new Date(f.intern_submitted_date)) / 24)} ימים ועדיין לא קיבל תגובה.`,
+            feedback_id: f.id,
+            intern_name: f.intern_name,
+            expert_name: f.expert_name,
+            is_read: false,
+            sent_at: new Date().toISOString()
+          });
+        }
+      }
+    };
+    checkOverdue().catch(console.warn);
+  }, [isAuthenticated, feedbacks, user?.id]);
 
   const { data: interns = [] } = useQuery({
     queryKey: ['interns'],

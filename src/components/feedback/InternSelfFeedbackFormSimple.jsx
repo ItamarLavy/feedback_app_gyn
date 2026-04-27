@@ -9,6 +9,8 @@ import { Send, CheckCircle, Calendar, Hash, Zap } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getFormTypeForProcedure } from '@/lib/epaFormTypeMapping';
+import { onFeedbackRequested, getOrCreateUserPoints, addPoints } from '@/hooks/useNotifications';
+import { useAuth } from '@/lib/AuthContext';
 
 const PROCEDURE_CATEGORIES = {
   "OB": [
@@ -99,6 +101,7 @@ function generateProcedureCode(count) {
 }
 
 export default function InternSelfFeedbackFormSimple({ internId, internName, experts, onSuccess }) {
+  const { user } = useAuth();
   const emptyForm = {
     expert_id: '',
     procedure_category: '',
@@ -147,7 +150,55 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
     if (formData.intern_communication_rating > 0) dataToSave.intern_communication_rating = formData.intern_communication_rating;
     if (formData.intern_independence !== null) dataToSave.intern_independence = formData.intern_independence;
 
-    await base44.entities.Feedback.create(dataToSave);
+    const created = await base44.entities.Feedback.create(dataToSave);
+
+    // שלח תזכורת למומחה + תזמן תזכורות עתידיות
+    const expertObj = experts.find(ex => ex.id === formData.expert_id);
+    // מצא את ה-User של המומחה לפי שם
+    try {
+      const allUsers = await base44.entities.User.list();
+      const expertUser = allUsers.find(u => u.full_name === expertObj?.name || u.email === expertObj?.email);
+      await onFeedbackRequested({
+        feedbackId: created.id,
+        internId,
+        internName,
+        expertId: formData.expert_id,
+        expertName: expertObj?.name,
+        expertEmail: expertUser?.email || expertObj?.email
+      });
+    } catch(e) { console.warn('notification error', e); }
+
+    // בדוק כמה משובים שלח המתמחה היום
+    try {
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+      const allToday = (await base44.entities.Feedback.filter({ intern_id: internId }))
+        .filter(f => f.intern_submitted_date && new Date(f.intern_submitted_date) >= todayStart);
+
+      if (user?.id) {
+        if (allToday.length >= 2) {
+          await base44.entities.Notification.create({
+            recipient_user_id: user.id,
+            recipient_role: 'intern',
+            type: 'bravo_double',
+            message: '🏆 איזו אליפות! שלחת שני משובים היום!',
+            intern_name: internName,
+            is_read: false,
+            sent_at: new Date().toISOString()
+          });
+        } else {
+          await base44.entities.Notification.create({
+            recipient_user_id: user.id,
+            recipient_role: 'intern',
+            type: 'bravo_first',
+            message: '🎉 כל הכבוד! שלחת בקשת משוב!',
+            intern_name: internName,
+            is_read: false,
+            sent_at: new Date().toISOString()
+          });
+        }
+      }
+    } catch(e) { console.warn('bravo notification error', e); }
+
     setProcedureCode(code);
     setShowSuccess(true);
     setTimeout(() => {

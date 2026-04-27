@@ -2,8 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Stethoscope, Shield, Home, BookOpen, Notebook } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
+import PointsBadge from '@/components/notifications/PointsBadge';
+import NotificationBanner from '@/components/notifications/NotificationBanner';
+import { processPendingNotifications } from '@/hooks/useNotifications';
+import { useEffect } from 'react';
 
 export default function Layout({ children, currentPageName }) {
+  const { user, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      processPendingNotifications(user.id, user.email).catch(() => {});
+    }
+  }, [isAuthenticated, user?.id]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100">
       {/* Navigation */}
@@ -18,6 +31,9 @@ export default function Layout({ children, currentPageName }) {
             </Link>
 
             <div className="flex items-center gap-2">
+              {isAuthenticated && user?.id && (
+                <PointsBadge userId={user.id} />
+              )}
               <Link
                 to={createPageUrl('Home')}
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
@@ -82,6 +98,11 @@ export default function Layout({ children, currentPageName }) {
       <main className="pt-16">
         {children}
       </main>
+
+      {/* Notification Banners */}
+      {isAuthenticated && user?.id && (
+        <NotificationBanner userId={user.id} />
+      )}
     </div>
   );
 }
