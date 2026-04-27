@@ -11,13 +11,14 @@ import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
-  Star, Search, Filter, Clock, Key, BookOpen, Hash, Calendar, User, Stethoscope, Trash2
+  Star, Search, Filter, Clock, Key, BookOpen, Hash, Calendar, User, Stethoscope, Trash2, X, Mail
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format, differenceInHours } from 'date-fns';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -31,6 +32,8 @@ export default function Admin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
   const [showAdminInstructions, setShowAdminInstructions] = useState(false);
+  const [selectedModal, setSelectedModal] = useState(null); // 'interns', 'experts', or 'managers'
+  const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
   const pullToRefreshRef = usePullToRefresh(['feedbacks']);
 
@@ -95,6 +98,21 @@ export default function Admin() {
     enabled: isAuthenticated
   });
 
+  const { data: managers = [] } = useQuery({
+    queryKey: ['managers'],
+    queryFn: () => base44.entities.Manager.list(),
+    enabled: isAuthenticated
+  });
+
+  const { data: userPoints = [] } = useQuery({
+    queryKey: ['userPoints'],
+    queryFn: async () => {
+      const points = await base44.entities.UserPoints.list();
+      return points;
+    },
+    enabled: isAuthenticated
+  });
+
   const handleDeleteFeedback = async (feedbackId) => {
     await base44.entities.Feedback.delete(feedbackId);
     queryClient.invalidateQueries({ queryKey: ['feedbacks'] });
@@ -153,27 +171,6 @@ export default function Admin() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link 
-              to={createPageUrl('InternPasswords')}
-              className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm"
-            >
-              <Key className="w-4 h-4" />
-              פרטים מתמחים
-            </Link>
-            <Link 
-              to={createPageUrl('ExpertPasswords')}
-              className="flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium text-sm"
-            >
-              <Key className="w-4 h-4" />
-              פרטים מומחים
-            </Link>
-            <Link 
-              to={createPageUrl('ManagerEmails')}
-              className="flex items-center gap-2 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium text-sm"
-            >
-              <Key className="w-4 h-4" />
-              פרטים מנהלים
-            </Link>
             <Link 
               to={createPageUrl('Home')}
               className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
@@ -323,74 +320,165 @@ export default function Admin() {
           <AnomalousReports feedbacks={feedbacks} interns={interns} />
         </div>
 
-        {/* Interns List */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader>
-            <CardTitle className="text-lg">מתמחים</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-3">
-              {interns.map(intern => {
-                const internFeedbacks = feedbacks.filter(f => f.intern_id === intern.id);
-                const internRatings = [];
-                internFeedbacks.forEach(f => {
-                  RATING_KEYS.forEach(key => {
-                    if (f[key] && f[key] > 0) internRatings.push(f[key]);
-                  });
-                });
-                const avg = internRatings.length > 0
-                  ? (internRatings.reduce((a, b) => a + b, 0) / internRatings.length).toFixed(1)
-                  : '-';
-                
-                // בדיקה אם עבר שבוע מאז המשוב האחרון
-                const lastFeedback = internFeedbacks[0]; // feedbacks ממוינים לפי תאריך
-                const needsReminder = lastFeedback 
-                  ? (Date.now() - new Date(lastFeedback.created_date).getTime()) > 7 * 24 * 60 * 60 * 1000
-                  : internFeedbacks.length > 0;
-                
-                return (
-                  <Link
-                    key={intern.id}
-                    to={createPageUrl('InternDetails') + `?id=${intern.id}`}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border ${
-                      needsReminder 
-                        ? 'bg-amber-50 hover:bg-amber-100 border-amber-200 hover:border-amber-300' 
-                        : 'bg-slate-50 hover:bg-teal-50 border-slate-100 hover:border-teal-200'
-                    }`}
-                  >
-                    {needsReminder && (
-                      <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                    )}
-                    <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold">
-                      {intern.name?.[0]}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-800">{intern.name}</p>
-                      <div className="flex items-center gap-1 text-sm text-slate-500">
-                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                        <span>{avg}</span>
-                        <span className="text-slate-300 mx-1">•</span>
-                        <span>{internFeedbacks.length} משובים</span>
-                      </div>
-                      {needsReminder && (
-                        <p className="text-xs text-amber-700 mt-1">עבר שבוע מהמשוב האחרון</p>
-                      )}
-                      <InternProgressBadges feedbacks={internFeedbacks} />
-                    </div>
-                  </Link>
-                );
-              })}
-              {interns.length === 0 && (
-                <p className="text-slate-500">אין מתמחים במערכת</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Interns List - Clickable */}
+         <Card className="border-0 shadow-lg mb-8">
+           <CardHeader>
+             <CardTitle className="text-lg">מתמחים</CardTitle>
+           </CardHeader>
+           <CardContent>
+             <div className="flex flex-wrap gap-3">
+               {interns.map(intern => {
+                 const internFeedbacks = feedbacks.filter(f => f.intern_id === intern.id);
+                 const internRatings = [];
+                 internFeedbacks.forEach(f => {
+                   RATING_KEYS.forEach(key => {
+                     if (f[key] && f[key] > 0) internRatings.push(f[key]);
+                   });
+                 });
+                 const avg = internRatings.length > 0
+                   ? (internRatings.reduce((a, b) => a + b, 0) / internRatings.length).toFixed(1)
+                   : '-';
+
+                 // בדיקה אם עבר שבוע מאז המשוב האחרון
+                 const lastFeedback = internFeedbacks[0]; // feedbacks ממוינים לפי תאריך
+                 const needsReminder = lastFeedback 
+                   ? (Date.now() - new Date(lastFeedback.created_date).getTime()) > 7 * 24 * 60 * 60 * 1000
+                   : internFeedbacks.length > 0;
+
+                 const points = userPoints.find(p => p.user_name === intern.name)?.total_points ?? null;
+
+                 return (
+                   <button
+                     key={intern.id}
+                     onClick={() => { setSelectedModal('interns'); setSelectedItem(intern); }}
+                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border text-left ${
+                       needsReminder 
+                         ? 'bg-amber-50 hover:bg-amber-100 border-amber-200 hover:border-amber-300' 
+                         : 'bg-slate-50 hover:bg-teal-50 border-slate-100 hover:border-teal-200'
+                     }`}
+                   >
+                     {needsReminder && (
+                       <Clock className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                     )}
+                     <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold flex-shrink-0">
+                       {intern.name?.[0]}
+                     </div>
+                     <div className="flex-1 min-w-0">
+                       <p className="font-medium text-slate-800">{intern.name}</p>
+                       <div className="flex items-center gap-1 text-sm text-slate-500">
+                         <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                         <span>{avg}</span>
+                         <span className="text-slate-300 mx-1">•</span>
+                         <span>{internFeedbacks.length} משובים</span>
+                         {points !== null && (
+                           <>
+                             <span className="text-slate-300 mx-1">•</span>
+                             <span className="font-semibold text-amber-600">{points} נק'</span>
+                           </>
+                         )}
+                       </div>
+                       {needsReminder && (
+                         <p className="text-xs text-amber-700 mt-1">עבר שבוע מהמשוב האחרון</p>
+                       )}
+                       <InternProgressBadges feedbacks={internFeedbacks} />
+                     </div>
+                   </button>
+                 );
+               })}
+               {interns.length === 0 && (
+                 <p className="text-slate-500">אין מתמחים במערכת</p>
+               )}
+             </div>
+           </CardContent>
+         </Card>
+
+        {/* Experts List - Clickable */}
+         <Card className="border-0 shadow-lg mb-8">
+           <CardHeader>
+             <CardTitle className="text-lg">מומחים</CardTitle>
+           </CardHeader>
+           <CardContent>
+             <div className="flex flex-wrap gap-3">
+               {experts.map(expert => {
+                 const expertFeedbacks = feedbacks.filter(f => f.expert_id === expert.id);
+                 const expertRatings = [];
+                 expertFeedbacks.forEach(f => {
+                   ['expert_knowledge_rating', 'expert_manual_skill_rating', 'expert_professionalism_rating', 'expert_independence_rating'].forEach(key => {
+                     if (f[key] && f[key] > 0) expertRatings.push(f[key]);
+                   });
+                 });
+                 const avg = expertRatings.length > 0
+                   ? (expertRatings.reduce((a, b) => a + b, 0) / expertRatings.length).toFixed(1)
+                   : '-';
+
+                 const points = userPoints.find(p => p.user_name === expert.name)?.total_points ?? null;
+
+                 return (
+                   <button
+                     key={expert.id}
+                     onClick={() => { setSelectedModal('experts'); setSelectedItem(expert); }}
+                     className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border bg-slate-50 hover:bg-purple-50 border-slate-100 hover:border-purple-200 text-left"
+                   >
+                     <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold flex-shrink-0">
+                       {expert.name?.[0]}
+                     </div>
+                     <div className="flex-1 min-w-0">
+                       <p className="font-medium text-slate-800">{expert.name}</p>
+                       <div className="flex items-center gap-1 text-sm text-slate-500">
+                         <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                         <span>{avg}</span>
+                         <span className="text-slate-300 mx-1">•</span>
+                         <span>{expertFeedbacks.length} משובים</span>
+                         {points !== null && (
+                           <>
+                             <span className="text-slate-300 mx-1">•</span>
+                             <span className="font-semibold text-amber-600">{points} נק'</span>
+                           </>
+                         )}
+                       </div>
+                     </div>
+                   </button>
+                 );
+               })}
+               {experts.length === 0 && (
+                 <p className="text-slate-500">אין מומחים במערכת</p>
+               )}
+             </div>
+           </CardContent>
+         </Card>
+
+        {/* Managers List - Clickable */}
+         <Card className="border-0 shadow-lg mb-8">
+           <CardHeader>
+             <CardTitle className="text-lg">מנהלים</CardTitle>
+           </CardHeader>
+           <CardContent>
+             <div className="flex flex-wrap gap-3">
+               {managers.map(manager => (
+                 <button
+                   key={manager.id}
+                   onClick={() => { setSelectedModal('managers'); setSelectedItem(manager); }}
+                   className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors border bg-slate-50 hover:bg-teal-50 border-slate-100 hover:border-teal-200 text-left"
+                 >
+                   <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold flex-shrink-0">
+                     {manager.name?.[0]}
+                   </div>
+                   <div className="flex-1 min-w-0">
+                     <p className="font-medium text-slate-800">{manager.name}</p>
+                   </div>
+                 </button>
+               ))}
+               {managers.length === 0 && (
+                 <p className="text-slate-500">אין מנהלים במערכת</p>
+               )}
+             </div>
+           </CardContent>
+         </Card>
 
         {/* Feedback Meeting Manager */}
-        <div className="mb-8">
-          <FeedbackMeetingManager interns={interns} experts={experts} />
-        </div>
+         <div className="mb-8">
+           <FeedbackMeetingManager interns={interns} experts={experts} />
+         </div>
 
         {/* Filters */}
         <div className="space-y-4">
@@ -470,6 +558,98 @@ export default function Admin() {
             </div>
           )}
         </div>
+
+        {/* Modal - Intern Details */}
+        <Dialog open={selectedModal === 'interns'} onOpenChange={(open) => !open && setSelectedModal(null)}>
+          <DialogContent className="max-w-sm" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold text-sm">
+                  {selectedItem?.name?.[0]}
+                </div>
+                {selectedItem?.name}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                <Mail className="w-5 h-5 text-teal-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-slate-500">כתובת מייל</p>
+                  <p className="font-mono text-sm text-slate-700 break-all">{selectedItem?.email || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                <Star className="w-5 h-5 text-amber-500 fill-amber-500 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-slate-500">נקודות</p>
+                  <p className="font-semibold text-slate-800">{userPoints.find(p => p.user_name === selectedItem?.name)?.total_points ?? '—'}</p>
+                </div>
+              </div>
+              <Button onClick={() => { setSelectedModal(null); setSelectedItem(null); }} className="w-full bg-teal-600 hover:bg-teal-700">
+                סגור
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal - Expert Details */}
+        <Dialog open={selectedModal === 'experts'} onOpenChange={(open) => !open && setSelectedModal(null)}>
+          <DialogContent className="max-w-sm" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold text-sm">
+                  {selectedItem?.name?.[0]}
+                </div>
+                {selectedItem?.name}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                <Mail className="w-5 h-5 text-purple-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-slate-500">כתובת מייל</p>
+                  <p className="font-mono text-sm text-slate-700 break-all">{selectedItem?.email || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                <Star className="w-5 h-5 text-amber-500 fill-amber-500 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-slate-500">נקודות</p>
+                  <p className="font-semibold text-slate-800">{userPoints.find(p => p.user_name === selectedItem?.name)?.total_points ?? '—'}</p>
+                </div>
+              </div>
+              <Button onClick={() => { setSelectedModal(null); setSelectedItem(null); }} className="w-full bg-purple-600 hover:bg-purple-700">
+                סגור
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal - Manager Details */}
+        <Dialog open={selectedModal === 'managers'} onOpenChange={(open) => !open && setSelectedModal(null)}>
+          <DialogContent className="max-w-sm" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold text-sm">
+                  {selectedItem?.name?.[0]}
+                </div>
+                {selectedItem?.name}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                <Mail className="w-5 h-5 text-teal-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-slate-500">כתובת מייל</p>
+                  <p className="font-mono text-sm text-slate-700 break-all">{selectedItem?.email || '—'}</p>
+                </div>
+              </div>
+              <Button onClick={() => { setSelectedModal(null); setSelectedItem(null); }} className="w-full bg-teal-600 hover:bg-teal-700">
+                סגור
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { createPageUrl } from '@/utils';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Mail, Shield, Check, Plus, Trash2, Pencil } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -20,6 +21,7 @@ export default function ManagerEmails() {
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [selectedManager, setSelectedManager] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: managers = [] } = useQuery({
@@ -107,50 +109,62 @@ export default function ManagerEmails() {
                   </tr>
                 </thead>
                 <tbody>
-                  {managers.map((manager, index) => {
-                    const isEditing = editingId === manager.id;
-                    return (
-                      <tr key={manager.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-4 text-slate-500">{index + 1}</td>
-                        <td className="py-3 px-4">
-                          {isEditing ? (
-                            <Input value={editName} onChange={e => setEditName(e.target.value)} className="h-7 text-sm" autoFocus />
-                          ) : (
-                            <span className="font-medium text-slate-800">{manager.name}</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 min-w-[240px]">
-                          {isEditing ? (
-                            <Input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="email@example.com" className="h-7 text-sm" onKeyDown={e => e.key === 'Enter' && handleSave(manager.id)} />
-                          ) : (
-                            <div className="flex items-center gap-1">
-                              <Mail className="w-3 h-3 text-teal-400" />
-                              <span className="text-slate-600 text-sm">{manager.email || <span className="text-slate-300 italic">לא הוגדר</span>}</span>
-                            </div>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          {isEditing ? (
-                            <div className="flex items-center justify-center gap-1">
-                              <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={() => handleSave(manager.id)}>
-                                <Check className="w-3 h-3" />
-                              </Button>
-                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingId(null)}>✕</Button>
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center gap-1">
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-teal-600" onClick={() => { setEditingId(manager.id); setEditName(manager.name); setEditEmail(manager.email || ''); }}>
-                                <Pencil className="w-3 h-3" />
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500 hover:text-red-700" onClick={() => handleDelete(manager.id)}>
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                   {managers.map((manager, index) => {
+                     const isEditing = editingId === manager.id;
+                     return (
+                       <tr 
+                         key={manager.id} 
+                         className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+                         onClick={() => !isEditing && setSelectedManager(manager)}
+                       >
+                         <td className="py-3 px-4 text-slate-500">{index + 1}</td>
+                         <td className="py-3 px-4">
+                           {isEditing ? (
+                             <Input value={editName} onChange={e => setEditName(e.target.value)} className="h-7 text-sm" autoFocus onClick={e => e.stopPropagation()} />
+                           ) : (
+                             <span className="font-medium text-slate-800">{manager.name}</span>
+                           )}
+                         </td>
+                         <td className="py-3 px-4 min-w-[240px]">
+                           {isEditing ? (
+                             <Input 
+                               type="email" 
+                               value={editEmail} 
+                               onChange={e => setEditEmail(e.target.value)} 
+                               placeholder="email@example.com" 
+                               className="h-7 text-sm" 
+                               onKeyDown={e => e.key === 'Enter' && handleSave(manager.id)}
+                               onClick={e => e.stopPropagation()}
+                             />
+                           ) : (
+                             <div className="flex items-center gap-1">
+                               <Mail className="w-3 h-3 text-teal-400" />
+                               <span className="text-slate-600 text-sm">{manager.email || <span className="text-slate-300 italic">לא הוגדר</span>}</span>
+                             </div>
+                           )}
+                         </td>
+                         <td className="py-3 px-4 text-center" onClick={e => e.stopPropagation()}>
+                           {isEditing ? (
+                             <div className="flex items-center justify-center gap-1">
+                               <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={() => handleSave(manager.id)}>
+                                 <Check className="w-3 h-3" />
+                               </Button>
+                               <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingId(null)}>✕</Button>
+                             </div>
+                           ) : (
+                             <div className="flex items-center justify-center gap-1">
+                               <Button variant="ghost" size="icon" className="h-7 w-7 text-teal-600" onClick={() => { setEditingId(manager.id); setEditName(manager.name); setEditEmail(manager.email || ''); }}>
+                                 <Pencil className="w-3 h-3" />
+                               </Button>
+                               <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500 hover:text-red-700" onClick={() => handleDelete(manager.id)}>
+                                 <Trash2 className="w-3 h-3" />
+                               </Button>
+                             </div>
+                           )}
+                         </td>
+                       </tr>
+                     );
+                   })}
 
                   {/* Add new row */}
                   {addingNew && (
@@ -181,9 +195,35 @@ export default function ManagerEmails() {
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
+            </CardContent>
+            </Card>
+
+            {/* Modal - Manager Details */}
+            <Dialog open={!!selectedManager} onOpenChange={(open) => !open && setSelectedManager(null)}>
+            <DialogContent className="max-w-sm" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-semibold text-sm">
+                  {selectedManager?.name?.[0]}
+                </div>
+                {selectedManager?.name}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                <Mail className="w-5 h-5 text-teal-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-slate-500">כתובת מייל</p>
+                  <p className="font-mono text-sm text-slate-700 break-all">{selectedManager?.email || '—'}</p>
+                </div>
+              </div>
+              <Button onClick={() => setSelectedManager(null)} className="w-full bg-teal-600 hover:bg-teal-700">
+                סגור
+              </Button>
+            </div>
+            </DialogContent>
+            </Dialog>
+            </div>
+            </div>
+            );
+            }

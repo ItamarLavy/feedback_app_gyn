@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -21,6 +22,7 @@ export default function InternPasswords() {
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [selectedIntern, setSelectedIntern] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: interns = [] } = useQuery({
@@ -145,12 +147,16 @@ export default function InternPasswords() {
                     const isEditing = editingEmail === intern.id;
                     const points = userPoints.find(p => p.user_name === intern.name)?.total_points ?? null;
                     return (
-                      <tr key={intern.id} className="border-b border-slate-100 hover:bg-slate-50">
+                      <tr 
+                        key={intern.id} 
+                        className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
+                        onClick={() => !isEditing && setSelectedIntern(intern)}
+                      >
                         <td className="py-3 px-4 text-slate-500">{index + 1}</td>
                         <td className="py-3 px-4 font-medium text-slate-800">{intern.name}</td>
                         <td className="py-3 px-4 min-w-[240px]">
                           {isEditing ? (
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
                               <Input
                                 type="email"
                                 value={emailValue}
@@ -166,7 +172,7 @@ export default function InternPasswords() {
                             </div>
                           ) : (
                             <button
-                              onClick={() => { setEditingEmail(intern.id); setEmailValue(intern.email || ''); }}
+                              onClick={(e) => { e.stopPropagation(); setEditingEmail(intern.id); setEmailValue(intern.email || ''); }}
                               className="flex items-center gap-1 text-sm text-slate-600 hover:text-blue-600 group"
                             >
                               <Mail className="w-3 h-3 text-slate-400 group-hover:text-blue-400" />
@@ -184,7 +190,7 @@ export default function InternPasswords() {
                             <span className="text-slate-300 text-xs">—</span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-center">
+                        <td className="py-3 px-4 text-center" onClick={e => e.stopPropagation()}>
                           {!isEditing && (
                             <Button variant="ghost" size="sm" onClick={() => { setEditingEmail(intern.id); setEmailValue(intern.email || ''); }} className="text-blue-600 hover:text-blue-700 text-xs">
                               עדכן
@@ -225,8 +231,41 @@ export default function InternPasswords() {
               </div>
             </CardContent>
           </Card>
-        )}
-      </div>
-    </div>
-  );
-}
+          )}
+
+          {/* Modal - Intern Details */}
+          <Dialog open={!!selectedIntern} onOpenChange={(open) => !open && setSelectedIntern(null)}>
+          <DialogContent className="max-w-sm" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm">
+                  {selectedIntern?.name?.[0]}
+                </div>
+                {selectedIntern?.name}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                <Mail className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-slate-500">כתובת מייל</p>
+                  <p className="font-mono text-sm text-slate-700 break-all">{selectedIntern?.email || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                <Star className="w-5 h-5 text-amber-500 fill-amber-500 flex-shrink-0" />
+                <div>
+                  <p className="text-xs text-slate-500">נקודות</p>
+                  <p className="font-semibold text-slate-800">{userPoints.find(p => p.user_name === selectedIntern?.name)?.total_points ?? '—'}</p>
+                </div>
+              </div>
+              <Button onClick={() => setSelectedIntern(null)} className="w-full bg-blue-600 hover:bg-blue-700">
+                סגור
+              </Button>
+            </div>
+          </DialogContent>
+          </Dialog>
+          </div>
+          </div>
+          );
+          }
