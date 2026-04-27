@@ -15,7 +15,7 @@ const BUCKETS = {
   misc: { label: 'שונות', icon: Layers, color: 'bg-slate-50 border-slate-200 text-slate-700', badge: 'bg-slate-100 text-slate-600' },
 };
 
-export default function MeetingSummaryManager({ intern, feedbacks = [], manualCounts = [] }) {
+export default function MeetingSummaryManager({ intern, feedbacks = [], manualCounts = [], managerNotes = [], rotations = [] }) {
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [classifying, setClassifying] = useState(false);
@@ -115,6 +115,18 @@ export default function MeetingSummaryManager({ intern, feedbacks = [], manualCo
       `[${s.meeting_date}] ${s.title || ''}: ${s.notes || ''}`
     ).join('\n');
 
+    const notesText = managerNotes.map(n =>
+      `[${n.created_date ? format(new Date(n.created_date), 'dd/MM/yyyy') : '?'}] סוג: ${n.note_type} | ${n.note_content}`
+    ).join('\n');
+
+    const rotationsText = rotations.map(r =>
+      `${r.rotation_type} | ${r.start_date}${r.end_date ? ` עד ${r.end_date}` : ''} | סטטוס: ${r.status}`
+    ).join('\n');
+
+    const manualCountsText = manualCounts.map(m =>
+      `${m.procedure_category} - ${m.procedure_name}: ${m.manual_count} ביצועים ידניים`
+    ).join('\n');
+
     const pendingMeeting = meetings.find(m => m.status === 'מתוכנן');
 
     const prompt = `אתה מנחה רפואי בכיר המכין דוח לפגישת מנטורינג עם מתמחה ברפואת נשים.
@@ -123,6 +135,15 @@ export default function MeetingSummaryManager({ intern, feedbacks = [], manualCo
 
 === משובים מהמומחים (${feedbacks.length} סה"כ) ===
 ${feedbackText || 'אין נתונים'}
+
+=== ביצועים ידניים (ללא משוב) ===
+${manualCountsText || 'אין נתונים'}
+
+=== תוכנית ההתמחות - סבבים ===
+${rotationsText || 'אין נתונים'}
+
+=== הערות מנהל ===
+${notesText || 'אין הערות'}
 
 === פגישות מנטורינג קודמות ===
 ${meetingsText || 'אין נתונים'}
@@ -136,12 +157,13 @@ ${pendingMeeting ? `תאריך: ${pendingMeeting.meeting_date ? format(new Date(
 ---
 אנא הכן סיכום מנהלי מפורט ומועיל שיכלול:
 
-1. **תמונת מצב כללית** - איך המתמחה מתקדם בסה"כ?
+1. **תמונת מצב כללית** - איך המתמחה מתקדם בסה"כ? (כולל מיקום בתוכנית הסבבים)
 2. **נקודות חוזק** - מה עולה בצורה עקבית כחזק?
 3. **תחומים לשיפור** - מה צריך לחזק? (על בסיס הנתונים)
 4. **מגמות לאורך זמן** - האם יש שיפור/ירידה בדירוגים? האם תדירות הבקשות עקבית?
-5. **הכנה לפגישה הקרובה** - 3-5 נושאים מומלצים לדיון, שאלות שכדאי לשאול
-6. **המלצות לפעולה** - מה כדאי לעשות בטווח הקרוב?
+5. **הערות מנהל - נושאים חשובים** - אם יש הערות מנהל, ציין את הנושאים המרכזיים שעלו
+6. **הכנה לפגישה הקרובה** - 3-5 נושאים מומלצים לדיון, שאלות שכדאי לשאול
+7. **המלצות לפעולה** - מה כדאי לעשות בטווח הקרוב?
 
 כתוב בעברית, בצורה מקצועית, ממוקדת ומועילה. אל תפרט כל משוב לגופו, אלא תן תמונה כוללת ותובנות.`;
 

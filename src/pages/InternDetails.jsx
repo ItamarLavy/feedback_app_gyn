@@ -316,7 +316,7 @@ export default function InternDetails() {
 
         {/* Meeting Summaries + AI */}
         <div className="mb-8">
-          <MeetingSummaryManager intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} />
+          <MeetingSummaryManager intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} managerNotes={managerNotes} rotations={rotations} />
         </div>
 
         {/* Manual Procedure Entry */}
