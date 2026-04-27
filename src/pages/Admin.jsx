@@ -428,53 +428,38 @@ export default function Admin() {
         </div>
 
         {/* Feedbacks List - Compact */}
-        <div className="space-y-2 mt-6">
-          {filteredFeedbacks.map(feedback => (
-            <div key={feedback.id} className="bg-white rounded-lg p-3 border border-slate-200 hover:border-teal-300 transition-colors flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 flex-1">
-                <Hash className="w-4 h-4 text-slate-400" />
-                <span className="font-mono text-teal-700 font-semibold min-w-[60px]">{feedback.procedure_id_code}</span>
-                
-                <div className="flex items-center gap-2 text-sm">
-                  <User className="w-3 h-3 text-slate-400" />
-                  <span className="text-slate-700">{feedback.intern_name}</span>
-                </div>
-                
-                <div className="flex items-center gap-2 text-sm">
-                  <Stethoscope className="w-3 h-3 text-slate-400" />
-                  <span className="text-slate-700">{feedback.expert_name}</span>
-                </div>
-                
-                <span className="text-sm text-slate-600">{feedback.procedure_type}</span>
-                
-                {feedback.procedure_date && (
-                  <div className="flex items-center gap-1 text-xs text-slate-500">
-                    <Calendar className="w-3 h-3" />
-                    <span>{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
-                  </div>
-                )}
-                
-                <Badge className={feedback.status === 'completed' ? 'bg-green-600' : 'bg-amber-600'}>
-                  {feedback.status === 'completed' ? 'הושלם' : 'ממתין'}
-                </Badge>
-              </div>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDeleteFeedback(feedback.id)}
-                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          ))}
-          {filteredFeedbacks.length === 0 && (
-            <div className="text-center py-12 text-slate-500">
-              לא נמצאו משובים
-            </div>
-          )}
-        </div>
+         <div className="space-y-2 mt-6">
+           {filteredFeedbacks.map(feedback => (
+             <div key={feedback.id} className="bg-white rounded-lg p-2 md:p-3 border border-slate-200 hover:border-teal-300 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-3 text-sm md:text-base">
+               <div className="flex flex-wrap items-center gap-2 flex-1">
+                 <span className="font-mono text-teal-700 font-semibold">{feedback.procedure_id_code}</span>
+                 <span className="text-slate-700 font-medium truncate">{feedback.intern_name}</span>
+                 <span className="text-slate-600 truncate hidden sm:inline">{feedback.expert_name}</span>
+                 <span className="text-slate-600 truncate">{feedback.procedure_type}</span>
+                 {feedback.procedure_date && (
+                   <span className="text-xs text-slate-500">{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
+                 )}
+                 <Badge className={`text-xs ${feedback.status === 'completed' ? 'bg-green-600' : 'bg-amber-600'}`}>
+                   {feedback.status === 'completed' ? 'הושלם' : 'ממתין'}
+                 </Badge>
+               </div>
+
+               <Button
+                 variant="ghost"
+                 size="icon"
+                 onClick={() => handleDeleteFeedback(feedback.id)}
+                 className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8"
+               >
+                 <Trash2 className="w-4 h-4" />
+               </Button>
+             </div>
+           ))}
+           {filteredFeedbacks.length === 0 && (
+             <div className="text-center py-12 text-slate-500">
+               לא נמצאו משובים
+             </div>
+           )}
+         </div>
 
 
       </div>
