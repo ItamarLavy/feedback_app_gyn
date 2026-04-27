@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Star, TrendingUp, BookOpen, Hand, Award, UserCog, Sparkles, Loader2 } from 'lucide-react';
+import { Star, TrendingUp, BookOpen, Hand, Award, UserCog } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const EXPERT_RATING_KEYS = [
@@ -12,8 +11,7 @@ const EXPERT_RATING_KEYS = [
 ];
 
 export default function InternStats({ feedbacks, internName, rotations, meetings, managerNotes }) {
-  const [aiSummary, setAiSummary] = useState(null);
-  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+
 
   // חישוב ממוצע כללי (רק מדירוגי מומחים)
   const expertRatings = [];
@@ -66,68 +64,7 @@ export default function InternStats({ feedbacks, internName, rotations, meetings
     avgIndependence: stats.independence.length > 0 ? (stats.independence.reduce((a, b) => a + b, 0) / stats.independence.length).toFixed(1) : '-'
   })).sort((a, b) => b.count - a.count);
 
-  const generateAiSummary = async () => {
-    setIsLoadingSummary(true);
-    
-    const feedbacksText = feedbacks.map(f => {
-      const expertRatings = [];
-      if (f.expert_knowledge_rating) expertRatings.push(`ידע: ${f.expert_knowledge_rating}/5`);
-      if (f.expert_manual_skill_rating) expertRatings.push(`מיומנות מנואלית: ${f.expert_manual_skill_rating}/5`);
-      if (f.expert_professionalism_rating) expertRatings.push(`מקצועיות: ${f.expert_professionalism_rating}/5`);
-      if (f.expert_independence_rating) expertRatings.push(`עצמאות: ${f.expert_independence_rating}/5`);
-      
-      return `פרוצדורה: ${f.procedure_type}, ${expertRatings.join(', ')}${f.expert_verbal_feedback ? `, משוב מומחה: ${f.expert_verbal_feedback}` : ''}`;
-    }).join('\n');
 
-    // בניית מידע נוסף על המתמחה
-    let additionalInfo = '';
-
-    // סיבובים
-    if (rotations && rotations.length > 0) {
-      const rotationsText = rotations.map(r => 
-        `${r.rotation_type} (${r.status}${r.start_date ? `, התחלה: ${r.start_date}` : ''})`
-      ).join(', ');
-      additionalInfo += `\n\nסיבובים: ${rotationsText}`;
-    }
-
-    // פגישות מתוכננות
-    if (meetings && meetings.length > 0) {
-      const upcomingMeetings = meetings.filter(m => new Date(m.meeting_date) > new Date() && m.status === 'מתוכנן');
-      if (upcomingMeetings.length > 0) {
-        const meetingsText = upcomingMeetings.map(m => 
-          `פגישה ב-${new Date(m.meeting_date).toLocaleDateString('he-IL')}${m.location ? ` ב${m.location}` : ''}`
-        ).join(', ');
-        additionalInfo += `\n\nפגישות מתוכננות: ${meetingsText}`;
-      }
-    }
-
-    // הערות מנהל
-    if (managerNotes && managerNotes.length > 0) {
-      const notesText = managerNotes.slice(0, 3).map(n => 
-        `[${n.note_type}] ${n.note_content}`
-      ).join('\n');
-      additionalInfo += `\n\nהערות מנהל:\n${notesText}`;
-    }
-
-    const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `אתה מנהל מחלקה רפואית. להלן מידע מקיף על מתמחה בשם ${internName}:
-
-משובים מומחים:
-${feedbacksText}
-${additionalInfo}
-
-כתוב 1-2 פסקאות מסכמות שמתארות את החוזקות והאתגרים של המתמחה, התקדמותו בסיבובים, פגישות קרובות, והצעדים הבאים. השתמש רק במידע שניתן לך (אם משהו חסר, אל תזכיר אותו). כתוב בעברית, בצורה מקצועית ובונה.`,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          summary: { type: "string" }
-        }
-      }
-    });
-
-    setAiSummary(result.summary);
-    setIsLoadingSummary(false);
-  };
 
   return (
     <div className="space-y-6">
@@ -234,43 +171,7 @@ ${additionalInfo}
         </CardContent>
       </Card>
 
-      {/* AI Summary */}
-      <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-indigo-50">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-slate-800 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-600" />
-            סיכום AI
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {aiSummary ? (
-            <div className="bg-white rounded-xl p-4 border border-purple-100">
-              <p className="text-slate-700 leading-relaxed">{aiSummary}</p>
-            </div>
-          ) : (
-            <div className="text-center py-4">
-              <p className="text-slate-500 mb-4">קבל סיכום אוטומטי של כל המשובים על המתמחה</p>
-              <Button
-                onClick={generateAiSummary}
-                disabled={isLoadingSummary || feedbacks.length === 0}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                {isLoadingSummary ? (
-                  <>
-                    <Loader2 className="w-4 h-4 ml-2 animate-spin" />
-                    מייצר סיכום...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 ml-2" />
-                    צור סיכום AI
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+
     </div>
   );
 }
