@@ -108,7 +108,7 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       {/* Mobile Main Content */}
-      <main className="md:hidden pt-24 pb-56 bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100">
+      <main className="md:hidden pt-24 pb-96 bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100">
         <PageTransition>
           {children}
         </PageTransition>
