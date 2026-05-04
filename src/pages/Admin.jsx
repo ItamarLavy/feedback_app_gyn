@@ -154,7 +154,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-emerald-50/40 to-cyan-100" dir="rtl">
-      <div ref={pullToRefreshRef} className="max-w-6xl mx-auto px-4 py-8 pb-40 md:pb-8">
+      <div ref={pullToRefreshRef} className="max-w-6xl mx-auto px-5 py-8 pb-40 md:pb-8">
         {/* Header */}
         <div className="flex flex-col gap-4 mb-8">
           <div className="flex items-center gap-3">

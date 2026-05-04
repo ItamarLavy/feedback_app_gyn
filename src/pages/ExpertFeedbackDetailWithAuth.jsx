@@ -126,15 +126,18 @@ export default function ExpertFeedbackDetailWithAuth() {
 
     // נקודות + ניקוי תזכורות
     try {
-      const allUsers = await base44.entities.User.list();
-      const internUser = allUsers.find(u => u.full_name === feedback.intern_name);
+      // מצא את האימייל של המתמחה מה-Intern entity
+      let internEmail = null;
+      const internRecord = await base44.entities.Intern.filter({ id: feedback.intern_id });
+      if (internRecord.length > 0) internEmail = internRecord[0].email;
+
       await onFeedbackCompleted({
         feedbackId: feedback.id,
         internId: feedback.intern_id,
         internName: feedback.intern_name,
         expertId,
         expertName: expert?.name,
-        internEmail: internUser?.email,
+        internEmail,
         expertEmail: user?.email,
         requestedAt: feedback.intern_submitted_date
       });
@@ -150,7 +153,7 @@ export default function ExpertFeedbackDetailWithAuth() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
-      <div className="max-w-5xl mx-auto px-4 py-8 md:py-12">
+      <div className="max-w-5xl mx-auto px-5 py-8 md:py-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">

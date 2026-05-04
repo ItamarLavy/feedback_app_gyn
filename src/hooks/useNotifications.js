@@ -119,9 +119,18 @@ export async function onFeedbackRequested({ feedbackId, internId, internName, ex
 
 // כשמומחה מסיים למלא משוב: +5 נקודות לשניהם + שלח לאימייל מנהלים אם הייתה עיכוב
 export async function onFeedbackCompleted({ feedbackId, internId, internName, expertId, expertName, internEmail, expertEmail, requestedAt }) {
-  // נקודות
-  await addPoints(expertId, 5);
-  await addPoints(internId, 5);
+  // נקודות - חפש לפי אימייל כדי למצוא את ה-User ID האמיתי
+  try {
+    const allUsers = await base44.entities.User.list();
+    if (internEmail) {
+      const internUser = allUsers.find(u => u.email === internEmail);
+      if (internUser) await addPoints(internUser.id, 5);
+    }
+    if (expertEmail) {
+      const expertUser = allUsers.find(u => u.email === expertEmail);
+      if (expertUser) await addPoints(expertUser.id, 5);
+    }
+  } catch(e) { console.warn('points error', e); }
 
   // סמן תזכורות הקשורות כנקראות
   const pendingReminders = await base44.entities.Notification.filter({ feedback_id: feedbackId, is_read: false });

@@ -86,7 +86,7 @@ export default function Home() {
     
     return (
       <div className="min-h-screen w-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
-        <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-8 w-full pb-40">
+        <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-5 py-8 w-full pb-40">
           {/* Header with Points */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-800 mb-4">
