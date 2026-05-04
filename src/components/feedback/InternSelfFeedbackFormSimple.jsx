@@ -83,9 +83,9 @@ function RatingRow({ label, value, onChange }) {
              type="button"
              onClick={() => onChange(n)}
              className={`flex-1 py-2 text-sm border rounded ${
-               value === n
-                 ? 'bg-gray-900 text-white border-gray-900'
-                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              value === n
+                ? 'bg-teal-600 text-white border-teal-600'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
              }`}
            >
              {n}
@@ -352,7 +352,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
                             onClick={() => set('intern_independence', opt.val)}
                             className={`flex-1 py-2 text-sm border rounded ${
                               formData.intern_independence === opt.val
-                                ? 'bg-gray-900 text-white border-gray-900'
+                                ? 'bg-teal-600 text-white border-teal-600'
                                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                             }`}
                           >
@@ -379,7 +379,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
               <Button
                 type="submit"
                 disabled={!isValid || isSubmitting}
-                className="w-full h-10 bg-gray-900 hover:bg-gray-800 text-white font-normal"
+                className="w-full h-10 bg-teal-600 hover:bg-teal-700 text-white font-normal"
               >
                 {isSubmitting ? 'שומר...' : 'שלח משוב'}
               </Button>
