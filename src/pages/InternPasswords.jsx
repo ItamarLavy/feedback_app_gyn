@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2 } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -21,6 +21,7 @@ export default function InternPasswords() {
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: interns = [] } = useQuery({
@@ -53,6 +54,12 @@ export default function InternPasswords() {
     queryClient.invalidateQueries({ queryKey: ['interns'] });
     setEditingEmail(null);
     setSavingEmail(null);
+  };
+
+  const handleDeleteIntern = async (internId) => {
+    await base44.entities.Intern.delete(internId);
+    queryClient.invalidateQueries({ queryKey: ['interns'] });
+    setConfirmDelete(null);
   };
 
   const handleAddIntern = async () => {
@@ -126,6 +133,7 @@ export default function InternPasswords() {
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">משובים</th>
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">נקודות</th>
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">פעולה</th>
+                    <th className="text-center py-3 px-4 font-semibold text-slate-700">הסרה</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -200,13 +208,27 @@ export default function InternPasswords() {
                           )}
                         </td>
                         <td className="py-3 px-4 text-center">
-                          {!isEditing && (
-                            <Button variant="ghost" size="sm" onClick={() => { setEditingEmail(intern.id); setEmailValue(intern.email || ''); }} className="text-blue-600 hover:text-blue-700 text-xs">
-                              עדכן
-                            </Button>
-                          )}
+                         {!isEditing && (
+                           <Button variant="ghost" size="sm" onClick={() => { setEditingEmail(intern.id); setEmailValue(intern.email || ''); }} className="text-blue-600 hover:text-blue-700 text-xs">
+                             עדכן
+                           </Button>
+                         )}
                         </td>
-                      </tr>
+                        <td className="py-3 px-4 text-center">
+                         {confirmDelete === intern.id ? (
+                           <div className="flex items-center justify-center gap-1">
+                             <Button size="icon" className="h-7 w-7 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteIntern(intern.id)}>
+                               <Check className="w-3 h-3" />
+                             </Button>
+                             <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setConfirmDelete(null)}>✕</Button>
+                           </div>
+                         ) : (
+                           <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirmDelete(intern.id)}>
+                             <Trash2 className="w-4 h-4" />
+                           </Button>
+                         )}
+                        </td>
+                        </tr>
                     );
                   })}
                 </tbody>

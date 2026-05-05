@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2 } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -21,6 +21,7 @@ export default function ExpertPasswords() {
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: experts = [] } = useQuery({
@@ -53,6 +54,12 @@ export default function ExpertPasswords() {
     queryClient.invalidateQueries({ queryKey: ['experts'] });
     setEditingEmail(null);
     setSavingEmail(null);
+  };
+
+  const handleDeleteExpert = async (expertId) => {
+    await base44.entities.Expert.delete(expertId);
+    queryClient.invalidateQueries({ queryKey: ['experts'] });
+    setConfirmDelete(null);
   };
 
   const handleAddExpert = async () => {
@@ -126,6 +133,7 @@ export default function ExpertPasswords() {
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">משובים</th>
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">נקודות</th>
                     <th className="text-center py-3 px-4 font-semibold text-slate-700">פעולה</th>
+                    <th className="text-center py-3 px-4 font-semibold text-slate-700">הסרה</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -200,13 +208,27 @@ export default function ExpertPasswords() {
                           )}
                         </td>
                         <td className="py-3 px-4 text-center">
-                          {!isEditing && (
-                            <Button variant="ghost" size="sm" onClick={() => { setEditingEmail(expert.id); setEmailValue(expert.email || ''); }} className="text-purple-600 hover:text-purple-700 text-xs">
-                              עדכן
-                            </Button>
-                          )}
+                         {!isEditing && (
+                           <Button variant="ghost" size="sm" onClick={() => { setEditingEmail(expert.id); setEmailValue(expert.email || ''); }} className="text-purple-600 hover:text-purple-700 text-xs">
+                             עדכן
+                           </Button>
+                         )}
                         </td>
-                      </tr>
+                        <td className="py-3 px-4 text-center">
+                         {confirmDelete === expert.id ? (
+                           <div className="flex items-center justify-center gap-1">
+                             <Button size="icon" className="h-7 w-7 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteExpert(expert.id)}>
+                               <Check className="w-3 h-3" />
+                             </Button>
+                             <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setConfirmDelete(null)}>✕</Button>
+                           </div>
+                         ) : (
+                           <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirmDelete(expert.id)}>
+                             <Trash2 className="w-4 h-4" />
+                           </Button>
+                         )}
+                        </td>
+                        </tr>
                     );
                   })}
                 </tbody>
