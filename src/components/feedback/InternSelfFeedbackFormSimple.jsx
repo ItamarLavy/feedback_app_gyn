@@ -156,12 +156,16 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
     const expertObj = experts.find(ex => ex.id === formData.expert_id);
     const expertEmail = expertObj?.email;
     if (expertEmail) {
-      const feedbackUrl = `${window.location.origin}/ExpertFeedbackDetailWithAuth?feedback_id=${created.id}`;
       try {
-        await base44.integrations.Core.SendEmail({
+        await base44.functions.invoke('sendFeedbackEmail', {
           to: expertEmail,
-          subject: `בקשת משוב מ-${internName} - ${formData.procedure_type}`,
-          body: `שלום ${expertObj?.name},\n\n${internName} ביקש/ה את משובך על: ${formData.procedure_type} (${formData.procedure_category})\nתאריך ביצוע: ${formData.procedure_date || 'לא צוין'}\n\nאנא מלא/י את המשוב בקישור הבא:\n${feedbackUrl}\n\nתודה על שיתוף הפעולה!\nצוות אגף נשים - הדסה`
+          expertName: expertObj?.name,
+          internName,
+          procedureType: formData.procedure_type,
+          procedureCategory: formData.procedure_category,
+          procedureDate: formData.procedure_date,
+          feedbackId: created.id,
+          appOrigin: window.location.origin
         });
       } catch(e) { console.warn('email send error', e); }
     }
