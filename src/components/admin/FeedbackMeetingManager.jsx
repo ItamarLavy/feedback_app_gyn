@@ -172,9 +172,20 @@ export default function FeedbackMeetingManager({ interns, experts }) {
       if (expert?.email) recipients.push({ email: expert.email, name: expert.name });
     });
 
+    // שלח מייל הזמנה לפגישה לכל המוזמנים
+    const meetingDate = formData.meeting_date ? new Date(formData.meeting_date).toLocaleString('he-IL', { dateStyle: 'full', timeStyle: 'short' }) : '';
+    const meetingEmailPromises = recipients.map(r =>
+      base44.integrations.Core.SendEmail({
+        to: r.email,
+        subject: `הזמנה לפגישת משוב עם ${selectedIntern?.name}`,
+        body: `שלום ${r.name},\n\nנקבעה פגישת משוב עם ${selectedIntern?.name}.\n\n📅 תאריך ושעה: ${meetingDate}\n📍 מיקום: ${formData.location || 'לא צוין'}\n${formData.notes ? `\nהערות: ${formData.notes}` : ''}\n\nתודה!\nצוות אגף נשים - הדסה`
+      })
+    );
+
     if (recipients.length > 0) {
+      await Promise.all(meetingEmailPromises);
       await sendQuestionnaireEmails(selectedIntern?.name, recipients);
-      toast.success(`הפגישה נקבעה והשאלון נשלח ל-${recipients.length} נמענים`);
+      toast.success(`הפגישה נקבעה ומיילים נשלחו ל-${recipients.length} נמענים`);
     } else {
       toast.success('הפגישה נקבעה (לא נמצאו כתובות מייל לשליחה)');
     }

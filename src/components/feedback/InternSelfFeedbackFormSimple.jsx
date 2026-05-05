@@ -158,14 +158,25 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
     try {
       const allUsers = await base44.entities.User.list();
       const expertUser = allUsers.find(u => u.full_name === expertObj?.name || u.email === expertObj?.email);
+      const expertEmail = expertUser?.email || expertObj?.email;
       await onFeedbackRequested({
         feedbackId: created.id,
         internId,
         internName,
         expertId: formData.expert_id,
         expertName: expertObj?.name,
-        expertEmail: expertUser?.email || expertObj?.email
+        expertEmail
       });
+
+      // שלח מייל למומחה עם קישור למשוב
+      if (expertEmail) {
+        const feedbackUrl = `${window.location.origin}/ExpertFeedbackDetailWithAuth?feedback_id=${created.id}`;
+        await base44.integrations.Core.SendEmail({
+          to: expertEmail,
+          subject: `בקשת משוב מ-${internName} - ${formData.procedure_type}`,
+          body: `שלום ${expertObj?.name},\n\n${internName} ביקש/ה את משובך על: ${formData.procedure_type} (${formData.procedure_category})\nתאריך ביצוע: ${formData.procedure_date || 'לא צוין'}\n\nאנא מלא/י את המשוב בקישור הבא:\n${feedbackUrl}\n\nתודה על שיתוף הפעולה!\nצוות אגף נשים - הדסה`
+        });
+      }
     } catch(e) { console.warn('notification error', e); }
 
     // בדוק כמה משובים שלח המתמחה היום
