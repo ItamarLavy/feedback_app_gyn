@@ -126,11 +126,19 @@ export default function ExpertFeedbackDetailWithAuth() {
 
     // נקודות + ניקוי תזכורות
     try {
-      // מצא את האימייל של המתמחה מה-Intern entity
-      let internEmail = null;
+      const allUsers = await base44.entities.User.list();
       const allInterns = await base44.entities.Intern.list();
+
+      // מצא user של המתמחה לפי intern_id -> email
       const internRecord = allInterns.find(i => i.id === feedback.intern_id);
-      if (internRecord) internEmail = internRecord.email;
+      const internEmail = internRecord?.email || null;
+      const internUser = internEmail ? allUsers.find(u => u.email === internEmail) : null;
+      console.log('[ExpertFeedback] internRecord:', internRecord, '| internUser:', internUser);
+
+      // מצא user של המומחה לפי expert entity email
+      const expertEmail = expert?.email || null;
+      const expertUser = expertEmail ? allUsers.find(u => u.email === expertEmail) : null;
+      console.log('[ExpertFeedback] expert:', expert, '| expertUser:', expertUser);
 
       await onFeedbackCompleted({
         feedbackId: feedback.id,
@@ -139,8 +147,9 @@ export default function ExpertFeedbackDetailWithAuth() {
         expertId,
         expertName: expert?.name,
         internEmail,
-        expertEmail: user?.email,
-        expertUserId: user?.id,
+        expertEmail,
+        internUserId: internUser?.id,
+        expertUserId: expertUser?.id,
         requestedAt: feedback.intern_submitted_date
       });
     } catch(e) { console.warn('points/notification error', e); }
