@@ -4,8 +4,9 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserCheck, UserX, Clock, Mail } from 'lucide-react';
+import { UserCheck, UserX, Clock, Mail, UserPlus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -16,7 +17,7 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
   const isManager = isAuthenticated && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const internalQueryClient = useQueryClient();
   const queryClient = externalQueryClient || internalQueryClient;
-  const [assigning, setAssigning] = useState({}); // { [requestId]: { role, entityId } }
+  const [assigning, setAssigning] = useState({}); // { [requestId]: { role, entityId, createNew, newName } }
 
   const { data: requests = [] } = useQuery({
     queryKey: ['access-requests'],
@@ -26,20 +27,31 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
 
   const handleApprove = async (req) => {
     const cfg = assigning[req.id];
-    if (!cfg?.role || !cfg?.entityId) return;
+    if (!cfg?.role) return;
 
-    // עדכן את המייל ברשומה המתאימה
-    if (cfg.role === 'intern') {
-      await base44.entities.Intern.update(cfg.entityId, { email: req.email });
+    let entityId = cfg.entityId;
+
+    if (cfg.createNew) {
+      // צור רשומה חדשה
+      if (!cfg.newName?.trim()) return;
+      const created = cfg.role === 'intern'
+        ? await base44.entities.Intern.create({ name: cfg.newName.trim(), email: req.email })
+        : await base44.entities.Expert.create({ name: cfg.newName.trim(), email: req.email });
+      entityId = created.id;
     } else {
-      await base44.entities.Expert.update(cfg.entityId, { email: req.email });
+      if (!entityId) return;
+      // עדכן מייל ברשומה קיימת
+      if (cfg.role === 'intern') {
+        await base44.entities.Intern.update(entityId, { email: req.email });
+      } else {
+        await base44.entities.Expert.update(entityId, { email: req.email });
+      }
     }
 
-    // עדכן את הבקשה כמאושרת
     await base44.entities.AccessRequest.update(req.id, {
       status: 'approved',
       assigned_role: cfg.role,
-      assigned_entity_id: cfg.entityId
+      assigned_entity_id: entityId
     });
 
     queryClient.invalidateQueries({ queryKey: ['access-requests'] });
@@ -73,7 +85,7 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
         {requests.map(req => {
           const cfg = assigning[req.id] || {};
           const entityList = cfg.role === 'intern' ? interns : cfg.role === 'expert' ? experts : [];
-          const canApprove = cfg.role && cfg.entityId;
+          const canApprove = cfg.role && (cfg.createNew ? cfg.newName?.trim() : cfg.entityId);
 
           return (
             <div key={req.id} className="bg-white border border-slate-200 rounded-xl p-4">
@@ -107,8 +119,21 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
                   </SelectContent>
                 </Select>
 
-                {/* בחר רשומה */}
+                {/* חדש או קיים */}
                 {cfg.role && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 text-xs gap-1"
+                    onClick={() => setAssigning(prev => ({ ...prev, [req.id]: { ...prev[req.id], createNew: !prev[req.id]?.createNew, entityId: '', newName: '' } }))}
+                  >
+                    <UserPlus className="w-3 h-3" />
+                    {cfg.createNew ? 'שייך לקיים' : 'צור חדש'}
+                  </Button>
+                )}
+
+                {/* שייך לרשומה קיימת */}
+                {cfg.role && !cfg.createNew && (
                   <Select
                     value={cfg.entityId || ''}
                     onValueChange={val => setAssigning(prev => ({ ...prev, [req.id]: { ...prev[req.id], entityId: val } }))}
@@ -124,6 +149,16 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
                       ))}
                     </SelectContent>
                   </Select>
+                )}
+
+                {/* יצירת רשומה חדשה */}
+                {cfg.role && cfg.createNew && (
+                  <Input
+                    className="w-48 h-8 text-sm"
+                    placeholder={`שם ${cfg.role === 'intern' ? 'המתמחה' : 'המומחה'}`}
+                    value={cfg.newName || ''}
+                    onChange={e => setAssigning(prev => ({ ...prev, [req.id]: { ...prev[req.id], newName: e.target.value } }))}
+                  />
                 )}
 
                 <Button
