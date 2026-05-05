@@ -126,9 +126,12 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    console.log('[InternForm] handleSubmit started, formData:', JSON.stringify(formData));
     const selectedExpert = experts.find(ex => ex.id === formData.expert_id);
+    console.log('[InternForm] selectedExpert:', selectedExpert);
     const existingFeedbacks = await base44.entities.Feedback.list();
     const code = generateProcedureCode(existingFeedbacks.length);
+    console.log('[InternForm] generated code:', code);
 
     const dataToSave = {
       procedure_id_code: code,
@@ -151,13 +154,17 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
     if (formData.intern_communication_rating > 0) dataToSave.intern_communication_rating = formData.intern_communication_rating;
     if (formData.intern_independence !== null) dataToSave.intern_independence = formData.intern_independence;
 
+    console.log('[InternForm] saving feedback:', JSON.stringify(dataToSave));
     const created = await base44.entities.Feedback.create(dataToSave);
+    console.log('[InternForm] feedback created, id:', created.id);
 
     // שלח מייל למומחה עם קישור למשוב
     const expertObj = experts.find(ex => ex.id === formData.expert_id);
     const expertEmail = expertObj?.email;
+    console.log('[InternForm] expertObj:', expertObj, '| expertEmail:', expertEmail);
     if (expertEmail) {
       try {
+        console.log('[InternForm] invoking sendFeedbackEmail...');
         await base44.functions.invoke('sendFeedbackEmail', {
           to: expertEmail,
           expertName: expertObj?.name,
@@ -169,14 +176,19 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
           feedbackId: created.id,
           appOrigin: window.location.origin
         });
-      } catch(e) { console.warn('email send error', e); }
+        console.log('[InternForm] sendFeedbackEmail success');
+      } catch(e) { console.warn('[InternForm] email send error:', e); }
+    } else {
+      console.warn('[InternForm] no expertEmail found - skipping email');
     }
 
     // הוסף 5 נקודות למתמחה על שליחת המשוב
     if (user?.id) {
       try {
+        console.log('[InternForm] adding points for intern, user.id:', user.id);
         await addPoints(user.id, internName, 'intern', 5);
-      } catch(e) { console.warn('intern points error', e); }
+        console.log('[InternForm] intern points added');
+      } catch(e) { console.warn('[InternForm] intern points error:', e); }
     }
 
     // שלח תזכורות פנימיות
