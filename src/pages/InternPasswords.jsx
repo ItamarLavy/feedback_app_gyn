@@ -18,6 +18,8 @@ export default function InternPasswords() {
   const [editingEmail, setEditingEmail] = useState(null);
   const [emailValue, setEmailValue] = useState('');
   const [savingEmail, setSavingEmail] = useState(null);
+  const [editingName, setEditingName] = useState(null);
+  const [nameValue, setNameValue] = useState('');
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
@@ -54,6 +56,13 @@ export default function InternPasswords() {
     queryClient.invalidateQueries({ queryKey: ['interns'] });
     setEditingEmail(null);
     setSavingEmail(null);
+  };
+
+  const handleSaveName = async (internId) => {
+    if (!nameValue.trim()) return;
+    await base44.entities.Intern.update(internId, { name: nameValue });
+    queryClient.invalidateQueries({ queryKey: ['interns'] });
+    setEditingName(null);
   };
 
   const handleDeleteIntern = async (internId) => {
@@ -159,12 +168,25 @@ export default function InternPasswords() {
                   )}
                   {interns.map((intern, index) => {
                     const isEditing = editingEmail === intern.id;
-                    const points = userPoints.find(p => p.user_name === intern.name)?.total_points ?? null;
+                    const isEditingN = editingName === intern.id;
+                    const points = userPoints.find(p => p.user_id === intern.id)?.total_points ?? null;
                     const feedbackCount = feedbacks.filter(f => f.intern_id === intern.id).length;
                     return (
                       <tr key={intern.id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="py-3 px-4 text-slate-500">{index + 1}</td>
-                        <td className="py-3 px-4 font-medium text-slate-800">{intern.name}</td>
+                        <td className="py-3 px-4 font-medium text-slate-800">
+                          {isEditingN ? (
+                            <div className="flex items-center gap-1">
+                              <Input value={nameValue} onChange={e => setNameValue(e.target.value)} className="h-7 text-sm" autoFocus onKeyDown={e => e.key === 'Enter' && handleSaveName(intern.id)} />
+                              <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={() => handleSaveName(intern.id)}><Check className="w-3 h-3" /></Button>
+                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingName(null)}>✕</Button>
+                            </div>
+                          ) : (
+                            <button onClick={() => { setEditingName(intern.id); setNameValue(intern.name || ''); }} className="hover:text-blue-600 hover:underline text-right">
+                              {intern.name}
+                            </button>
+                          )}
+                        </td>
                         <td className="py-3 px-4 min-w-[240px]">
                           {isEditing ? (
                             <div className="flex items-center gap-1">

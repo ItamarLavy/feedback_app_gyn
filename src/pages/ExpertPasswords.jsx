@@ -18,6 +18,8 @@ export default function ExpertPasswords() {
   const [editingEmail, setEditingEmail] = useState(null);
   const [emailValue, setEmailValue] = useState('');
   const [savingEmail, setSavingEmail] = useState(null);
+  const [editingName, setEditingName] = useState(null);
+  const [nameValue, setNameValue] = useState('');
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
@@ -54,6 +56,13 @@ export default function ExpertPasswords() {
     queryClient.invalidateQueries({ queryKey: ['experts'] });
     setEditingEmail(null);
     setSavingEmail(null);
+  };
+
+  const handleSaveName = async (expertId) => {
+    if (!nameValue.trim()) return;
+    await base44.entities.Expert.update(expertId, { name: nameValue });
+    queryClient.invalidateQueries({ queryKey: ['experts'] });
+    setEditingName(null);
   };
 
   const handleDeleteExpert = async (expertId) => {
@@ -159,12 +168,25 @@ export default function ExpertPasswords() {
                   )}
                   {experts.map((expert, index) => {
                     const isEditing = editingEmail === expert.id;
-                    const points = userPoints.find(p => p.user_name === expert.name)?.total_points ?? null;
+                    const isEditingN = editingName === expert.id;
+                    const points = userPoints.find(p => p.user_id === expert.id)?.total_points ?? null;
                     const feedbackCount = feedbacks.filter(f => f.expert_id === expert.id).length;
                     return (
                       <tr key={expert.id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="py-3 px-4 text-slate-500">{index + 1}</td>
-                        <td className="py-3 px-4 font-medium text-slate-800">{expert.name}</td>
+                        <td className="py-3 px-4 font-medium text-slate-800">
+                          {isEditingN ? (
+                            <div className="flex items-center gap-1">
+                              <Input value={nameValue} onChange={e => setNameValue(e.target.value)} className="h-7 text-sm" autoFocus onKeyDown={e => e.key === 'Enter' && handleSaveName(expert.id)} />
+                              <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={() => handleSaveName(expert.id)}><Check className="w-3 h-3" /></Button>
+                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingName(null)}>✕</Button>
+                            </div>
+                          ) : (
+                            <button onClick={() => { setEditingName(expert.id); setNameValue(expert.name || ''); }} className="hover:text-purple-600 hover:underline text-right">
+                              {expert.name}
+                            </button>
+                          )}
+                        </td>
                         <td className="py-3 px-4 min-w-[240px]">
                           {isEditing ? (
                             <div className="flex items-center gap-1">
