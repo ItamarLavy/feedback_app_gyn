@@ -118,17 +118,27 @@ export async function onFeedbackRequested({ feedbackId, internId, internName, ex
 }
 
 // כשמומחה מסיים למלא משוב: +5 נקודות לשניהם + שלח לאימייל מנהלים אם הייתה עיכוב
-export async function onFeedbackCompleted({ feedbackId, internId, internName, expertId, expertName, internEmail, expertEmail, requestedAt }) {
-  // נקודות - חפש לפי אימייל כדי למצוא את ה-User ID האמיתי
+export async function onFeedbackCompleted({ feedbackId, internId, internName, expertId, expertName, internEmail, expertEmail, requestedAt, internUserId, expertUserId }) {
+  // נקודות - קודם כל וודא שיש רשומת נקודות, ואז הוסף
   try {
     const allUsers = await base44.entities.User.list();
-    if (internEmail) {
-      const internUser = allUsers.find(u => u.email === internEmail);
-      if (internUser) await addPoints(internUser.id, 5);
+
+    // מתמחה - לפי userId אם יש, אחרת לפי email
+    const internUser = internUserId
+      ? allUsers.find(u => u.id === internUserId)
+      : allUsers.find(u => u.email === internEmail);
+    if (internUser) {
+      await getOrCreateUserPoints(internUser.id, internName, 'intern');
+      await addPoints(internUser.id, 5);
     }
-    if (expertEmail) {
-      const expertUser = allUsers.find(u => u.email === expertEmail);
-      if (expertUser) await addPoints(expertUser.id, 5);
+
+    // מומחה - לפי userId אם יש, אחרת לפי email
+    const expertUser = expertUserId
+      ? allUsers.find(u => u.id === expertUserId)
+      : allUsers.find(u => u.email === expertEmail);
+    if (expertUser) {
+      await getOrCreateUserPoints(expertUser.id, expertName, 'expert');
+      await addPoints(expertUser.id, 5);
     }
   } catch(e) { console.warn('points error', e); }
 

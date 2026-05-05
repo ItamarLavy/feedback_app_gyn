@@ -10,6 +10,7 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getFormTypeForProcedure } from '@/lib/epaFormTypeMapping';
 import { onFeedbackRequested, getOrCreateUserPoints, addPoints } from '@/hooks/useNotifications';
+
 import { useAuth } from '@/lib/AuthContext';
 
 const PROCEDURE_CATEGORIES = {
@@ -168,6 +169,14 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
           appOrigin: window.location.origin
         });
       } catch(e) { console.warn('email send error', e); }
+    }
+
+    // הוסף 5 נקודות למתמחה על שליחת המשוב
+    if (user?.id) {
+      try {
+        await getOrCreateUserPoints(user.id, internName, 'intern');
+        await addPoints(user.id, 5);
+      } catch(e) { console.warn('intern points error', e); }
     }
 
     // שלח תזכורות פנימיות

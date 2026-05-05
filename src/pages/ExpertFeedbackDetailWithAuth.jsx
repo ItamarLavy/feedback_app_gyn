@@ -139,6 +139,7 @@ export default function ExpertFeedbackDetailWithAuth() {
         expertName: expert?.name,
         internEmail,
         expertEmail: user?.email,
+        expertUserId: user?.id,
         requestedAt: feedback.intern_submitted_date
       });
     } catch(e) { console.warn('points/notification error', e); }
