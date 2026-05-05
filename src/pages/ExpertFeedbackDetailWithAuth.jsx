@@ -128,8 +128,9 @@ export default function ExpertFeedbackDetailWithAuth() {
     try {
       // מצא את האימייל של המתמחה מה-Intern entity
       let internEmail = null;
-      const internRecord = await base44.entities.Intern.filter({ id: feedback.intern_id });
-      if (internRecord.length > 0) internEmail = internRecord[0].email;
+      const allInterns = await base44.entities.Intern.list();
+      const internRecord = allInterns.find(i => i.id === feedback.intern_id);
+      if (internRecord) internEmail = internRecord.email;
 
       await onFeedbackCompleted({
         feedbackId: feedback.id,

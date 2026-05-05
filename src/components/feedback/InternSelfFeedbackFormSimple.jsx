@@ -161,6 +161,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
         await base44.functions.invoke('sendFeedbackEmail', {
           to: expertEmail,
           expertName: expertObj?.name,
+          expertId: formData.expert_id,
           internName,
           procedureType: formData.procedure_type,
           procedureCategory: formData.procedure_category,
@@ -174,8 +175,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
     // הוסף 5 נקודות למתמחה על שליחת המשוב
     if (user?.id) {
       try {
-        await getOrCreateUserPoints(user.id, internName, 'intern');
-        await addPoints(user.id, 5);
+        await addPoints(user.id, internName, 'intern', 5);
       } catch(e) { console.warn('intern points error', e); }
     }
 

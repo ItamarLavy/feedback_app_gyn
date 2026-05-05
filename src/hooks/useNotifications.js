@@ -18,14 +18,12 @@ export async function getOrCreateUserPoints(userId, userName, userRole) {
   });
 }
 
-// הוסף נקודות למשתמש
-export async function addPoints(userId, points) {
-  const existing = await base44.entities.UserPoints.filter({ user_id: userId });
-  if (existing.length > 0) {
-    await base44.entities.UserPoints.update(existing[0].id, {
-      total_points: (existing[0].total_points || 0) + points
-    });
-  }
+// הוסף נקודות למשתמש (יוצר רשומה אם לא קיימת)
+export async function addPoints(userId, userName, userRole, points) {
+  const record = await getOrCreateUserPoints(userId, userName, userRole);
+  await base44.entities.UserPoints.update(record.id, {
+    total_points: (record.total_points || 0) + points
+  });
 }
 
 // צור התראה + שלח אימייל
@@ -128,8 +126,7 @@ export async function onFeedbackCompleted({ feedbackId, internId, internName, ex
       ? allUsers.find(u => u.id === internUserId)
       : allUsers.find(u => u.email === internEmail);
     if (internUser) {
-      await getOrCreateUserPoints(internUser.id, internName, 'intern');
-      await addPoints(internUser.id, 5);
+      await addPoints(internUser.id, internName, 'intern', 5);
     }
 
     // מומחה - לפי userId אם יש, אחרת לפי email
@@ -137,8 +134,7 @@ export async function onFeedbackCompleted({ feedbackId, internId, internName, ex
       ? allUsers.find(u => u.id === expertUserId)
       : allUsers.find(u => u.email === expertEmail);
     if (expertUser) {
-      await getOrCreateUserPoints(expertUser.id, expertName, 'expert');
-      await addPoints(expertUser.id, 5);
+      await addPoints(expertUser.id, expertName, 'expert', 5);
     }
   } catch(e) { console.warn('points error', e); }
 

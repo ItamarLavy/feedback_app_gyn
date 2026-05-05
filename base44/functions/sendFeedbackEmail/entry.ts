@@ -6,13 +6,13 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { to, expertName, internName, procedureType, procedureCategory, procedureDate, feedbackId, appOrigin } = await req.json();
+    const { to, expertName, expertId, internName, procedureType, procedureCategory, procedureDate, feedbackId, appOrigin } = await req.json();
 
     if (!to || !feedbackId) {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const feedbackUrl = `${appOrigin}/ExpertFeedbackDetailWithAuth?feedback_id=${feedbackId}`;
+    const feedbackUrl = `${appOrigin}/ExpertFeedbackDetailWithAuth?id=${expertId}`;
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to,
