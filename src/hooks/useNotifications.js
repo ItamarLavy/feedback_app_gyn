@@ -119,22 +119,19 @@ export async function onFeedbackRequested({ feedbackId, internId, internName, ex
 export async function onFeedbackCompleted({ feedbackId, internId, internName, expertId, expertName, internEmail, expertEmail, requestedAt, internUserId, expertUserId }) {
   // נקודות - קודם כל וודא שיש רשומת נקודות, ואז הוסף
   try {
-    const allUsers = await base44.entities.User.list();
-
     // מתמחה - לפי userId אם יש, אחרת לפי email
-    const internUser = internUserId
-      ? allUsers.find(u => u.id === internUserId)
-      : allUsers.find(u => u.email === internEmail);
-    if (internUser) {
-      await addPoints(internUser.id, internName, 'intern', 5);
+    if (internUserId) {
+      await addPoints(internUserId, internName, 'intern', 5);
+    } else if (internEmail) {
+      const allUsers = await base44.entities.User.list();
+      const internUser = allUsers.find(u => u.email === internEmail);
+      if (internUser) await addPoints(internUser.id, internName, 'intern', 5);
     }
 
-    // מומחה - לפי userId אם יש, אחרת לפי email
-    const expertUser = expertUserId
-      ? allUsers.find(u => u.id === expertUserId)
-      : allUsers.find(u => u.email === expertEmail);
-    if (expertUser) {
-      await addPoints(expertUser.id, expertName, 'expert', 5);
+    // מומחה - משתמש ב-Expert entity id ישירות (לא User id, כי מומחים הם לאו דווקא users)
+    if (expertId) {
+      await addPoints(expertId, expertName, 'expert', 5);
+      console.log('[onFeedbackCompleted] added 5 points to expert:', expertName, expertId);
     }
   } catch(e) { console.warn('points error', e); }
 

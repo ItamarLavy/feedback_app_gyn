@@ -79,11 +79,12 @@ export default function ExpertFeedbackDetailWithAuth() {
   });
 
   useEffect(() => {
-    if (!expert || !user?.id) return;
-    getOrCreateUserPoints(user.id, expert.name, 'expert').catch(() => {});
-    sendExpertWeeklySummary(user.id, expert.name, user.email).catch(() => {});
-    checkExpertWeeklyReminder(user.id, expert.name, user.email).catch(() => {});
-  }, [expert?.id, user?.id]);
+    if (!expert) return;
+    // השתמש ב-Expert entity id (לא user id) כי מומחים לאו דווקא הם users
+    getOrCreateUserPoints(expertId, expert.name, 'expert').catch(() => {});
+    sendExpertWeeklySummary(expertId, expert.name, expert.email).catch(() => {});
+    checkExpertWeeklyReminder(expertId, expert.name, expert.email).catch(() => {});
+  }, [expert?.id]);
 
   const pendingFeedbacks = allFeedbacks.filter(f => f.status === 'pending_expert_review');
   const completedFeedbacks = allFeedbacks.filter(f => f.status === 'completed');
