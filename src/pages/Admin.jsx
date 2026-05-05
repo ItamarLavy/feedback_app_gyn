@@ -6,6 +6,7 @@ import { createPageUrl } from '@/utils';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 import AnomalousReports from '../components/admin/AnomalousReports';
+import PointsLeaderboard from '../components/admin/PointsLeaderboard';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import { 
@@ -325,6 +326,9 @@ export default function Admin() {
         <div ref={accessRequestsRef}>
           <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
         </div>
+
+        {/* Points Leaderboard */}
+        <PointsLeaderboard />
 
         {/* Anomalous Reports */}
         <div className="mb-8">

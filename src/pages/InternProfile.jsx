@@ -270,11 +270,6 @@ export default function InternProfile() {
           </Link>
         </div>
 
-        {/* Manual Procedure Entry */}
-        <div className="mb-8">
-          <ManualProcedureEntry internId={internId} internName={intern.name} />
-        </div>
-
         {/* Add Feedback Form */}
         <div className="mb-8">
           {showFeedbackForm ? (
@@ -305,6 +300,11 @@ export default function InternProfile() {
               הוסף משוב עצמי חדש
             </Button>
           )}
+        </div>
+
+        {/* Manual Procedure Entry */}
+        <div className="mb-8">
+          <ManualProcedureEntry internId={internId} internName={intern.name} />
         </div>
 
         {/* Progress Tracking - Collapsible */}

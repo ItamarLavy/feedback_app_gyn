@@ -167,7 +167,7 @@ export default function ExpertFeedbackDetailWithAuth() {
             </div>
           </div>
           <Link 
-            to={createPageUrl('Experts')}
+            to={createPageUrl('Home')}
             className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 transition-all"
           >
             חזרה
