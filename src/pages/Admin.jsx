@@ -11,7 +11,7 @@ import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
-  Star, Search, Filter, Clock, Key, BookOpen, Hash, Calendar, User, Stethoscope, Trash2, X, Mail
+  Star, Search, Filter, Clock, Key, BookOpen, Hash, User, Stethoscope, Trash2, X, Mail
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -92,14 +92,6 @@ export default function Admin() {
     queryFn: () => base44.entities.Expert.list(),
     enabled: isAuthenticated
   });
-
-  const { data: meetings = [] } = useQuery({
-    queryKey: ['meetings'],
-    queryFn: () => base44.entities.FeedbackMeeting.list(),
-    enabled: isAuthenticated
-  });
-
-
 
   const { data: userPoints = [] } = useQuery({
     queryKey: ['userPoints'],
@@ -310,13 +302,7 @@ export default function Admin() {
                     <p className="text-sm text-slate-600">לחץ על שם מתמחה לצפייה מפורטת. ניתן לתזמן פגישות מנטורינג, לצפות בסיכומי AI ובדוחות חריגים, ולמחוק משובים במידת הצורך.</p>
                   </div>
                 </div>
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">5</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">ניהול פגישות משוב</h4>
-                    <p className="text-sm text-slate-600">ניתן לתזמן פגישות משוב עם מתמחים ולהזמין מומחים להשתתף. תזכורות נשלחות אוטומטית יומיים לפני הפגישה ובבוקר יום הפגישה.</p>
-                  </div>
-                </div>
+
               </div>
             </CardContent>
           )}
@@ -405,25 +391,7 @@ export default function Admin() {
 
 
 
-        {/* Feedback Meetings Management */}
-        <Link to={createPageUrl('FeedbackMeetingsManagement')} className="mb-8">
-          <Card className="border-0 shadow-xl hover:shadow-2xl transition-all cursor-pointer group bg-gradient-to-br from-white via-teal-50 to-emerald-50">
-            <CardContent className="p-5 md:p-8">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="w-12 md:w-14 h-12 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-all flex-shrink-0">
-                    <Calendar className="w-6 md:w-7 h-6 md:h-7 text-white" />
-                   </div>
-                   <div>
-                     <h3 className="text-lg md:text-xl font-bold text-slate-800 mb-1 md:mb-2">ניהול פגישות משוב</h3>
-                     <p className="text-sm md:text-base text-slate-600">תזמון וניהול פגישות משוב עם מתמחים ומומחים</p>
-                   </div>
-                 </div>
-                 <ArrowLeft className="w-5 h-5 text-slate-400 flex-shrink-0" />
-               </div>
-             </CardContent>
-           </Card>
-         </Link>
+
 
         {/* Filters */}
         <div className="space-y-4">

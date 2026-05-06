@@ -5,13 +5,9 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import InternStats from '../components/admin/InternStats';
-import RotationManager from '../components/admin/RotationManager';
-import RotationMap from '../components/intern/RotationMap';
-import MyFeedbackMeetings from '../components/intern/MyFeedbackMeetings';
-import ManagerNotes from '../components/admin/ManagerNotes';
 import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
 import { User, ArrowLeft, ClipboardList, ListChecks, Shield } from 'lucide-react';
-import MeetingSummaryManager from '../components/admin/MeetingSummaryManager';
+import AIProgressSummary from '../components/admin/AIProgressSummary';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -166,28 +162,6 @@ export default function InternDetails() {
     enabled: !!internId
   });
 
-  const { data: rotations = [] } = useQuery({
-    queryKey: ['rotations', internId],
-    queryFn: async () => {
-      return base44.entities.Rotation.filter({ intern_id: internId }, 'start_date');
-    },
-    enabled: !!internId
-  });
-
-  const { data: meetings = [] } = useQuery({
-    queryKey: ['meetings', internId],
-    queryFn: async () => {
-      return base44.entities.FeedbackMeeting.filter({ intern_id: internId }, '-meeting_date');
-    },
-    enabled: !!internId
-  });
-
-  const { data: managerNotes = [] } = useQuery({
-    queryKey: ['manager-notes', internId],
-    queryFn: () => base44.entities.ManagerNote.filter({ intern_id: internId }, '-created_date'),
-    enabled: !!internId
-  });
-
   const { data: manualCounts = [] } = useQuery({
     queryKey: ['manual-procedure-counts', internId],
     queryFn: () => base44.entities.ManualProcedureCount.filter({ intern_id: internId }),
@@ -291,32 +265,13 @@ export default function InternDetails() {
         <div className="mb-8">
           <InternStats 
             feedbacks={feedbacks} 
-            internName={intern?.name} 
-            rotations={rotations}
-            meetings={meetings}
-            managerNotes={managerNotes}
+            internName={intern?.name}
           />
         </div>
 
-        {/* Rotation Management & Map */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <RotationManager intern={intern} rotations={rotations} />
-          <RotationMap rotations={rotations} />
-        </div>
-
-        {/* Feedback Meetings */}
+        {/* AI Summary */}
         <div className="mb-8">
-          <MyFeedbackMeetings meetings={meetings} />
-        </div>
-
-        {/* Manager Notes */}
-        <div className="mb-8">
-          <ManagerNotes intern={intern} />
-        </div>
-
-        {/* Meeting Summaries + AI */}
-        <div className="mb-8">
-          <MeetingSummaryManager intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} managerNotes={managerNotes} rotations={rotations} />
+          <AIProgressSummary intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} />
         </div>
 
         {/* Manual Procedure Entry */}

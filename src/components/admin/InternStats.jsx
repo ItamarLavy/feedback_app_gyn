@@ -10,7 +10,7 @@ const EXPERT_RATING_KEYS = [
   { key: 'expert_independence_rating', label: 'עצמאות', icon: UserCog }
 ];
 
-export default function InternStats({ feedbacks, internName, rotations, meetings, managerNotes }) {
+export default function InternStats({ feedbacks, internName }) {
 
 
   // חישוב ממוצע כללי (רק מדירוגי מומחים)
