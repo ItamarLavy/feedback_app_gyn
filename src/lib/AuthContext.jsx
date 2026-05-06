@@ -58,13 +58,16 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
       
-      // Check if user exists in interns or experts
+      // Check if user exists in interns, experts, or managers
       if (currentUser?.email) {
-        const interns = await base44.entities.Intern.filter({ email: currentUser.email });
-        const experts = await base44.entities.Expert.filter({ email: currentUser.email });
-        
-        // If user not found in either list, create access request
-        if (interns.length === 0 && experts.length === 0) {
+        const [interns, experts, managers] = await Promise.all([
+          base44.entities.Intern.filter({ email: currentUser.email }),
+          base44.entities.Expert.filter({ email: currentUser.email }),
+          base44.entities.Manager.filter({ email: currentUser.email }),
+        ]);
+
+        // If user not found in any list, create access request
+        if (interns.length === 0 && experts.length === 0 && managers.length === 0) {
           const existing = await base44.entities.AccessRequest.filter({ email: currentUser.email });
           if (existing.length === 0) {
             await base44.entities.AccessRequest.create({
