@@ -8,6 +8,7 @@ import InternStats from '../components/admin/InternStats';
 import { User, ArrowLeft, ClipboardList, ListChecks, Shield } from 'lucide-react';
 import AIProgressSummary from '../components/admin/AIProgressSummary';
 import RotationPlanEditor from '../components/admin/RotationPlanEditor';
+import InternFilesManager from '../components/admin/InternFilesManager';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -168,6 +169,12 @@ export default function InternDetails() {
     enabled: !!internId
   });
 
+  const { data: internFiles = [] } = useQuery({
+    queryKey: ['intern-files', internId],
+    queryFn: () => base44.entities.MeetingSummary.filter({ intern_id: internId }, '-meeting_date'),
+    enabled: !!internId
+  });
+
   const handleDeleteFeedback = async (feedbackId) => {
     await base44.entities.Feedback.delete(feedbackId);
     queryClient.invalidateQueries({ queryKey: ['feedbacks', internId] });
@@ -274,9 +281,14 @@ export default function InternDetails() {
           <RotationPlanEditor intern={intern} />
         </div>
 
+        {/* Intern Files */}
+        <div className="mb-8">
+          <InternFilesManager intern={intern} />
+        </div>
+
         {/* AI Summary */}
         <div className="mb-8">
-          <AIProgressSummary intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} />
+          <AIProgressSummary intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} internFiles={internFiles} />
         </div>
 
         {/* Detailed Progress Button */}

@@ -13,7 +13,7 @@ const PROCEDURE_REQUIREMENTS = {
   "כללי": { total: 37 },
 };
 
-export default function AIProgressSummary({ intern, feedbacks = [], manualCounts = [] }) {
+export default function AIProgressSummary({ intern, feedbacks = [], manualCounts = [], internFiles = [] }) {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSummary, setAiSummary] = useState('');
 
@@ -29,8 +29,14 @@ export default function AIProgressSummary({ intern, feedbacks = [], manualCounts
     }).join('\n');
 
     const feedbackText = feedbacks.map(f =>
-      `[${f.procedure_date || '?'}] ${f.procedure_category} - ${f.procedure_type} | ידע: ${f.expert_knowledge_rating || '-'} מיומנות: ${f.expert_manual_skill_rating || '-'} מקצועיות: ${f.expert_professionalism_rating || '-'} עצמאות: ${f.expert_independence_rating || '-'} | "${f.expert_verbal_feedback || ''}"`
+      `[${f.procedure_date || '?'}] ${f.procedure_category} - ${f.procedure_type} | ידע: ${f.expert_knowledge_rating || '-'} מיומנות: ${f.expert_clinical_skill_rating || '-'} תקשורת: ${f.expert_communication_rating || '-'} | "${f.expert_verbal_feedback || ''}"`
     ).join('\n');
+
+    const meetingsText = internFiles.length > 0
+      ? internFiles.map(f =>
+          `[${f.meeting_date || '?'}] (${f.bucket}) ${f.title}${f.notes ? ': ' + f.notes : ''}`
+        ).join('\n')
+      : 'אין מסמכים/פגישות מתועדות';
 
     const prompt = `אתה מנחה רפואי בכיר. סכם בעברית את התקדמות המתמחה ${intern?.name} בצורה קצרה ומועילה.
 
@@ -40,11 +46,15 @@ ${categoryProgress}
 === משובי מומחים (${feedbacks.length} סה"כ) ===
 ${feedbackText || 'אין משובים עדיין'}
 
+=== פגישות מנטורינג ומסמכים אישיים ===
+${meetingsText}
+
 אנא כתוב סיכום קצר (3-5 פסקאות) שיכלול:
 1. מצב כולל - כמה ביצע מתוך הנדרש (באחוזים גסים)
 2. נקודות חוזק שעולות מהמשובים
 3. תחומים לשיפור
-4. המלצה לפעולה הבאה`;
+4. תובנות מהפגישות ומהמסמכים האישיים (אם יש)
+5. המלצה לפעולה הבאה`;
 
     const result = await base44.integrations.Core.InvokeLLM({
       prompt,
@@ -74,7 +84,7 @@ ${feedbackText || 'אין משובים עדיין'}
             : <><Sparkles className="w-4 h-4 ml-2" />הפק סיכום AI</>
           }
         </Button>
-        <p className="text-xs text-slate-400 text-center">משקלל משובי מומחים וקצב ההתקדמות</p>
+        <p className="text-xs text-slate-400 text-center">משקלל משובי מומחים, פגישות מנטורינג ומסמכים אישיים</p>
 
         {aiSummary && (
           <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-5">
