@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Plus, Trash2, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 import { format, parseISO, differenceInDays } from 'date-fns';
 
-const DEPARTMENTS = ['גניקולוגיה', 'מיילדות', 'פוריות', 'אונקולוגיה', 'כללי', 'רוטציה חיצונית'];
+const DEPARTMENTS = ['גניקולוגיה', 'מיילדות', 'פוריות', 'כללי', 'רוטציה חיצונית'];
 
 const emptyPlan = {
   department: '',
