@@ -75,6 +75,9 @@ function InternRotationCard({ plan, interns, onToggleMeeting }) {
           >
             {plan.intern_name || intern?.name || '—'}
           </Link>
+          {plan.external_location && (
+            <p className="text-xs text-orange-600 font-medium mt-0.5">📍 {plan.external_location}</p>
+          )}
           {plan.stage_name && (
             <p className="text-xs text-slate-500 mt-0.5">{plan.stage_name}</p>
           )}

@@ -9,11 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Plus, Trash2, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 import { format, parseISO, differenceInDays } from 'date-fns';
 
-const DEPARTMENTS = ['גניקולוגיה', 'מיילדות', 'פוריות', 'אונקולוגיה', 'כללי'];
+const DEPARTMENTS = ['גניקולוגיה', 'מיילדות', 'פוריות', 'אונקולוגיה', 'כללי', 'רוטציה חיצונית'];
 
 const emptyPlan = {
   department: '',
   stage_name: '',
+  external_location: '',
   start_date: '',
   end_date: '',
   is_current: false,
@@ -124,6 +125,17 @@ export default function RotationPlanEditor({ intern }) {
                   className="h-9 bg-white"
                 />
               </div>
+              {formData.department === 'רוטציה חיצונית' && (
+                <div className="col-span-2">
+                  <label className="text-xs text-slate-600 mb-1 block">מיקום הרוטציה (פנימית, כירורגיה וכו') *</label>
+                  <Input
+                    placeholder="לדוג': מחלקה פנימית, כירורגיה, ניתוחים..."
+                    value={formData.external_location}
+                    onChange={e => setFormData(d => ({ ...d, external_location: e.target.value }))}
+                    className="h-9 bg-white border-orange-300 focus:border-orange-500"
+                  />
+                </div>
+              )}
               <div>
                 <label className="text-xs text-slate-600 mb-1 block">תאריך התחלה *</label>
                 <Input
@@ -190,6 +202,9 @@ export default function RotationPlanEditor({ intern }) {
                       <span>{format(parseISO(plan.start_date), 'dd/MM/yyyy')} – {format(parseISO(plan.end_date), 'dd/MM/yyyy')}</span>
                       <span className="text-slate-400">({getDuration(plan.start_date, plan.end_date)})</span>
                     </div>
+                    {plan.external_location && (
+                      <p className="text-xs text-orange-600 font-medium mt-1">📍 {plan.external_location}</p>
+                    )}
                     {plan.notes && (
                       <p className="text-xs text-slate-400 mt-1">{plan.notes}</p>
                     )}

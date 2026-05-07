@@ -337,6 +337,7 @@ export default function Admin() {
           <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
           <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
           <DepartmentPanel department="אונקולוגיה" label="אונקולוגיה" interns={interns} />
+          <DepartmentPanel department="רוטציה חיצונית" label="רוטציה חיצונית" interns={interns} />
         </div>
 
         {/* Interns List - Collapsible */}
