@@ -356,59 +356,58 @@ export default function ExpertFeedbackDetailWithAuth() {
                     {/* Side-by-side comparison form */}
                     {editingId === feedback.id ? (
                       <div className="border-2 border-teal-300 rounded-xl overflow-hidden shadow-md">
-                        {/* Header row */}
-                        <div className="grid grid-cols-3 bg-slate-100 text-xs font-semibold text-slate-600 px-3 py-2">
-                          <span>קטגוריה</span>
-                          <span className="text-center text-blue-700">המתמחה</span>
-                          <span className="text-center text-teal-700">המומחה (אתה)</span>
-                        </div>
-
                         <div className="divide-y divide-slate-100 bg-white">
                           {getRatingFields(feedback.form_type || 'procedural').map(field => (
-                            <div key={field.key} className="grid grid-cols-3 items-center gap-2 px-3 py-3">
-                              <span className="text-sm text-slate-700 font-medium">{field.label}</span>
-                              {/* Intern read-only */}
-                              <div className="flex justify-center">
-                                {(feedback[field.internKey] || 0) > 0
-                                  ? <StarRating value={feedback[field.internKey]} readOnly />
-                                  : <span className="text-xs text-slate-400">לא מילא</span>
-                                }
-                              </div>
-                              {/* Expert editable */}
-                              <div className="flex justify-center">
-                                <StarRating
-                                  value={expertFeedback[field.expertKey] || 0}
-                                  onChange={v => setExpertFeedback(prev => ({ ...prev, [field.expertKey]: v }))}
-                                />
+                            <div key={field.key} className="px-3 py-3 space-y-2">
+                              <span className="text-sm text-slate-700 font-semibold block">{field.label}</span>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex flex-col items-center gap-1">
+                                  <span className="text-xs text-blue-600 font-medium">המתמחה</span>
+                                  {(feedback[field.internKey] || 0) > 0
+                                    ? <StarRating value={feedback[field.internKey]} readOnly />
+                                    : <span className="text-xs text-slate-400">לא מילא</span>
+                                  }
+                                </div>
+                                <div className="flex flex-col items-center gap-1">
+                                  <span className="text-xs text-teal-600 font-medium">המומחה (אתה)</span>
+                                  <StarRating
+                                    value={expertFeedback[field.expertKey] || 0}
+                                    onChange={v => setExpertFeedback(prev => ({ ...prev, [field.expertKey]: v }))}
+                                  />
+                                </div>
                               </div>
                             </div>
                           ))}
 
                           {/* Independence */}
                           {['procedural', 'clinical_management', 'ward_management'].includes(feedback.form_type) && (
-                            <div className="grid grid-cols-3 items-center gap-2 px-3 py-3">
-                              <span className="text-sm text-slate-700 font-medium">עצמאות</span>
-                              {/* Intern */}
-                              <div className="flex justify-center">
-                                {feedback.intern_independence !== null && feedback.intern_independence !== undefined
-                                  ? <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${feedback.intern_independence ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>
-                                      {feedback.intern_independence ? 'כן' : 'לא'}
-                                    </span>
-                                  : <span className="text-xs text-slate-400">—</span>
-                                }
-                              </div>
-                              {/* Expert */}
-                              <div className="flex justify-center gap-2">
-                                {[{ val: true, label: 'כן' }, { val: false, label: 'לא' }].map(opt => (
-                                  <button key={String(opt.val)} type="button"
-                                    onClick={() => setExpertFeedback(prev => ({ ...prev, expert_independence: opt.val }))}
-                                    className={`px-3 py-1 text-xs rounded border font-medium transition-colors ${
-                                      expertFeedback.expert_independence === opt.val
-                                        ? 'bg-teal-600 text-white border-teal-600'
-                                        : 'bg-white text-slate-600 border-slate-300 hover:border-teal-400'
-                                    }`}
-                                  >{opt.label}</button>
-                                ))}
+                            <div className="px-3 py-3 space-y-2">
+                              <span className="text-sm text-slate-700 font-semibold block">עצמאות</span>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex flex-col items-center gap-1">
+                                  <span className="text-xs text-blue-600 font-medium">המתמחה</span>
+                                  {feedback.intern_independence !== null && feedback.intern_independence !== undefined
+                                    ? <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${feedback.intern_independence ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>
+                                        {feedback.intern_independence ? 'כן' : 'לא'}
+                                      </span>
+                                    : <span className="text-xs text-slate-400">—</span>
+                                  }
+                                </div>
+                                <div className="flex flex-col items-center gap-1">
+                                  <span className="text-xs text-teal-600 font-medium">המומחה (אתה)</span>
+                                  <div className="flex gap-2">
+                                    {[{ val: true, label: 'כן' }, { val: false, label: 'לא' }].map(opt => (
+                                      <button key={String(opt.val)} type="button"
+                                        onClick={() => setExpertFeedback(prev => ({ ...prev, expert_independence: opt.val }))}
+                                        className={`px-3 py-1 text-xs rounded border font-medium transition-colors ${
+                                          expertFeedback.expert_independence === opt.val
+                                            ? 'bg-teal-600 text-white border-teal-600'
+                                            : 'bg-white text-slate-600 border-slate-300 hover:border-teal-400'
+                                        }`}
+                                      >{opt.label}</button>
+                                    ))}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           )}
