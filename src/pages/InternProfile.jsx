@@ -7,8 +7,7 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, UserCircle2, Calendar, Hash, Star, Plus, BarChart3, ClipboardList } from 'lucide-react';
-import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
+import { ArrowLeft, UserCircle2, Calendar, Hash, Star, BarChart3, ClipboardList } from 'lucide-react';
 import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/AuthContext';
@@ -143,7 +142,6 @@ export default function InternProfile() {
   const internId = urlParams.get('id');
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [showAvatarSetup, setShowAvatarSetup] = useState(false);
   const pullToRefreshRef = usePullToRefresh(['intern-feedbacks', internId]);
 
@@ -159,12 +157,6 @@ export default function InternProfile() {
   const { data: feedbacks = [] } = useQuery({
     queryKey: ['intern-feedbacks', internId],
     queryFn: () => base44.entities.Feedback.filter({ intern_id: internId }, '-created_date'),
-    enabled: !!internId
-  });
-
-  const { data: experts = [] } = useQuery({
-    queryKey: ['experts'],
-    queryFn: () => base44.entities.Expert.list(),
     enabled: !!internId
   });
 
@@ -269,37 +261,7 @@ export default function InternProfile() {
           </Link>
         </div>
 
-        {/* Add Feedback Form */}
-        <div className="mb-8">
-          {showFeedbackForm ? (
-            <div>
-              <InternSelfFeedbackFormSimple
-                internId={internId}
-                internName={intern.name}
-                experts={experts}
-                onSuccess={() => {
-                  queryClient.invalidateQueries({ queryKey: ['intern-feedbacks', internId] });
-                  setShowFeedbackForm(false);
-                }}
-              />
-              <Button
-                variant="outline"
-                onClick={() => setShowFeedbackForm(false)}
-                className="mt-4 w-full"
-              >
-                ביטול
-              </Button>
-            </div>
-          ) : (
-            <Button
-               onClick={() => setShowFeedbackForm(true)}
-               className="w-full h-14 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold text-lg shadow-lg"
-             >
-              <Plus className="w-5 h-5 ml-2" />
-              הוסף משוב עצמי חדש
-            </Button>
-          )}
-        </div>
+
 
         {/* Progress Tracking - Collapsible */}
         <div className="mb-8">
