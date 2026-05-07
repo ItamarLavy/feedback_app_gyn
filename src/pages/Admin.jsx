@@ -6,6 +6,7 @@ import { createPageUrl } from '@/utils';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 import AnomalousReports from '../components/admin/AnomalousReports';
+import DepartmentPanel from '../components/admin/DepartmentPanel';
 import PointsLeaderboard from '../components/admin/PointsLeaderboard';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
@@ -32,7 +33,8 @@ export default function Admin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
   const [showAdminInstructions, setShowAdminInstructions] = useState(false);
-  const [selectedModal, setSelectedModal] = useState(null); // 'interns', 'experts', or 'managers'
+  const [showInternsList, setShowInternsList] = useState(false);
+  const [selectedModal, setSelectedModal] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
   const pullToRefreshRef = usePullToRefresh(['feedbacks']);
@@ -321,12 +323,33 @@ export default function Admin() {
           <AnomalousReports feedbacks={feedbacks} interns={interns} />
         </div>
 
-        {/* Interns List */}
+        {/* Department Panels */}
+        <div className="space-y-4 mb-8">
+          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <Stethoscope className="w-5 h-5 text-teal-600" />
+            מעקב לפי מחלקה
+          </h2>
+          <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
+          <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
+          <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
+          <DepartmentPanel department="אונקולוגיה" label="אונקולוגיה" interns={interns} />
+        </div>
+
+        {/* Interns List - Collapsible */}
          <Card className="border-0 shadow-lg mb-8">
-           <CardHeader>
-             <CardTitle className="text-lg">מתמחים</CardTitle>
+           <CardHeader
+             className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+             onClick={() => setShowInternsList(prev => !prev)}
+           >
+             <CardTitle className="flex items-center justify-between text-lg">
+               <div className="flex items-center gap-2">
+                 <Users className="w-5 h-5 text-teal-600" />
+                 מתמחים ({interns.length})
+               </div>
+               <span className="text-slate-400 text-lg">{showInternsList ? '▲' : '▼'}</span>
+             </CardTitle>
            </CardHeader>
-           <CardContent>
+           {showInternsList && <CardContent>
              <div className="flex flex-col gap-3">
                   {interns.map(intern => {
                     const internFeedbacks = feedbacks.filter(f => f.intern_id === intern.id);
@@ -386,7 +409,7 @@ export default function Admin() {
                     <p className="text-center text-slate-500 py-8">אין מתמחים במערכת</p>
                   )}
                 </div>
-           </CardContent>
+           </CardContent>}
          </Card>
 
 

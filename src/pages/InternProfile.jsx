@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, UserCircle2, Calendar, Hash, Star, Plus, BarChart3, ClipboardList } from 'lucide-react';
 import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
-import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
 import { format } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/lib/AuthContext';
@@ -300,11 +299,6 @@ export default function InternProfile() {
               הוסף משוב עצמי חדש
             </Button>
           )}
-        </div>
-
-        {/* Manual Procedure Entry */}
-        <div className="mb-8">
-          <ManualProcedureEntry internId={internId} internName={intern.name} />
         </div>
 
         {/* Progress Tracking - Collapsible */}

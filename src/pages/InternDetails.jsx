@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import InternStats from '../components/admin/InternStats';
-import ManualProcedureEntry from '../components/intern/ManualProcedureEntry';
 import { User, ArrowLeft, ClipboardList, ListChecks, Shield } from 'lucide-react';
 import AIProgressSummary from '../components/admin/AIProgressSummary';
+import RotationPlanEditor from '../components/admin/RotationPlanEditor';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -269,14 +269,14 @@ export default function InternDetails() {
           />
         </div>
 
+        {/* Rotation Plan */}
+        <div className="mb-8">
+          <RotationPlanEditor intern={intern} />
+        </div>
+
         {/* AI Summary */}
         <div className="mb-8">
           <AIProgressSummary intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} />
-        </div>
-
-        {/* Manual Procedure Entry */}
-        <div className="mb-8">
-          <ManualProcedureEntry internId={internId} internName={intern?.name} />
         </div>
 
         {/* Detailed Progress Button */}
