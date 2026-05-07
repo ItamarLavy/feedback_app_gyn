@@ -261,7 +261,7 @@ export default function InternProfile() {
             </div>
           </div>
           <Link 
-            to={createPageUrl('Interns')}
+            to={createPageUrl('Home')}
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 transition-all"
           >
             חזרה
