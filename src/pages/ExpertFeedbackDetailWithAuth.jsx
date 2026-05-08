@@ -218,7 +218,7 @@ export default function ExpertFeedbackDetailWithAuth() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
-      <div className="max-w-5xl mx-auto px-5 py-8 md:py-12">
+      <div className="max-w-5xl mx-auto px-4 py-8 md:py-12 pb-40 md:pb-12">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">

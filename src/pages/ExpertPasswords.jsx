@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2 } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -39,16 +39,16 @@ export default function ExpertPasswords() {
   });
 
   const { data: userPoints = [] } = useQuery({
-     queryKey: ['userPoints-experts'],
-     queryFn: () => base44.entities.UserPoints.filter({ user_role: 'expert' }),
-     enabled: isAuthenticated
-   });
+    queryKey: ['userPoints-experts'],
+    queryFn: () => base44.entities.UserPoints.filter({ user_role: 'expert' }),
+    enabled: isAuthenticated
+  });
 
-   const { data: feedbacks = [] } = useQuery({
-     queryKey: ['feedbacks'],
-     queryFn: () => base44.entities.Feedback.list(),
-     enabled: isAuthenticated
-   });
+  const { data: feedbacks = [] } = useQuery({
+    queryKey: ['feedbacks'],
+    queryFn: () => base44.entities.Feedback.list(),
+    enabled: isAuthenticated
+  });
 
   const handleSaveEmail = async (expertId) => {
     setSavingEmail(expertId);
@@ -96,174 +96,150 @@ export default function ExpertPasswords() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 py-8 pb-40 md:pb-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-bl from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <Users className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-bl from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <Users className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">מיילים מומחים</h1>
-              <p className="text-slate-500 text-sm">רשימת כתובות מייל של מומחים</p>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-800">מיילים מומחים</h1>
+              <p className="text-slate-500 text-xs md:text-sm">רשימת כתובות מייל של מומחים</p>
             </div>
           </div>
           <Link
             to={createPageUrl('Admin')}
-            className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium"
+            className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium text-sm"
           >
             חזרה לניהול
             <ArrowLeft className="w-4 h-4" />
           </Link>
         </div>
 
-        {/* Experts email list */}
-        <Card className="border-0 shadow-xl mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-purple-500" />
-                רשימת מומחים
+        {/* Add new button */}
+        <div className="mb-4 flex justify-end">
+          <Button size="sm" onClick={() => setAddingNew(true)} className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="w-4 h-4 ml-1" />
+            הוסף מומחה
+          </Button>
+        </div>
+
+        {/* Add new form */}
+        {addingNew && (
+          <Card className="border-2 border-purple-300 mb-4 bg-purple-50">
+            <CardContent className="p-4 space-y-3">
+              <p className="font-semibold text-purple-800 text-sm">הוספת מומחה חדש</p>
+              <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="שם המומחה" autoFocus />
+              <Input type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="email@example.com" onKeyDown={e => e.key === 'Enter' && handleAddExpert()} />
+              <div className="flex gap-2">
+                <Button className="bg-green-600 hover:bg-green-700 flex-1" onClick={handleAddExpert}>
+                  <Check className="w-4 h-4 ml-1" /> שמור
+                </Button>
+                <Button variant="outline" onClick={() => setAddingNew(false)}>
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
-              <Button size="sm" onClick={() => setAddingNew(true)} className="bg-purple-600 hover:bg-purple-700">
-                <Plus className="w-4 h-4 ml-1" />
-                הוסף מומחה
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b-2 border-slate-200">
-                    <th className="text-right py-3 px-4 font-semibold text-slate-700">#</th>
-                    <th className="text-right py-3 px-4 font-semibold text-slate-700">שם המומחה</th>
-                    <th className="text-right py-3 px-4 font-semibold text-slate-700">כתובת מייל</th>
-                    <th className="text-center py-3 px-4 font-semibold text-slate-700">משובים</th>
-                    <th className="text-center py-3 px-4 font-semibold text-slate-700">נקודות</th>
-                    <th className="text-center py-3 px-4 font-semibold text-slate-700">פעולה</th>
-                    <th className="text-center py-3 px-4 font-semibold text-slate-700">הסרה</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {addingNew && (
-                    <tr className="border-b border-purple-100 bg-purple-50">
-                      <td className="py-3 px-4 text-slate-400">+</td>
-                      <td className="py-3 px-4">
-                        <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="שם המומחה" className="h-7 text-sm" autoFocus />
-                      </td>
-                      <td className="py-3 px-4">
-                        <Input type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="email@example.com" className="h-7 text-sm" onKeyDown={e => e.key === 'Enter' && handleAddExpert()} />
-                      </td>
-                      <td className="py-3 px-4 text-center">—</td>
-                      <td className="py-3 px-4 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={handleAddExpert}>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Experts list - card-based */}
+        <div className="space-y-3 mb-6">
+          {experts.map((expert, index) => {
+            const isEditingEmail = editingEmail === expert.id;
+            const isEditingN = editingName === expert.id;
+            const points = userPoints.find(p => p.user_id === expert.id)?.total_points ?? null;
+            const feedbackCount = feedbacks.filter(f => f.expert_id === expert.id).length;
+
+            return (
+              <Card key={expert.id} className="border border-slate-200 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    {/* Name & Email */}
+                    <div className="flex-1 min-w-0 space-y-2">
+                      {/* Name */}
+                      {isEditingN ? (
+                        <div className="flex items-center gap-2">
+                          <Input value={nameValue} onChange={e => setNameValue(e.target.value)} className="h-8 text-sm" autoFocus onKeyDown={e => e.key === 'Enter' && handleSaveName(expert.id)} />
+                          <Button size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700 flex-shrink-0" onClick={() => handleSaveName(expert.id)}><Check className="w-3 h-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 flex-shrink-0" onClick={() => setEditingName(null)}><X className="w-3 h-3" /></Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-800">{expert.name}</span>
+                          <button onClick={() => { setEditingName(expert.id); setNameValue(expert.name || ''); }} className="text-slate-400 hover:text-purple-600">
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Email */}
+                      {isEditingEmail ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="email"
+                            value={emailValue}
+                            onChange={e => setEmailValue(e.target.value)}
+                            placeholder="email@example.com"
+                            className="h-8 text-sm"
+                            autoFocus
+                            onKeyDown={e => e.key === 'Enter' && handleSaveEmail(expert.id)}
+                          />
+                          <Button size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700 flex-shrink-0" onClick={() => handleSaveEmail(expert.id)} disabled={savingEmail === expert.id}>
                             <Check className="w-3 h-3" />
                           </Button>
-                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setAddingNew(false)}>✕</Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 flex-shrink-0" onClick={() => setEditingEmail(null)}><X className="w-3 h-3" /></Button>
                         </div>
-                      </td>
-                    </tr>
-                  )}
-                  {experts.map((expert, index) => {
-                    const isEditing = editingEmail === expert.id;
-                    const isEditingN = editingName === expert.id;
-                    const points = userPoints.find(p => p.user_id === expert.id)?.total_points ?? null;
-                    const feedbackCount = feedbacks.filter(f => f.expert_id === expert.id).length;
-                    return (
-                      <tr key={expert.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="py-3 px-4 text-slate-500">{index + 1}</td>
-                        <td className="py-3 px-4 font-medium text-slate-800">
-                          {isEditingN ? (
-                            <div className="flex items-center gap-1">
-                              <Input value={nameValue} onChange={e => setNameValue(e.target.value)} className="h-7 text-sm" autoFocus onKeyDown={e => e.key === 'Enter' && handleSaveName(expert.id)} />
-                              <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={() => handleSaveName(expert.id)}><Check className="w-3 h-3" /></Button>
-                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingName(null)}>✕</Button>
-                            </div>
-                          ) : (
-                            <button onClick={() => { setEditingName(expert.id); setNameValue(expert.name || ''); }} className="hover:text-purple-600 hover:underline text-right">
-                              {expert.name}
-                            </button>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 min-w-[240px]">
-                          {isEditing ? (
-                            <div className="flex items-center gap-1">
-                              <Input
-                                type="email"
-                                value={emailValue}
-                                onChange={e => setEmailValue(e.target.value)}
-                                placeholder="email@example.com"
-                                className="h-7 text-sm"
-                                autoFocus
-                                onKeyDown={e => e.key === 'Enter' && handleSaveEmail(expert.id)}
-                              />
-                              <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={() => handleSaveEmail(expert.id)} disabled={savingEmail === expert.id}>
-                                <Check className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => { setEditingEmail(expert.id); setEmailValue(expert.email || ''); }}
-                              className="flex items-center gap-1 text-sm text-slate-600 hover:text-purple-600 group"
-                            >
-                              <Mail className="w-3 h-3 text-slate-400 group-hover:text-purple-400" />
-                              {expert.email ? <span>{expert.email}</span> : <span className="text-slate-300 italic">הוסף מייל</span>}
-                            </button>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <span className="flex items-center justify-center gap-1 font-semibold text-teal-600">
-                            <MessageSquare className="w-3.5 h-3.5" />
-                            {feedbackCount}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          {points !== null ? (
-                            <span className="flex items-center justify-center gap-1 font-semibold text-amber-600">
-                              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                              {points}
-                            </span>
-                          ) : (
-                            <span className="text-slate-300 text-xs">—</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                         {!isEditing && (
-                           <Button variant="ghost" size="sm" onClick={() => { setEditingEmail(expert.id); setEmailValue(expert.email || ''); }} className="text-purple-600 hover:text-purple-700 text-xs">
-                             עדכן
-                           </Button>
-                         )}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                         {confirmDelete === expert.id ? (
-                           <div className="flex items-center justify-center gap-1">
-                             <Button size="icon" className="h-7 w-7 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteExpert(expert.id)}>
-                               <Check className="w-3 h-3" />
-                             </Button>
-                             <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setConfirmDelete(null)}>✕</Button>
-                           </div>
-                         ) : (
-                           <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirmDelete(expert.id)}>
-                             <Trash2 className="w-4 h-4" />
-                           </Button>
-                         )}
-                        </td>
-                        </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+                      ) : (
+                        <button onClick={() => { setEditingEmail(expert.id); setEmailValue(expert.email || ''); }} className="flex items-center gap-1 text-sm text-slate-500 hover:text-purple-600 text-right">
+                          <Mail className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">{expert.email || <span className="text-slate-300 italic">הוסף מייל</span>}</span>
+                        </button>
+                      )}
 
-        {/* Pending requests not in experts list */}
+                      {/* Stats */}
+                      <div className="flex items-center gap-3 text-xs">
+                        <span className="flex items-center gap-1 text-teal-600 font-semibold">
+                          <MessageSquare className="w-3 h-3" />{feedbackCount}
+                        </span>
+                        {points !== null && (
+                          <span className="flex items-center gap-1 text-amber-600 font-semibold">
+                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{points}
+                          </span>
+                        )}
+                        <span className="text-slate-400">#{index + 1}</span>
+                      </div>
+                    </div>
+
+                    {/* Delete */}
+                    <div className="flex-shrink-0">
+                      {confirmDelete === expert.id ? (
+                        <div className="flex items-center gap-1">
+                          <Button size="icon" className="h-8 w-8 bg-red-600 hover:bg-red-700" onClick={() => handleDeleteExpert(expert.id)}><Check className="w-3 h-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setConfirmDelete(null)}><X className="w-3 h-3" /></Button>
+                        </div>
+                      ) : (
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirmDelete(expert.id)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+          {experts.length === 0 && (
+            <div className="text-center py-12 text-slate-500">אין מומחים במערכת</div>
+          )}
+        </div>
+
+        {/* Pending requests */}
         {pendingRequests.length > 0 && (
           <Card className="border-0 shadow-xl border-l-4 border-amber-400">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-700">
+              <CardTitle className="flex items-center gap-2 text-amber-700 text-base">
                 <AlertCircle className="w-5 h-5" />
                 בקשות גישה שאינן ברשימת המומחים ({pendingRequests.length})
               </CardTitle>
@@ -271,12 +247,12 @@ export default function ExpertPasswords() {
             <CardContent>
               <div className="space-y-2">
                 {pendingRequests.map(req => (
-                  <div key={req.id} className="flex items-center justify-between bg-amber-50 rounded-lg px-4 py-2">
-                    <div>
-                      <span className="font-medium text-slate-800">{req.full_name}</span>
-                      <span className="text-slate-500 text-sm mr-2">{req.email}</span>
+                  <div key={req.id} className="flex items-center justify-between bg-amber-50 rounded-lg px-4 py-2 gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-slate-800 text-sm">{req.full_name}</p>
+                      <p className="text-slate-500 text-xs truncate">{req.email}</p>
                     </div>
-                    <Badge className={req.status === 'pending' ? 'bg-amber-500' : req.status === 'approved' ? 'bg-green-600' : 'bg-red-500'}>
+                    <Badge className={`flex-shrink-0 ${req.status === 'pending' ? 'bg-amber-500' : req.status === 'approved' ? 'bg-green-600' : 'bg-red-500'}`}>
                       {req.status === 'pending' ? 'ממתין' : req.status === 'approved' ? 'אושר' : 'נדחה'}
                     </Badge>
                   </div>
@@ -284,8 +260,8 @@ export default function ExpertPasswords() {
               </div>
             </CardContent>
           </Card>
-          )}
-          </div>
-          </div>
-          );
-          }
+        )}
+      </div>
+    </div>
+  );
+}

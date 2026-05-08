@@ -250,19 +250,19 @@ export default function InternDetails() {
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
       <div className="max-w-4xl mx-auto px-4 py-8 pb-40 md:pb-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 flex items-center justify-center shadow-lg text-white text-2xl font-bold">
+        <div className="flex items-center justify-between mb-8 gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 flex items-center justify-center shadow-lg text-white text-xl md:text-2xl font-bold flex-shrink-0">
               {intern?.name?.[0] || '?'}
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">{intern?.name || 'טוען...'}</h1>
-              <p className="text-slate-500">פרופיל מתמחה</p>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-800">{intern?.name || 'טוען...'}</h1>
+              <p className="text-slate-500 text-sm">פרופיל מתמחה</p>
             </div>
           </div>
           <Link 
              to={createPageUrl('Admin')}
-             className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 transition-all shadow-md"
+             className="flex items-center gap-2 px-3 py-2 rounded-lg text-white font-medium bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 transition-all shadow-md text-sm"
            >
             חזרה לניהול
             <ArrowLeft className="w-4 h-4" />

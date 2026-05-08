@@ -104,13 +104,13 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-start gap-2">
                 {/* בחר תפקיד */}
                 <Select
                   value={cfg.role || ''}
                   onValueChange={val => setAssigning(prev => ({ ...prev, [req.id]: { role: val, entityId: '' } }))}
                 >
-                  <SelectTrigger className="w-36 h-8 text-sm">
+                  <SelectTrigger className="w-32 h-9 text-sm">
                     <SelectValue placeholder="בחר תפקיד" />
                   </SelectTrigger>
                   <SelectContent>
@@ -138,7 +138,7 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
                     value={cfg.entityId || ''}
                     onValueChange={val => setAssigning(prev => ({ ...prev, [req.id]: { ...prev[req.id], entityId: val } }))}
                   >
-                    <SelectTrigger className="w-48 h-8 text-sm">
+                    <SelectTrigger className="w-full sm:w-48 h-9 text-sm">
                       <SelectValue placeholder={`בחר ${cfg.role === 'intern' ? 'מתמחה' : 'מומחה'}`} />
                     </SelectTrigger>
                     <SelectContent>
@@ -154,7 +154,7 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
                 {/* יצירת רשומה חדשה */}
                 {cfg.role && cfg.createNew && (
                   <Input
-                    className="w-48 h-8 text-sm"
+                   className="w-full sm:w-48 h-9 text-sm"
                     placeholder={`שם ${cfg.role === 'intern' ? 'המתמחה' : 'המומחה'}`}
                     value={cfg.newName || ''}
                     onChange={e => setAssigning(prev => ({ ...prev, [req.id]: { ...prev[req.id], newName: e.target.value } }))}
@@ -163,7 +163,7 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
 
                 <Button
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700 h-8"
+                  className="bg-green-600 hover:bg-green-700 h-9"
                   disabled={!canApprove}
                   onClick={() => handleApprove(req)}
                 >
@@ -173,7 +173,7 @@ export default function AccessRequestsPanel({ interns, experts, queryClient: ext
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-red-600 border-red-300 hover:bg-red-50 h-8"
+                  className="text-red-600 border-red-300 hover:bg-red-50 h-9"
                   onClick={() => handleReject(req)}
                 >
                   <UserX className="w-4 h-4 ml-1" />
