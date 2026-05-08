@@ -23,20 +23,22 @@ export default function MentoringMeetingManager({ interns = [], experts = [] }) 
   const createMutation = useMutation({
     mutationFn: async (data) => {
       const meeting = await base44.entities.MentoringMeeting.create(data);
-      // שלח מיילים לכל המוזמנים
-      const appOrigin = window.location.origin;
-      const dateStr = new Date(data.meeting_date).toLocaleString('he-IL', { dateStyle: 'full', timeStyle: 'short' });
-      const allRecipients = [
-        ...interns.filter(i => data.intern_ids.includes(i.id)).map(i => ({ email: i.email, name: i.name, role: 'intern' })),
-        ...experts.filter(e => data.expert_ids.includes(e.id)).map(e => ({ email: e.email, name: e.name, role: 'expert' }))
+      // שלח מיילים דרך backend function
+      const recipients = [
+        ...interns.filter(i => data.intern_ids.includes(i.id)).map(i => ({ email: i.email, name: i.name })),
+        ...experts.filter(e => data.expert_ids.includes(e.id)).map(e => ({ email: e.email, name: e.name }))
       ].filter(r => r.email);
-      await Promise.all(allRecipients.map(r =>
-        base44.integrations.Core.SendEmail({
-          to: r.email,
-          subject: `פגישת מנטורינג: ${data.title} - ${dateStr}`,
-          body: `שלום ${r.name},\n\nנקבעה פגישת מנטורינג:\n\nנושא: ${data.title}\nתאריך: ${dateStr}${data.location ? `\nמיקום: ${data.location}` : ''}${data.notes ? `\nהערות: ${data.notes}` : ''}\n\nמשתתפים:\n${data.intern_names?.join(', ') || ''}, ${data.expert_names?.join(', ') || ''}\n\nתודה,\nצוות אגף נשים - הדסה`
-        }).catch(() => {})
-      ));
+      if (recipients.length > 0) {
+        base44.functions.invoke('sendMentoringMeetingEmail', {
+          title: data.title,
+          meeting_date: data.meeting_date,
+          location: data.location,
+          notes: data.notes,
+          intern_names: data.intern_names,
+          expert_names: data.expert_names,
+          recipients
+        }).catch(() => {});
+      }
       return meeting;
     },
     onSuccess: () => {

@@ -7,15 +7,14 @@ import { CalendarDays, Clock, MapPin, Users } from 'lucide-react';
 import { format, isPast } from 'date-fns';
 
 export default function MyMentoringMeetings({ internId }) {
-  const { data: meetings = [] } = useQuery({
+  const { data: myMeetings = [] } = useQuery({
     queryKey: ['mentoring-meetings-intern', internId],
-    queryFn: () => base44.entities.MentoringMeeting.list('-meeting_date'),
+    queryFn: async () => {
+      const all = await base44.entities.MentoringMeeting.list('-meeting_date', 200);
+      return all.filter(m => m.intern_ids && m.intern_ids.includes(internId));
+    },
     enabled: !!internId
   });
-
-  const myMeetings = meetings.filter(m =>
-    m.intern_ids && m.intern_ids.includes(internId)
-  );
 
   const upcoming = myMeetings.filter(m => !isPast(new Date(m.meeting_date)));
   const past = myMeetings.filter(m => isPast(new Date(m.meeting_date)));
