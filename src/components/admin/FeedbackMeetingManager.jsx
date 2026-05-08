@@ -154,40 +154,42 @@ export default function FeedbackMeetingManager({ interns, experts }) {
     const selectedIntern = interns.find(i => i.id === formData.intern_id);
     setSending(true);
 
-    createMeetingMutation.mutate({
-      intern_id: formData.intern_id,
-      intern_name: selectedIntern?.name,
-      meeting_date: formData.meeting_date,
-      location: formData.location,
-      notes: formData.notes,
-      invited_experts: formData.invited_experts,
-      status: 'מתוכנן'
-    });
+    try {
+      await createMeetingMutation.mutateAsync({
+        intern_id: formData.intern_id,
+        intern_name: selectedIntern?.name,
+        meeting_date: formData.meeting_date,
+        location: formData.location,
+        notes: formData.notes,
+        invited_experts: formData.invited_experts,
+        status: 'מתוכנן'
+      });
 
-    // שליחת שאלון לכל המוזמנים
-    const recipients = [];
-    if (selectedIntern?.email) recipients.push({ email: selectedIntern.email, name: selectedIntern.name });
-    formData.invited_experts.forEach(ie => {
-      const expert = experts.find(e => e.id === ie.id);
-      if (expert?.email) recipients.push({ email: expert.email, name: expert.name });
-    });
+      // שליחת מיילים לכל המוזמנים
+      const recipients = [];
+      if (selectedIntern?.email) recipients.push({ email: selectedIntern.email, name: selectedIntern.name });
+      formData.invited_experts.forEach(ie => {
+        const expert = experts.find(e => e.id === ie.id);
+        if (expert?.email) recipients.push({ email: expert.email, name: expert.name });
+      });
 
-    // שלח מייל הזמנה לפגישה לכל המוזמנים
-    const meetingDate = formData.meeting_date ? new Date(formData.meeting_date).toLocaleString('he-IL', { dateStyle: 'full', timeStyle: 'short' }) : '';
-    const meetingEmailPromises = recipients.map(r =>
-      base44.integrations.Core.SendEmail({
-        to: r.email,
-        subject: `הזמנה לפגישת משוב עם ${selectedIntern?.name}`,
-        body: `שלום ${r.name},\n\nנקבעה פגישת משוב עם ${selectedIntern?.name}.\n\n📅 תאריך ושעה: ${meetingDate}\n📍 מיקום: ${formData.location || 'לא צוין'}\n${formData.notes ? `\nהערות: ${formData.notes}` : ''}\n\nתודה!\nצוות אגף נשים - הדסה`
-      })
-    );
-
-    if (recipients.length > 0) {
-      await Promise.all(meetingEmailPromises);
-      await sendQuestionnaireEmails(selectedIntern?.name, recipients);
-      toast.success(`הפגישה נקבעה ומיילים נשלחו ל-${recipients.length} נמענים`);
-    } else {
-      toast.success('הפגישה נקבעה (לא נמצאו כתובות מייל לשליחה)');
+      const meetingDate = formData.meeting_date ? new Date(formData.meeting_date).toLocaleString('he-IL', { dateStyle: 'full', timeStyle: 'short' }) : '';
+      if (recipients.length > 0) {
+        const meetingEmailPromises = recipients.map(r =>
+          base44.integrations.Core.SendEmail({
+            to: r.email,
+            subject: `הזמנה לפגישת משוב עם ${selectedIntern?.name}`,
+            body: `שלום ${r.name},\n\nנקבעה פגישת משוב עם ${selectedIntern?.name}.\n\n📅 תאריך ושעה: ${meetingDate}\n📍 מיקום: ${formData.location || 'לא צוין'}\n${formData.notes ? `\nהערות: ${formData.notes}` : ''}\n\nתודה!\nצוות אגף נשים - הדסה`
+          })
+        );
+        await Promise.all(meetingEmailPromises);
+        await sendQuestionnaireEmails(selectedIntern?.name, recipients);
+        toast.success(`הפגישה נקבעה ומיילים נשלחו ל-${recipients.length} נמענים`);
+      } else {
+        toast.success('הפגישה נקבעה (לא נמצאו כתובות מייל לשליחה)');
+      }
+    } catch (err) {
+      toast.error('שגיאה בקביעת הפגישה: ' + (err.message || 'נסה שוב'));
     }
     setSending(false);
   };
