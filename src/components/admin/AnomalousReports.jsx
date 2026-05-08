@@ -54,14 +54,7 @@ export default function AnomalousReports({ feedbacks, interns }) {
   });
 
   return (
-    <Card className="border-0 shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-amber-600" />
-          משובים וטרנדים חריגים
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div className="space-y-6">
         {/* Positive Trends */}
         {internTrends.filter(t => t.type === 'positive').length > 0 && (
           <div className="space-y-3">
@@ -173,7 +166,6 @@ export default function AnomalousReports({ feedbacks, interns }) {
             <p>אין משובים או טרנדים חריגים כרגע</p>
           </div>
         )}
-      </CardContent>
-    </Card>
+    </div>
   );
 }

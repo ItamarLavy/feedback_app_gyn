@@ -76,14 +76,8 @@ export default function PointsLeaderboard() {
     .sort((a, b) => b.computed_points - a.computed_points);
 
   return (
-    <Card className="border-0 shadow-lg mb-8">
-      <CardHeader className="bg-gradient-to-r from-amber-50 to-yellow-50 border-b border-amber-100">
-        <CardTitle className="flex items-center gap-2 text-amber-900">
-          <Trophy className="w-5 h-5 text-amber-500" />
-          מעקב נקודות
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-5">
+    <div>
+      <div className="p-0">
         {/* Period Tabs */}
         <div className="flex gap-2 mb-4">
           {PERIOD_TABS.map(tab => (
@@ -158,7 +152,7 @@ export default function PointsLeaderboard() {
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

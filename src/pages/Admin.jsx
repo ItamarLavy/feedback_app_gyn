@@ -13,7 +13,8 @@ import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import MentoringMeetingManager from '../components/admin/MentoringMeetingManager';
 import { 
   Shield, Users, ClipboardList, ArrowLeft, 
-  Star, Search, Filter, Clock, Key, BookOpen, Hash, User, Stethoscope, Trash2, X, Mail
+  Star, Search, Filter, Clock, Key, BookOpen, Hash, User, Stethoscope, Trash2, X, Mail,
+  Trophy, TrendingUp, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,9 @@ export default function Admin() {
   const [filterProcedure, setFilterProcedure] = useState('all');
   const [showAdminInstructions, setShowAdminInstructions] = useState(false);
   const [showInternsList, setShowInternsList] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showDepartments, setShowDepartments] = useState(false);
+  const [showAnomalous, setShowAnomalous] = useState(false);
   const [selectedModal, setSelectedModal] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
@@ -180,84 +184,89 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 mb-8">
-           <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-emerald-50 hover:shadow-xl transition-shadow">
-             <CardContent className="p-4 md:p-5">
-               <div className="flex flex-col gap-2">
-                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center">
-                   <ClipboardList className="w-5 h-5 text-teal-700" />
-                 </div>
-                 <div>
-                   <p className="text-slate-500 text-xs">סה"כ משובים</p>
-                   <p className="text-xl md:text-2xl font-bold text-slate-800">{totalFeedbacks}</p>
-                 </div>
-               </div>
-             </CardContent>
-           </Card>
+        {/* Stats Cards - 5 in a row on mobile too */}
+        <div className="grid grid-cols-5 gap-1.5 md:gap-4 mb-8">
+          {/* סה"כ משובים */}
+          <Card className="border-0 shadow-md bg-gradient-to-br from-white to-emerald-50">
+            <CardContent className="p-2 md:p-5">
+              <div className="flex flex-col items-center md:items-start gap-1 md:gap-2">
+                <div className="w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center">
+                  <ClipboardList className="w-3.5 h-3.5 md:w-5 md:h-5 text-teal-700" />
+                </div>
+                <div className="text-center md:text-right">
+                  <p className="text-slate-500 text-[10px] md:text-xs leading-tight">סה"כ<br className="md:hidden"/> משובים</p>
+                  <p className="text-lg md:text-2xl font-bold text-slate-800">{totalFeedbacks}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-           <Card className={`border-0 shadow-lg hover:shadow-xl transition-shadow ${pendingExpertReviews > 0 ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-400' : 'bg-gradient-to-br from-white to-yellow-50'}`}>
-             <CardContent className="p-4 md:p-5">
-               <div className="flex flex-col gap-2">
-                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${pendingExpertReviews > 0 ? 'bg-gradient-to-br from-amber-300 to-orange-400' : 'bg-gradient-to-br from-orange-200 to-yellow-300'}`}>
-                   <Clock className={`w-5 h-5 ${pendingExpertReviews > 0 ? 'text-amber-800' : 'text-orange-700'}`} />
-                 </div>
-                 <div>
-                   <p className="text-slate-500 text-xs">ממתינים למומחה</p>
-                   <p className={`text-xl md:text-2xl font-bold ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-slate-800'}`}>{pendingExpertReviews}</p>
-                 </div>
-               </div>
-             </CardContent>
-           </Card>
+          {/* ממתינים למומחה */}
+          <Card className={`border-0 shadow-md ${pendingExpertReviews > 0 ? 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-300' : 'bg-gradient-to-br from-white to-yellow-50'}`}>
+            <CardContent className="p-2 md:p-5">
+              <div className="flex flex-col items-center md:items-start gap-1 md:gap-2">
+                <div className={`w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center ${pendingExpertReviews > 0 ? 'bg-gradient-to-br from-amber-300 to-orange-400' : 'bg-gradient-to-br from-orange-200 to-yellow-300'}`}>
+                  <Clock className={`w-3.5 h-3.5 md:w-5 md:h-5 ${pendingExpertReviews > 0 ? 'text-amber-800' : 'text-orange-700'}`} />
+                </div>
+                <div className="text-center md:text-right">
+                  <p className="text-slate-500 text-[10px] md:text-xs leading-tight">ממתינים<br className="md:hidden"/> למומחה</p>
+                  <p className={`text-lg md:text-2xl font-bold ${pendingExpertReviews > 0 ? 'text-amber-700' : 'text-slate-800'}`}>{pendingExpertReviews}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-           <Link to={createPageUrl('InternPasswords')} className="no-underline">
-             <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-cyan-50 hover:shadow-xl hover:bg-gradient-to-br hover:from-cyan-50 hover:to-sky-100 transition-all cursor-pointer h-full">
-               <CardContent className="p-4 md:p-5">
-                 <div className="flex flex-col gap-2">
-                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-200 to-sky-300 flex items-center justify-center">
-                     <Users className="w-5 h-5 text-cyan-700" />
-                   </div>
-                   <div>
-                     <p className="text-slate-500 text-xs">מתמחים</p>
-                     <p className="text-xl md:text-2xl font-bold text-slate-800">{interns.length}</p>
-                   </div>
-                 </div>
-               </CardContent>
-             </Card>
-           </Link>
+          {/* מתמחים */}
+          <Link to={createPageUrl('InternPasswords')} className="no-underline">
+            <Card className="border-0 shadow-md bg-gradient-to-br from-white to-cyan-50 hover:shadow-lg transition-all cursor-pointer h-full">
+              <CardContent className="p-2 md:p-5">
+                <div className="flex flex-col items-center md:items-start gap-1 md:gap-2">
+                  <div className="w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-cyan-200 to-sky-300 flex items-center justify-center">
+                    <Users className="w-3.5 h-3.5 md:w-5 md:h-5 text-cyan-700" />
+                  </div>
+                  <div className="text-center md:text-right">
+                    <p className="text-slate-500 text-[10px] md:text-xs leading-tight">מתמחים</p>
+                    <p className="text-lg md:text-2xl font-bold text-slate-800">{interns.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
-           <Link to={createPageUrl('ExpertPasswords')} className="no-underline">
-             <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50 hover:shadow-xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-violet-100 transition-all cursor-pointer h-full">
-               <CardContent className="p-4 md:p-5">
-                 <div className="flex flex-col gap-2">
-                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-200 to-violet-300 flex items-center justify-center">
-                     <Stethoscope className="w-5 h-5 text-purple-700" />
-                   </div>
-                   <div>
-                     <p className="text-slate-500 text-xs">מומחים</p>
-                     <p className="text-xl md:text-2xl font-bold text-slate-800">{experts.length}</p>
-                   </div>
-                 </div>
-               </CardContent>
-             </Card>
-           </Link>
+          {/* מומחים */}
+          <Link to={createPageUrl('ExpertPasswords')} className="no-underline">
+            <Card className="border-0 shadow-md bg-gradient-to-br from-white to-purple-50 hover:shadow-lg transition-all cursor-pointer h-full">
+              <CardContent className="p-2 md:p-5">
+                <div className="flex flex-col items-center md:items-start gap-1 md:gap-2">
+                  <div className="w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-purple-200 to-violet-300 flex items-center justify-center">
+                    <Stethoscope className="w-3.5 h-3.5 md:w-5 md:h-5 text-purple-700" />
+                  </div>
+                  <div className="text-center md:text-right">
+                    <p className="text-slate-500 text-[10px] md:text-xs leading-tight">מומחים</p>
+                    <p className="text-lg md:text-2xl font-bold text-slate-800">{experts.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
-           <Link to={createPageUrl('ManagerEmails')} className="no-underline">
-             <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-teal-50 hover:shadow-xl hover:bg-gradient-to-br hover:from-teal-50 hover:to-emerald-100 transition-all cursor-pointer h-full">
-               <CardContent className="p-4 md:p-5">
-                 <div className="flex flex-col gap-2">
-                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center">
-                     <Shield className="w-5 h-5 text-teal-700" />
-                   </div>
-                   <div>
-                     <p className="text-slate-500 text-xs">מנהלים</p>
-                     <p className="text-xl md:text-2xl font-bold text-slate-800">{MANAGER_EMAILS.length}</p>
-                   </div>
-                 </div>
-               </CardContent>
-             </Card>
-           </Link>
-         </div>
+          {/* מנהלים */}
+          <Link to={createPageUrl('ManagerEmails')} className="no-underline">
+            <Card className="border-0 shadow-md bg-gradient-to-br from-white to-teal-50 hover:shadow-lg transition-all cursor-pointer h-full">
+              <CardContent className="p-2 md:p-5">
+                <div className="flex flex-col items-center md:items-start gap-1 md:gap-2">
+                  <div className="w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center">
+                    <Shield className="w-3.5 h-3.5 md:w-5 md:h-5 text-teal-700" />
+                  </div>
+                  <div className="text-center md:text-right">
+                    <p className="text-slate-500 text-[10px] md:text-xs leading-tight">מנהלים</p>
+                    <p className="text-lg md:text-2xl font-bold text-slate-800">{MANAGER_EMAILS.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
 
         {/* Admin Instructions - Collapsible */}
         <Card className="border-0 shadow-lg mb-8">
@@ -319,25 +328,71 @@ export default function Admin() {
         {/* Mentoring Meetings */}
         <MentoringMeetingManager interns={interns} experts={experts} />
 
-        {/* Points Leaderboard */}
-        <PointsLeaderboard />
+        {/* Points Leaderboard - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+            onClick={() => setShowLeaderboard(prev => !prev)}
+          >
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-500" />
+                לוח ניקוד
+              </div>
+              {showLeaderboard ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showLeaderboard && (
+            <CardContent className="pt-0">
+              <PointsLeaderboard />
+            </CardContent>
+          )}
+        </Card>
 
-        {/* Anomalous Reports */}
-        <div className="mb-8">
-          <AnomalousReports feedbacks={feedbacks} interns={interns} />
-        </div>
+        {/* Anomalous Reports - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+            onClick={() => setShowAnomalous(prev => !prev)}
+          >
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-red-500" />
+                טרנדים חריגים
+              </div>
+              {showAnomalous ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showAnomalous && (
+            <CardContent className="pt-0">
+              <AnomalousReports feedbacks={feedbacks} interns={interns} />
+            </CardContent>
+          )}
+        </Card>
 
-        {/* Department Panels */}
-        <div className="space-y-4 mb-8">
-          <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <Stethoscope className="w-5 h-5 text-teal-600" />
-            מעקב לפי מחלקה
-          </h2>
-          <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
-          <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
-          <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
-          <DepartmentPanel department="רוטציה חיצונית" label="רוטציה חיצונית" interns={interns} />
-        </div>
+        {/* Department Panels - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+            onClick={() => setShowDepartments(prev => !prev)}
+          >
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <Stethoscope className="w-5 h-5 text-teal-600" />
+                מעקב לפי מחלקה
+              </div>
+              {showDepartments ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showDepartments && (
+            <CardContent className="pt-0 space-y-4">
+              <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
+              <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
+              <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
+              <DepartmentPanel department="רוטציה חיצונית" label="רוטציה חיצונית" interns={interns} />
+            </CardContent>
+          )}
+        </Card>
 
         {/* Interns List - Collapsible */}
          <Card className="border-0 shadow-lg mb-8">
