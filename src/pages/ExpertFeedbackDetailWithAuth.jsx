@@ -360,16 +360,9 @@ export default function ExpertFeedbackDetailWithAuth() {
                           {getRatingFields(feedback.form_type || 'procedural').map(field => (
                             <div key={field.key} className="px-3 py-3 space-y-2">
                               <span className="text-sm text-slate-700 font-semibold block">{field.label}</span>
-                              <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center justify-center gap-2">
                                 <div className="flex flex-col items-center gap-1">
-                                  <span className="text-xs text-blue-600 font-medium">המתמחה</span>
-                                  {(feedback[field.internKey] || 0) > 0
-                                    ? <StarRating value={feedback[field.internKey]} readOnly />
-                                    : <span className="text-xs text-slate-400">לא מילא</span>
-                                  }
-                                </div>
-                                <div className="flex flex-col items-center gap-1">
-                                  <span className="text-xs text-teal-600 font-medium">המומחה (אתה)</span>
+                                  <span className="text-xs text-teal-600 font-medium">הערכתך</span>
                                   <StarRating
                                     value={expertFeedback[field.expertKey] || 0}
                                     onChange={v => setExpertFeedback(prev => ({ ...prev, [field.expertKey]: v }))}
@@ -383,18 +376,9 @@ export default function ExpertFeedbackDetailWithAuth() {
                           {['procedural', 'clinical_management', 'ward_management'].includes(feedback.form_type) && (
                             <div className="px-3 py-3 space-y-2">
                               <span className="text-sm text-slate-700 font-semibold block">עצמאות</span>
-                              <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center justify-center gap-2">
                                 <div className="flex flex-col items-center gap-1">
-                                  <span className="text-xs text-blue-600 font-medium">המתמחה</span>
-                                  {feedback.intern_independence !== null && feedback.intern_independence !== undefined
-                                    ? <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${feedback.intern_independence ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>
-                                        {feedback.intern_independence ? 'כן' : 'לא'}
-                                      </span>
-                                    : <span className="text-xs text-slate-400">—</span>
-                                  }
-                                </div>
-                                <div className="flex flex-col items-center gap-1">
-                                  <span className="text-xs text-teal-600 font-medium">המומחה (אתה)</span>
+                                  <span className="text-xs text-teal-600 font-medium">הערכתך</span>
                                   <div className="flex gap-2">
                                     {[{ val: true, label: 'כן' }, { val: false, label: 'לא' }].map(opt => (
                                       <button key={String(opt.val)} type="button"
@@ -415,12 +399,6 @@ export default function ExpertFeedbackDetailWithAuth() {
 
                         {/* Verbal feedbacks */}
                         <div className="bg-slate-50 p-4 space-y-3 border-t border-slate-200">
-                          {feedback.intern_verbal_feedback && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                              <p className="text-xs font-semibold text-blue-700 mb-1">הערות המתמחה:</p>
-                              <p className="text-sm text-slate-700">{feedback.intern_verbal_feedback}</p>
-                            </div>
-                          )}
                           <div className="space-y-1">
                             <Label className="text-xs text-teal-700 font-semibold">המשוב המילולי שלך (אופציונלי)</Label>
                             <Textarea
@@ -440,34 +418,11 @@ export default function ExpertFeedbackDetailWithAuth() {
                         </div>
                       </div>
                     ) : (
-                      /* Preview mode - show intern answers + fill button */
+                      /* Preview mode - only show fill button, intern answers hidden until after submission */
                       <div className="space-y-3">
-                        {/* Intern summary */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                          <p className="text-xs font-semibold text-blue-700 mb-2">הערכה עצמית של המתמחה:</p>
-                          <div className="space-y-1.5">
-                            {getRatingFields(feedback.form_type || 'procedural').map(field => (
-                              (feedback[field.internKey] || 0) > 0 && (
-                                <div key={field.key} className="flex items-center justify-between text-sm">
-                                  <span className="text-slate-600">{field.label}</span>
-                                  <div className="flex gap-0.5">
-                                    {[...Array(5)].map((_, i) => (
-                                      <Star key={i} className={`w-3.5 h-3.5 ${i < feedback[field.internKey] ? 'fill-blue-400 text-blue-400' : 'text-slate-300'}`} />
-                                    ))}
-                                  </div>
-                                </div>
-                              )
-                            ))}
-                            {feedback.intern_independence !== null && feedback.intern_independence !== undefined && (
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-600">עצמאות</span>
-                                <span className="text-xs font-medium text-blue-700">{feedback.intern_independence ? 'כן' : 'לא'}</span>
-                              </div>
-                            )}
-                            {feedback.intern_verbal_feedback && (
-                              <p className="text-xs text-slate-600 border-t border-blue-200 pt-1 mt-1">{feedback.intern_verbal_feedback}</p>
-                            )}
-                          </div>
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800 flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          מלא את המשוב שלך תחילה — הערכת המתמחה תוצג לאחר השליחה
                         </div>
                         <Button onClick={() => handleStartEdit(feedback)}
                           className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white">
@@ -516,6 +471,36 @@ export default function ExpertFeedbackDetailWithAuth() {
                         <span>{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
                       </div>
                     )}
+
+                    {/* השוואת שני הצדדים - גלויה רק אחרי הגשה */}
+                    <details className="mt-2">
+                      <summary className="text-xs text-green-700 cursor-pointer font-medium hover:text-green-900">הצג השוואת הערכות</summary>
+                      <div className="mt-2 divide-y divide-slate-100 bg-white rounded-lg border border-slate-200 overflow-hidden">
+                        {getRatingFields(feedback.form_type || 'procedural').map(field => (
+                          ((feedback[field.internKey] || 0) > 0 || (feedback[field.expertKey] || 0) > 0) && (
+                            <div key={field.key} className="px-3 py-2">
+                              <span className="text-xs font-semibold text-slate-600 block mb-1">{field.label}</span>
+                              <div className="flex items-center gap-4">
+                                <div className="flex flex-col items-center gap-0.5">
+                                  <span className="text-[10px] text-blue-500">מתמחה</span>
+                                  <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className={`w-3 h-3 ${i < (feedback[field.internKey] || 0) ? 'fill-blue-400 text-blue-400' : 'text-slate-200'}`} />)}</div>
+                                </div>
+                                <div className="flex flex-col items-center gap-0.5">
+                                  <span className="text-[10px] text-teal-500">מומחה</span>
+                                  <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className={`w-3 h-3 ${i < (feedback[field.expertKey] || 0) ? 'fill-teal-400 text-teal-400' : 'text-slate-200'}`} />)}</div>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        ))}
+                        {(feedback.intern_verbal_feedback || feedback.expert_verbal_feedback) && (
+                          <div className="px-3 py-2 space-y-1">
+                            {feedback.intern_verbal_feedback && <p className="text-xs text-blue-700"><span className="font-semibold">מתמחה: </span>{feedback.intern_verbal_feedback}</p>}
+                            {feedback.expert_verbal_feedback && <p className="text-xs text-teal-700"><span className="font-semibold">מומחה: </span>{feedback.expert_verbal_feedback}</p>}
+                          </div>
+                        )}
+                      </div>
+                    </details>
                   </div>
                 ))}
               </div>
