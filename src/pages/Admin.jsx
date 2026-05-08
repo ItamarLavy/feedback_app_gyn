@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -12,8 +12,8 @@ import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import MentoringMeetingManager from '../components/admin/MentoringMeetingManager';
 import { 
-  Shield, Users, ClipboardList, ArrowLeft, 
-  Star, Search, Filter, Clock, Key, BookOpen, Hash, User, Stethoscope, Trash2, X, Mail,
+  Shield, Users, ClipboardList,
+  Star, Search, Filter, Clock, BookOpen, Stethoscope, Trash2, Mail,
   Trophy, TrendingUp, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,11 +39,12 @@ export default function Admin() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showDepartments, setShowDepartments] = useState(false);
   const [showAnomalous, setShowAnomalous] = useState(false);
+  const [showAccessRequests, setShowAccessRequests] = useState(false);
   const [selectedModal, setSelectedModal] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
   const pullToRefreshRef = usePullToRefresh(['feedbacks']);
-  const accessRequestsRef = useRef(null);
+
 
   const { data: feedbacks = [] } = useQuery({
     queryKey: ['feedbacks'],
@@ -166,22 +167,7 @@ export default function Admin() {
               <p className="text-slate-500 text-sm">צפייה בכל המשובים</p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              onClick={() => accessRequestsRef.current?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold gap-2 h-11 flex-1 sm:flex-none shadow-md"
-            >
-              <Mail className="w-5 h-5" />
-              בקשות חדשות
-            </Button>
-            <Link 
-              to={createPageUrl('Home')}
-              className="flex items-center justify-center gap-2 px-4 h-11 rounded-lg text-white font-semibold bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 transition-all shadow-md"
-            >
-              חזרה
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-          </div>
+
         </div>
 
         {/* Stats Cards - 5 in a row on mobile too */}
@@ -320,10 +306,26 @@ export default function Admin() {
           )}
         </Card>
 
-        {/* Access Requests */}
-        <div ref={accessRequestsRef}>
-          <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
-        </div>
+        {/* Access Requests - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+            onClick={() => setShowAccessRequests(prev => !prev)}
+          >
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <Mail className="w-5 h-5 text-amber-500" />
+                בקשות גישה ממתינות
+              </div>
+              {showAccessRequests ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showAccessRequests && (
+            <CardContent className="pt-0">
+              <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
+            </CardContent>
+          )}
+        </Card>
 
         {/* Mentoring Meetings */}
         <MentoringMeetingManager interns={interns} experts={experts} />
