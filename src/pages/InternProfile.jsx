@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import MyMentoringMeetings from '@/components/intern/MyMentoringMeetings';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, UserCircle2, Calendar, Hash, Star, Plus, BarChart3, ClipboardList } from 'lucide-react';
@@ -270,6 +271,9 @@ export default function InternProfile() {
         </div>
 
 
+
+        {/* Mentoring Meetings */}
+        <MyMentoringMeetings internId={internId} />
 
         {/* Add Feedback Form */}
         <div className="mb-8">

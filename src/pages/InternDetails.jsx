@@ -9,6 +9,7 @@ import { User, ArrowLeft, ClipboardList, ListChecks, Shield } from 'lucide-react
 import AIProgressSummary from '../components/admin/AIProgressSummary';
 import RotationPlanEditor from '../components/admin/RotationPlanEditor';
 import InternFilesManager from '../components/admin/InternFilesManager';
+import MyMentoringMeetings from '../components/intern/MyMentoringMeetings';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -275,6 +276,9 @@ export default function InternDetails() {
             internName={intern?.name}
           />
         </div>
+
+        {/* Mentoring Meetings */}
+        <MyMentoringMeetings internId={internId} />
 
         {/* Rotation Plan */}
         <div className="mb-8">
