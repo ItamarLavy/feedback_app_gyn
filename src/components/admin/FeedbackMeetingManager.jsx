@@ -155,6 +155,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
     setSending(true);
 
     try {
+      console.log('[FeedbackMeetingManager] creating meeting, intern:', selectedIntern?.name, 'date:', formData.meeting_date);
       await createMeetingMutation.mutateAsync({
         intern_id: formData.intern_id,
         intern_name: selectedIntern?.name,
@@ -189,6 +190,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
         toast.success('הפגישה נקבעה (לא נמצאו כתובות מייל לשליחה)');
       }
     } catch (err) {
+      console.error('[FeedbackMeetingManager] error:', err.message, err);
       toast.error('שגיאה בקביעת הפגישה: ' + (err.message || 'נסה שוב'));
     }
     setSending(false);
