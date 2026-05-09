@@ -77,6 +77,9 @@ export default function FeedbackCardDetailed({ feedback, onDelete, showDelete = 
                   הושלם
                 </Badge>
               )}
+              {feedback.is_imported && (
+                <Badge className="bg-slate-400 text-xs">מיובא</Badge>
+              )}
             </div>
             <div className="flex items-center gap-2 text-slate-700">
               <User className="w-4 h-4 text-teal-600" />

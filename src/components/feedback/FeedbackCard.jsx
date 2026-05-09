@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, User, UserCheck, Calendar, Trash2, BookOpen, Hand, Award, UserCog } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
 
 const RATING_LABELS = {
@@ -85,8 +86,13 @@ export default function FeedbackCard({ feedback, onDelete, showDelete = false })
           </div>
         </div>
 
-        <div className="inline-block px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm font-medium mb-3">
-          {feedback.procedure_type}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="inline-block px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm font-medium">
+            {feedback.procedure_type}
+          </div>
+          {feedback.is_imported && (
+            <Badge className="bg-slate-400 text-xs">מיובא</Badge>
+          )}
         </div>
 
         {/* Rating Details */}
