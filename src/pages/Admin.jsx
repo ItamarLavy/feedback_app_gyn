@@ -95,11 +95,18 @@ export default function Admin() {
     enabled: isAuthenticated
   });
 
-  const { data: rotationPlans = [] } = useQuery({
+  const { data: rotationPlansRaw = [] } = useQuery({
     queryKey: ['rotationPlans'],
-    queryFn: () => base44.entities.InternRotationPlan.filter({ is_current: true }),
+    queryFn: () => base44.entities.InternRotationPlan.list(),
     enabled: isAuthenticated
   });
+
+  // לכל מתמחה - מצא את הרוטציה הנוכחית: is_current=true, או לחלופין לפי תאריך
+  const today = new Date().toISOString().slice(0, 10);
+  const rotationPlans = rotationPlansRaw.filter(r =>
+    r.is_current ||
+    (r.start_date && r.end_date && r.start_date <= today && r.end_date >= today)
+  );
 
   const { data: experts = [] } = useQuery({
     queryKey: ['experts'],
