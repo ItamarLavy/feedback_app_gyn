@@ -16,7 +16,7 @@ import { useAuth } from '@/lib/AuthContext';
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 // ---- ניתן לשנות קישור השאלון כאן ----
-const QUESTIONNAIRE_URL = "https://drive.google.com/open?id=18fDG1GNHYrAYQKrIL6URXePl8FhYhSAkouHhDdVCJt8";
+const QUESTIONNAIRE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfO8e-S_7H8GI6u_Qb8OS7V76OiqxkvSrKW_X98EU02pveSMw/viewform?usp=header";
 const QUESTIONNAIRE_NAME = "שאלון הערכת מתמחה לקראת שיחת חתך";
 // -------------------------------------
 
@@ -180,7 +180,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
           base44.integrations.Core.SendEmail({
             to: r.email,
             subject: `הזמנה לפגישת משוב עם ${selectedIntern?.name}`,
-            body: `שלום ${r.name},\n\nנקבעה פגישת משוב עם ${selectedIntern?.name}.\n\n📅 תאריך ושעה: ${meetingDate}\n📍 מיקום: ${formData.location || 'לא צוין'}\n${formData.notes ? `\nהערות: ${formData.notes}` : ''}\n\nתודה!\nצוות אגף נשים - הדסה`
+            body: `שלום ${r.name},\n\nנקבעה פגישת משוב עם ${selectedIntern?.name}.\n\n📅 תאריך ושעה: ${meetingDate}\n📍 מיקום: ${formData.location || 'לא צוין'}\n${formData.notes ? `\nהערות: ${formData.notes}` : ''}\n\n📝 לקראת הפגישה, אנא מלא/י את שאלון ההערכה:\n${QUESTIONNAIRE_URL}\n\nתודה!\nצוות אגף נשים - הדסה`
           })
         );
         await Promise.all(meetingEmailPromises);
