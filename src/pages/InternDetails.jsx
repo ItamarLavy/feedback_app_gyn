@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import InternStats from '../components/admin/InternStats';
-import { User, ArrowLeft, ClipboardList, ListChecks, Shield } from 'lucide-react';
+import { User, ArrowLeft, ClipboardList, ListChecks, Shield, GraduationCap, Check, X, Pencil } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 import AIProgressSummary from '../components/admin/AIProgressSummary';
 import RotationPlanEditor from '../components/admin/RotationPlanEditor';
 import InternFilesManager from '../components/admin/InternFilesManager';
@@ -142,6 +143,8 @@ export default function InternDetails() {
   const { user, isAuthenticated: isLoggedIn } = useAuth();
   const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [showDetailedProgress, setShowDetailedProgress] = useState(false);
+  const [editingStage, setEditingStage] = useState(false);
+  const [stageValue, setStageValue] = useState('');
   const queryClient = useQueryClient();
   
   const urlParams = new URLSearchParams(window.location.search);
@@ -179,6 +182,12 @@ export default function InternDetails() {
   const handleDeleteFeedback = async (feedbackId) => {
     await base44.entities.Feedback.delete(feedbackId);
     queryClient.invalidateQueries({ queryKey: ['feedbacks', internId] });
+  };
+
+  const handleSaveStage = async () => {
+    await base44.entities.Intern.update(internId, { stage: stageValue });
+    queryClient.invalidateQueries({ queryKey: ['intern', internId] });
+    setEditingStage(false);
   };
 
   // חישוב סטטיסטיקות לפי קטגוריה
@@ -257,7 +266,29 @@ export default function InternDetails() {
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-slate-800">{intern?.name || 'טוען...'}</h1>
-              <p className="text-slate-500 text-sm">פרופיל מתמחה</p>
+              {editingStage ? (
+                <div className="flex items-center gap-2 mt-1">
+                  <Input
+                    value={stageValue}
+                    onChange={e => setStageValue(e.target.value)}
+                    placeholder="שנה א', שנה ב'..."
+                    className="h-7 text-xs w-36"
+                    autoFocus
+                    onKeyDown={e => e.key === 'Enter' && handleSaveStage()}
+                  />
+                  <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700" onClick={handleSaveStage}><Check className="w-3 h-3" /></Button>
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingStage(false)}><X className="w-3 h-3" /></Button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => { setEditingStage(true); setStageValue(intern?.stage || ''); }}
+                  className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800 mt-0.5"
+                >
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  <span>{intern?.stage || 'הוסף שלב'}</span>
+                  <Pencil className="w-3 h-3 opacity-50" />
+                </button>
+              )}
             </div>
           </div>
           <Link 

@@ -14,7 +14,7 @@ import MentoringMeetingManager from '../components/admin/MentoringMeetingManager
 import { 
   Shield, Users, ClipboardList,
   Star, Search, Filter, Clock, BookOpen, Stethoscope, Trash2, Mail,
-  Trophy, TrendingUp, ChevronDown, ChevronUp
+  Trophy, TrendingUp, ChevronDown, ChevronUp, Building2, GraduationCap
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -92,6 +92,12 @@ export default function Admin() {
   const { data: interns = [] } = useQuery({
     queryKey: ['interns'],
     queryFn: () => base44.entities.Intern.list(),
+    enabled: isAuthenticated
+  });
+
+  const { data: rotationPlans = [] } = useQuery({
+    queryKey: ['rotationPlans'],
+    queryFn: () => base44.entities.InternRotationPlan.filter({ is_current: true }),
     enabled: isAuthenticated
   });
 
@@ -424,44 +430,52 @@ export default function Admin() {
                       ? (internRatings.reduce((a, b) => a + b, 0) / internRatings.length).toFixed(1)
                       : '-';
 
-                    // בדיקה אם עבר שבוע מאז המשוב האחרון
-                    const lastFeedback = internFeedbacks[0]; // feedbacks ממוינים לפי תאריך
+                    const lastFeedback = internFeedbacks[0];
                     const needsReminder = lastFeedback 
                       ? (Date.now() - new Date(lastFeedback.created_date).getTime()) > 7 * 24 * 60 * 60 * 1000
                       : internFeedbacks.length > 0;
+
+                    const currentRotation = rotationPlans.find(r => r.intern_id === intern.id);
 
                     return (
                       <Link
                         key={intern.id}
                         to={createPageUrl('InternDetails') + `?id=${intern.id}`}
-                        className={`flex items-start gap-3 p-4 rounded-xl transition-all border ${
+                        className={`flex items-center gap-3 p-3 rounded-xl transition-all border ${
                           needsReminder 
                             ? 'bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-amber-200 hover:border-amber-300 shadow-sm' 
                             : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-teal-300 shadow-sm'
                         }`}
                       >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          {needsReminder && (
-                            <Clock className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                          )}
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                            {intern.name?.[0]}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-slate-800 truncate">{intern.name}</p>
-                            <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
-                              <Star className="w-3 h-3 fill-amber-400 text-amber-400 flex-shrink-0" />
-                              <span>{avg}</span>
-                              <span className="text-slate-300">•</span>
-                              <span>{internFeedbacks.length} משובים</span>
-                            </div>
-                            {needsReminder && (
-                              <p className="text-xs text-amber-700 mt-1 font-medium">⚠ עבר שבוע מהמשוב האחרון</p>
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
+                          {intern.name?.[0]}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-semibold text-slate-800 text-sm">{intern.name}</p>
+                            {intern.stage && (
+                              <span className="flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-medium">
+                                <GraduationCap className="w-3 h-3" />{intern.stage}
+                              </span>
                             )}
-                            <div className="mt-2">
-                              <InternProgressBadges feedbacks={internFeedbacks} />
-                            </div>
+                            {currentRotation && (
+                              <span className="flex items-center gap-1 text-xs bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded-full font-medium">
+                                <Building2 className="w-3 h-3" />{currentRotation.department}
+                              </span>
+                            )}
+                            {needsReminder && (
+                              <span className="text-xs text-amber-700 font-medium">⚠ שבוע ללא משוב</span>
+                            )}
                           </div>
+                          <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                            <Star className="w-3 h-3 fill-amber-400 text-amber-400 flex-shrink-0" />
+                            <span>{avg}</span>
+                            <span className="text-slate-300">•</span>
+                            <span>{internFeedbacks.length} משובים</span>
+                          </div>
+                        </div>
+                        <div className="flex-shrink-0">
+                          <InternProgressBadges feedbacks={internFeedbacks} />
                         </div>
                       </Link>
                     );
