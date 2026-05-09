@@ -16,6 +16,7 @@ export default function InternPasswords() {
   const { user, isAuthenticated: isLoggedIn } = useAuth();
   const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [editingEmail, setEditingEmail] = useState(null);
+  const [editingEmailId, setEditingEmailId] = useState(null);
   const [emailValue, setEmailValue] = useState('');
   const [savingEmail, setSavingEmail] = useState(null);
   const [editingName, setEditingName] = useState(null);
@@ -50,11 +51,12 @@ export default function InternPasswords() {
     enabled: isAuthenticated
   });
 
-  const handleSaveEmail = async (internId) => {
+  const handleSaveEmail = async (internId, field) => {
     setSavingEmail(internId);
-    await base44.entities.Intern.update(internId, { email: emailValue });
+    await base44.entities.Intern.update(internId, { [field]: emailValue });
     queryClient.invalidateQueries({ queryKey: ['interns'] });
     setEditingEmail(null);
+    setEditingEmailId(null);
     setSavingEmail(null);
   };
 
@@ -91,7 +93,10 @@ export default function InternPasswords() {
     );
   }
 
-  const internEmails = new Set(interns.map(i => i.email).filter(Boolean));
+  const internEmails = new Set([
+    ...interns.map(i => i.email).filter(Boolean),
+    ...interns.map(i => i.email2).filter(Boolean),
+  ]);
   const pendingRequests = accessRequests.filter(r => !internEmails.has(r.email));
 
   return (
@@ -174,27 +179,31 @@ export default function InternPasswords() {
                         </div>
                       )}
 
-                      {/* Email */}
-                      {isEditingEmail ? (
+                      {/* Email 1 */}
+                      {editingEmailId === intern.id && editingEmail === 'email' ? (
                         <div className="flex items-center gap-2">
-                          <Input
-                            type="email"
-                            value={emailValue}
-                            onChange={e => setEmailValue(e.target.value)}
-                            placeholder="email@example.com"
-                            className="h-8 text-sm"
-                            autoFocus
-                            onKeyDown={e => e.key === 'Enter' && handleSaveEmail(intern.id)}
-                          />
-                          <Button size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700 flex-shrink-0" onClick={() => handleSaveEmail(intern.id)} disabled={savingEmail === intern.id}>
-                            <Check className="w-3 h-3" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="h-8 w-8 flex-shrink-0" onClick={() => setEditingEmail(null)}><X className="w-3 h-3" /></Button>
+                          <Input type="email" value={emailValue} onChange={e => setEmailValue(e.target.value)} placeholder="email@example.com" className="h-8 text-sm" autoFocus onKeyDown={e => e.key === 'Enter' && handleSaveEmail(intern.id, 'email')} />
+                          <Button size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700 flex-shrink-0" onClick={() => handleSaveEmail(intern.id, 'email')} disabled={savingEmail === intern.id}><Check className="w-3 h-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 flex-shrink-0" onClick={() => { setEditingEmail(null); setEditingEmailId(null); }}><X className="w-3 h-3" /></Button>
                         </div>
                       ) : (
-                        <button onClick={() => { setEditingEmail(intern.id); setEmailValue(intern.email || ''); }} className="flex items-center gap-1 text-sm text-slate-500 hover:text-blue-600 text-right">
+                        <button onClick={() => { setEditingEmail('email'); setEditingEmailId(intern.id); setEmailValue(intern.email || ''); }} className="flex items-center gap-1 text-sm text-slate-500 hover:text-blue-600 text-right">
                           <Mail className="w-3 h-3 flex-shrink-0" />
-                          <span className="truncate">{intern.email || <span className="text-slate-300 italic">הוסף מייל</span>}</span>
+                          <span className="truncate">{intern.email || <span className="text-slate-300 italic">הוסף מייל ראשי</span>}</span>
+                        </button>
+                      )}
+
+                      {/* Email 2 */}
+                      {editingEmailId === intern.id && editingEmail === 'email2' ? (
+                        <div className="flex items-center gap-2">
+                          <Input type="email" value={emailValue} onChange={e => setEmailValue(e.target.value)} placeholder="email2@example.com" className="h-8 text-sm" autoFocus onKeyDown={e => e.key === 'Enter' && handleSaveEmail(intern.id, 'email2')} />
+                          <Button size="icon" className="h-8 w-8 bg-green-600 hover:bg-green-700 flex-shrink-0" onClick={() => handleSaveEmail(intern.id, 'email2')} disabled={savingEmail === intern.id}><Check className="w-3 h-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-8 w-8 flex-shrink-0" onClick={() => { setEditingEmail(null); setEditingEmailId(null); }}><X className="w-3 h-3" /></Button>
+                        </div>
+                      ) : (
+                        <button onClick={() => { setEditingEmail('email2'); setEditingEmailId(intern.id); setEmailValue(intern.email2 || ''); }} className="flex items-center gap-1 text-sm text-slate-400 hover:text-blue-600 text-right">
+                          <Mail className="w-3 h-3 flex-shrink-0 opacity-50" />
+                          <span className="truncate text-xs">{intern.email2 || <span className="text-slate-300 italic">הוסף מייל נוסף</span>}</span>
                         </button>
                       )}
 
