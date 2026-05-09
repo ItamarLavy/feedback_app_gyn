@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, GraduationCap } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const STAGE_OPTIONS = ['תורנות מחלקה', 'מיון', 'שחרור ממיון', 'עצמאי'];
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -216,19 +219,20 @@ export default function InternPasswords() {
                       )}
 
                       {/* Stage */}
-                      {editingStage === intern.id ? (
-                       <div className="flex items-center gap-2">
-                         <Input value={stageValue} onChange={e => setStageValue(e.target.value)} placeholder="שנה א', שנה ב'..." className="h-7 text-xs" autoFocus onKeyDown={e => e.key === 'Enter' && handleSaveStage(intern.id)} />
-                         <Button size="icon" className="h-7 w-7 bg-green-600 hover:bg-green-700 flex-shrink-0" onClick={() => handleSaveStage(intern.id)}><Check className="w-3 h-3" /></Button>
-                         <Button size="icon" variant="ghost" className="h-7 w-7 flex-shrink-0" onClick={() => setEditingStage(null)}><X className="w-3 h-3" /></Button>
-                       </div>
-                      ) : (
-                       <button onClick={() => { setEditingStage(intern.id); setStageValue(intern.stage || ''); }} className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-800">
-                         <GraduationCap className="w-3 h-3 flex-shrink-0" />
-                         <span>{intern.stage || <span className="text-slate-300 italic">הוסף שלב</span>}</span>
-                         <Pencil className="w-2.5 h-2.5 opacity-50" />
-                       </button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <GraduationCap className="w-3 h-3 text-purple-500 flex-shrink-0" />
+                        <Select value={intern.stage || ''} onValueChange={async (val) => {
+                          await base44.entities.Intern.update(intern.id, { stage: val });
+                          queryClient.invalidateQueries({ queryKey: ['interns'] });
+                        }}>
+                          <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 w-40">
+                            <SelectValue placeholder="בחר שלב..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {STAGE_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
                       {/* Stats */}
                       <div className="flex items-center gap-3 text-xs">
