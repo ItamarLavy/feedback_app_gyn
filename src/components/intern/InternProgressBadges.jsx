@@ -163,7 +163,7 @@ export default function InternProgressBadges({ feedbacks }) {
         <span
           key={category}
           title={`${category}: ${Math.round(stats.totalPercentage)}%`}
-          className={`text-[10px] font-semibold px-1 py-0.5 rounded border leading-tight ${
+          className={`text-[9px] font-semibold px-1 py-px rounded border leading-tight ${
             stats.totalPercentage >= 100 ? 'bg-green-50 text-green-700 border-green-300' :
             stats.totalPercentage >= 50 ? 'bg-blue-50 text-blue-700 border-blue-300' :
             'bg-slate-50 text-slate-500 border-slate-300'

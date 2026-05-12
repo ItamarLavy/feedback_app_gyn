@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Stethoscope, Shield, Home, BookOpen, Notebook, ArrowLeft, Settings } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
@@ -12,28 +12,39 @@ import { processPendingNotifications, sendFridayManagerSummary, sendFridayChampi
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 const MANAGER_NAMES = ['יובל לביא', 'רונית גלעד', 'צביקה שמעונוביץ'];
 
-// מפה: מאיזה דף מגיעים ולאן חוזרים
-const BACK_DESTINATIONS = {
-  'InternDetails': 'Admin',
-  'InternPasswords': 'Admin',
-  'ExpertPasswords': 'Admin',
-  'ManagerEmails': 'Admin',
-  'ExpertFeedbackDetail': 'Home',
-  'InternProfile': 'Home',
-  'Instructions': 'Home',
-  'FeedbackMeetingsManagement': 'Admin',
+// דפים שבהם לא מציגים כפתור חזור
+const NO_BACK_PAGES = ['Home', 'Admin'];
+
+// מפה: מאיזה דף מגיעים ולאן חוזרים (fallback אם אין היסטוריה)
+const BACK_FALLBACK = {
+  'InternDetails': '/Admin',
+  'InternPasswords': '/Admin',
+  'ExpertPasswords': '/Admin',
+  'ManagerEmails': '/Admin',
+  'FeedbackMeetingsManagement': '/Admin',
+  'ExpertFeedbackDetail': '/',
+  'InternProfile': '/',
+  'Instructions': '/',
 };
 
 function BackButton({ currentPageName }) {
-  const backPage = BACK_DESTINATIONS[currentPageName] || 'Home';
+  const navigate = useNavigate();
+  const fallback = BACK_FALLBACK[currentPageName] || '/';
+  const handleBack = () => {
+    if (window.history.length > 2) {
+      navigate(-1);
+    } else {
+      navigate(fallback);
+    }
+  };
   return (
-    <Link
-      to={createPageUrl(backPage)}
+    <button
+      onClick={handleBack}
       className="flex items-center gap-2 text-white hover:text-slate-100 transition-colors"
     >
       <ArrowLeft className="w-5 h-5" />
       <span className="text-sm font-medium">חזור</span>
-    </Link>
+    </button>
   );
 }
 
@@ -41,6 +52,7 @@ export default function Layout({ children, currentPageName }) {
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const showBackButton = !NO_BACK_PAGES.includes(currentPageName) && !isHomePage;
   const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
 
   useEffect(() => {
@@ -104,10 +116,10 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile Header with Back Button */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 shadow-md" style={{ paddingTop: 'max(0px, env(safe-area-inset-top))' }}>
         <div className="flex items-center justify-between h-16 px-4" dir="rtl">
-          {!isHomePage && (
+          {showBackButton && (
             <BackButton currentPageName={currentPageName} />
           )}
-          {isHomePage && (
+          {(isHomePage || !showBackButton) && (
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
                 <Stethoscope className="w-4 h-4 text-white" />
