@@ -483,7 +483,7 @@ export default function Admin() {
                            <span>{internFeedbacks.length} משובים</span>
                          </div>
                        </div>
-                       <div className="flex-shrink-0 hidden sm:block">
+                       <div className="flex-shrink-0">
                          <InternProgressBadges feedbacks={internFeedbacks} />
                        </div>
                       </Link>

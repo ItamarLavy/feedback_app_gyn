@@ -158,19 +158,19 @@ export default function InternProgressBadges({ feedbacks }) {
   const progress = calculateInternProgress(feedbacks);
 
   return (
-    <div className="flex gap-1 flex-wrap mt-2">
+    <div className="flex gap-0.5 flex-wrap">
       {Object.entries(progress).map(([category, stats]) => (
-        <Badge 
-          key={category} 
-          variant="outline"
-          className={`text-xs ${
+        <span
+          key={category}
+          title={`${category}: ${Math.round(stats.totalPercentage)}%`}
+          className={`text-[10px] font-semibold px-1 py-0.5 rounded border leading-tight ${
             stats.totalPercentage >= 100 ? 'bg-green-50 text-green-700 border-green-300' :
             stats.totalPercentage >= 50 ? 'bg-blue-50 text-blue-700 border-blue-300' :
-            'bg-slate-50 text-slate-600 border-slate-300'
+            'bg-slate-50 text-slate-500 border-slate-300'
           }`}
         >
-          {category}: {Math.round(stats.totalPercentage)}%
-        </Badge>
+          {category === 'כללי' ? 'כלל' : category} {Math.round(stats.totalPercentage)}%
+        </span>
       ))}
     </div>
   );
