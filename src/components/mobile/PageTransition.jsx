@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 
 export default function PageTransition({ children }) {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [pathname]);
+  }, [pathname, search]);
 
   return (
     <motion.div
