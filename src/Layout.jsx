@@ -12,6 +12,31 @@ import { processPendingNotifications, sendFridayManagerSummary, sendFridayChampi
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 const MANAGER_NAMES = ['יובל לביא', 'רונית גלעד', 'צביקה שמעונוביץ'];
 
+// מפה: מאיזה דף מגיעים ולאן חוזרים
+const BACK_DESTINATIONS = {
+  'InternDetails': 'Admin',
+  'InternPasswords': 'Admin',
+  'ExpertPasswords': 'Admin',
+  'ManagerEmails': 'Admin',
+  'ExpertFeedbackDetail': 'Home',
+  'InternProfile': 'Home',
+  'Instructions': 'Home',
+  'FeedbackMeetingsManagement': 'Admin',
+};
+
+function BackButton({ currentPageName }) {
+  const backPage = BACK_DESTINATIONS[currentPageName] || 'Home';
+  return (
+    <Link
+      to={createPageUrl(backPage)}
+      className="flex items-center gap-2 text-white hover:text-slate-100 transition-colors"
+    >
+      <ArrowLeft className="w-5 h-5" />
+      <span className="text-sm font-medium">חזור</span>
+    </Link>
+  );
+}
+
 export default function Layout({ children, currentPageName }) {
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
@@ -80,13 +105,7 @@ export default function Layout({ children, currentPageName }) {
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 shadow-md" style={{ paddingTop: 'max(0px, env(safe-area-inset-top))' }}>
         <div className="flex items-center justify-between h-16 px-4" dir="rtl">
           {!isHomePage && (
-            <Link
-              to={createPageUrl('Home')}
-              className="flex items-center gap-2 text-white hover:text-slate-100 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm font-medium">חזור</span>
-            </Link>
+            <BackButton currentPageName={currentPageName} />
           )}
           {isHomePage && (
             <div className="flex items-center gap-2">

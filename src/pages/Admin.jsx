@@ -446,44 +446,46 @@ export default function Admin() {
 
                     return (
                       <Link
-                        key={intern.id}
-                        to={createPageUrl('InternDetails') + `?id=${intern.id}`}
-                        className={`flex items-center gap-3 p-3 rounded-xl transition-all border ${
-                          needsReminder 
-                            ? 'bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-amber-200 hover:border-amber-300 shadow-sm' 
-                            : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-teal-300 shadow-sm'
-                        }`}
+                       key={intern.id}
+                       to={createPageUrl('InternDetails') + `?id=${intern.id}`}
+                       className={`flex items-center gap-3 p-3 rounded-xl transition-all border ${
+                         needsReminder 
+                           ? 'bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-amber-200 hover:border-amber-300 shadow-sm' 
+                           : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-teal-300 shadow-sm'
+                       }`}
                       >
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
-                          {intern.name?.[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-semibold text-slate-800 text-sm">{intern.name}</p>
-                            {intern.stage && (
-                              <span className="flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-medium">
-                                <GraduationCap className="w-3 h-3" />{intern.stage}
-                              </span>
-                            )}
-                            {currentRotation && (
-                              <span className="flex items-center gap-1 text-xs bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded-full font-medium">
-                                <Building2 className="w-3 h-3" />{currentRotation.department}
-                              </span>
-                            )}
-                            {needsReminder && (
-                              <span className="text-xs text-amber-700 font-medium">⚠ שבוע ללא משוב</span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                            <Star className="w-3 h-3 fill-amber-400 text-amber-400 flex-shrink-0" />
-                            <span>{avg}</span>
-                            <span className="text-slate-300">•</span>
-                            <span>{internFeedbacks.length} משובים</span>
-                          </div>
-                        </div>
-                        <div className="flex-shrink-0">
-                          <InternProgressBadges feedbacks={internFeedbacks} />
-                        </div>
+                       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
+                         {intern.name?.[0]}
+                       </div>
+                       <div className="flex-1 min-w-0">
+                         <div className="flex items-center gap-1.5 flex-wrap">
+                           <p className="font-semibold text-slate-800 text-sm">{intern.name}</p>
+                           {needsReminder && (
+                             <span className="text-xs text-amber-600 font-medium">⚠</span>
+                           )}
+                         </div>
+                         <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                           {intern.stage && (
+                             <span className="flex items-center gap-0.5 text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-medium">
+                               <GraduationCap className="w-2.5 h-2.5" />{intern.stage}
+                             </span>
+                           )}
+                           {currentRotation && (
+                             <span className="flex items-center gap-0.5 text-xs bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded-full font-medium">
+                               <Building2 className="w-2.5 h-2.5" />{currentRotation.department}
+                             </span>
+                           )}
+                         </div>
+                         <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                           <Star className="w-3 h-3 fill-amber-400 text-amber-400 flex-shrink-0" />
+                           <span>{avg}</span>
+                           <span className="text-slate-300">•</span>
+                           <span>{internFeedbacks.length} משובים</span>
+                         </div>
+                       </div>
+                       <div className="flex-shrink-0 hidden sm:block">
+                         <InternProgressBadges feedbacks={internFeedbacks} />
+                       </div>
                       </Link>
                     );
                   })}
