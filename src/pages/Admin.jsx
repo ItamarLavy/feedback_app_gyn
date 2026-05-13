@@ -267,148 +267,6 @@ export default function Admin() {
           </Link>
         </div>
 
-        {/* Admin Instructions - Collapsible */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="bg-teal-50 border-b border-teal-100 cursor-pointer select-none hover:bg-teal-100 transition-colors rounded-xl"
-            onClick={() => setShowAdminInstructions(!showAdminInstructions)}
-          >
-            <CardTitle className="flex items-center justify-between text-teal-900">
-              <div className="flex items-center gap-3">
-                <BookOpen className="w-5 h-5" />
-                הוראות למנהלים
-              </div>
-              <span className="text-teal-500 text-lg">{showAdminInstructions ? '▲' : '▼'}</span>
-            </CardTitle>
-          </CardHeader>
-          {showAdminInstructions && (
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">1</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">צפייה בכל המשובים</h4>
-                    <p className="text-sm text-slate-600">בפאנל הניהול תוכל לראות את כל המשובים במערכת, לחפש ולסנן לפי מתמחה/מומחה/פרוצדורה, ולמחוק משובים במידת הצורך.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">2</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">אישור בקשות גישה</h4>
-                    <p className="text-sm text-slate-600">כאשר משתמש חדש נכנס עם גוגל ואין לו גישה, הבקשה שלו תופיע בראש הדף. בחר תפקיד (מתמחה/מומחה), בחר את הרשומה המתאימה, ולחץ "אשר" – המייל יתעדכן אוטומטית.</p>
-                    <p className="text-sm text-slate-600 mt-1">ניתן גם להוסיף מיילים מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">3</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">עדכון מיילים מראש</h4>
-                    <p className="text-sm text-slate-600">ניתן לרשום את המייל של כל מתמחה/מומחה מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>. כך הם יזוהו אוטומטית בכניסה הראשונה.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">4</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">ניהול שוטף</h4>
-                    <p className="text-sm text-slate-600">לחץ על שם מתמחה לצפייה מפורטת. ניתן לתזמן פגישות מנטורינג, לצפות בסיכומי AI ובדוחות חריגים, ולמחוק משובים במידת הצורך.</p>
-                  </div>
-                </div>
-
-              </div>
-            </CardContent>
-          )}
-        </Card>
-
-        {/* Access Requests - Collapsible */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-            onClick={() => setShowAccessRequests(prev => !prev)}
-          >
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-amber-500" />
-                בקשות גישה ממתינות
-              </div>
-              {showAccessRequests ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-            </CardTitle>
-          </CardHeader>
-          {showAccessRequests && (
-            <CardContent className="pt-0">
-              <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
-            </CardContent>
-          )}
-        </Card>
-
-        {/* Mentoring Meetings */}
-        <MentoringMeetingManager interns={interns} experts={experts} />
-
-        {/* Points Leaderboard - Collapsible */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-            onClick={() => setShowLeaderboard(prev => !prev)}
-          >
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-500" />
-                לוח ניקוד
-              </div>
-              {showLeaderboard ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-            </CardTitle>
-          </CardHeader>
-          {showLeaderboard && (
-            <CardContent className="pt-0">
-              <PointsLeaderboard />
-            </CardContent>
-          )}
-        </Card>
-
-        {/* Anomalous Reports - Collapsible */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-            onClick={() => setShowAnomalous(prev => !prev)}
-          >
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-red-500" />
-                טרנדים חריגים
-              </div>
-              {showAnomalous ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-            </CardTitle>
-          </CardHeader>
-          {showAnomalous && (
-            <CardContent className="pt-0">
-              <AnomalousReports feedbacks={feedbacks} interns={interns} />
-            </CardContent>
-          )}
-        </Card>
-
-        {/* Department Panels - Collapsible */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-            onClick={() => setShowDepartments(prev => !prev)}
-          >
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <Stethoscope className="w-5 h-5 text-teal-600" />
-                מעקב לפי מחלקה
-              </div>
-              {showDepartments ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-            </CardTitle>
-          </CardHeader>
-          {showDepartments && (
-            <CardContent className="pt-0 space-y-4">
-              <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
-              <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
-              <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
-              <DepartmentPanel department="רוטציה חיצונית" label="רוטציה חיצונית" interns={interns} />
-            </CardContent>
-          )}
-        </Card>
-
         {/* Interns List - Collapsible */}
          <Card className="border-0 shadow-lg mb-8">
            <CardHeader
@@ -499,6 +357,147 @@ export default function Admin() {
 
 
 
+
+        {/* Department Panels - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+            onClick={() => setShowDepartments(prev => !prev)}
+          >
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <Stethoscope className="w-5 h-5 text-teal-600" />
+                מעקב לפי מחלקה
+              </div>
+              {showDepartments ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showDepartments && (
+            <CardContent className="pt-0 space-y-4">
+              <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
+              <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
+              <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
+              <DepartmentPanel department="רוטציה חיצונית" label="רוטציה חיצונית" interns={interns} />
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Anomalous Reports - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+            onClick={() => setShowAnomalous(prev => !prev)}
+          >
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-red-500" />
+                טרנדים חריגים
+              </div>
+              {showAnomalous ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showAnomalous && (
+            <CardContent className="pt-0">
+              <AnomalousReports feedbacks={feedbacks} interns={interns} />
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Mentoring Meetings */}
+        <MentoringMeetingManager interns={interns} experts={experts} />
+
+        {/* Points Leaderboard - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+            onClick={() => setShowLeaderboard(prev => !prev)}
+          >
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-500" />
+                לוח ניקוד
+              </div>
+              {showLeaderboard ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showLeaderboard && (
+            <CardContent className="pt-0">
+              <PointsLeaderboard />
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Access Requests - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
+            onClick={() => setShowAccessRequests(prev => !prev)}
+          >
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <Mail className="w-5 h-5 text-amber-500" />
+                בקשות גישה ממתינות
+              </div>
+              {showAccessRequests ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showAccessRequests && (
+            <CardContent className="pt-0">
+              <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Admin Instructions - Collapsible */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader
+            className="bg-teal-50 border-b border-teal-100 cursor-pointer select-none hover:bg-teal-100 transition-colors rounded-xl"
+            onClick={() => setShowAdminInstructions(!showAdminInstructions)}
+          >
+            <CardTitle className="flex items-center justify-between text-teal-900">
+              <div className="flex items-center gap-3">
+                <BookOpen className="w-5 h-5" />
+                הוראות שימוש
+              </div>
+              <span className="text-teal-500 text-lg">{showAdminInstructions ? '▲' : '▼'}</span>
+            </CardTitle>
+          </CardHeader>
+          {showAdminInstructions && (
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">1</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">צפייה בכל המשובים</h4>
+                    <p className="text-sm text-slate-600">בפאנל הניהול תוכל לראות את כל המשובים במערכת, לחפש ולסנן לפי מתמחה/מומחה/פרוצדורה, ולמחוק משובים במידת הצורך.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">2</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">אישור בקשות גישה</h4>
+                    <p className="text-sm text-slate-600">כאשר משתמש חדש נכנס עם גוגל ואין לו גישה, הבקשה שלו תופיע בראש הדף. בחר תפקיד (מתמחה/מומחה), בחר את הרשומה המתאימה, ולחץ "אשר" – המייל יתעדכן אוטומטית.</p>
+                    <p className="text-sm text-slate-600 mt-1">ניתן גם להוסיף מיילים מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">3</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">עדכון מיילים מראש</h4>
+                    <p className="text-sm text-slate-600">ניתן לרשום את המייל של כל מתמחה/מומחה מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>. כך הם יזוהו אוטומטית בכניסה הראשונה.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">4</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">ניהול שוטף</h4>
+                    <p className="text-sm text-slate-600">לחץ על שם מתמחה לצפייה מפורטת. ניתן לתזמן פגישות, לצפות בסיכומי AI ובדוחות חריגים, ולמחוק משובים במידת הצורך.</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          )}
+        </Card>
 
         {/* Filters */}
         <div className="space-y-4">

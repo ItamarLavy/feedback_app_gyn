@@ -85,7 +85,7 @@ export default function MentoringMeetingManager({ interns = [], experts = [] }) 
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center gap-2">
             <CalendarDays className="w-5 h-5 text-indigo-600" />
-            פגישות מנטורינג
+            קביעת פגישות
             {upcoming.length > 0 && (
               <Badge className="bg-indigo-600 text-white text-xs">{upcoming.length} קרובות</Badge>
             )}
