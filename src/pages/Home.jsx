@@ -154,22 +154,6 @@ export default function Home() {
               </Card>
             )}
 
-            <Link to="/UserSettings">
-              <Card className="border-2 border-slate-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-slate-50 to-slate-100">
-                <CardContent className="p-4 md:p-8">
-                  <div className="flex items-center gap-3 md:gap-4">
-                    <div className="w-10 h-10 md:w-14 md:h-14 flex-shrink-0 rounded-xl bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center group-hover:from-slate-500 group-hover:to-slate-600 transition-colors shadow-md">
-                      <Settings className="w-5 h-5 md:w-7 md:h-7 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">הגדרות</h3>
-                      <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">עדכן את הפרטים שלך</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-
             <Link to={createPageUrl('Instructions')}>
               <Card className="border-2 border-amber-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-amber-50 to-yellow-50">
                 <CardContent className="p-4 md:p-8">
