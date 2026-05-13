@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, Home, BookOpen, Notebook, ArrowLeft, Settings } from 'lucide-react';
+import { Stethoscope, Shield, Home, BookOpen, Notebook, ArrowLeft, Settings, Lightbulb } from 'lucide-react';
+import ImprovementSuggestionModal from '@/components/feedback/ImprovementSuggestionModal';
 
 import { useAuth } from '@/lib/AuthContext';
 import PointsBadge from '@/components/notifications/PointsBadge';
@@ -52,6 +53,7 @@ function BackButton({ currentPageName }) {
 export default function Layout({ children, currentPageName }) {
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
+  const [showSuggestion, setShowSuggestion] = useState(false);
   const isHomePage = location.pathname === '/';
   const showBackButton = !NO_BACK_PAGES.includes(currentPageName) && !isHomePage;
   const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
@@ -70,6 +72,9 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100">
+      {showSuggestion && (
+        <ImprovementSuggestionModal onClose={() => setShowSuggestion(false)} />
+      )}
       {/* Desktop Navigation */}
       <nav className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50" style={{ paddingTop: 'max(0px, env(safe-area-inset-top))' }}>
         <div className="max-w-6xl mx-auto px-4">
@@ -120,6 +125,13 @@ export default function Layout({ children, currentPageName }) {
                 <Settings className="w-4 h-4" />
                 <span className="hidden sm:inline">חשבון</span>
               </Link>
+              <button
+                onClick={() => setShowSuggestion(true)}
+                className="px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-amber-600 hover:bg-amber-50"
+              >
+                <Lightbulb className="w-4 h-4" />
+                <span className="hidden sm:inline">הצעות לשיפור</span>
+              </button>
             </div>
           </div>
         </div>
