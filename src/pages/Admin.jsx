@@ -464,36 +464,76 @@ export default function Admin() {
           </CardHeader>
           {showAdminInstructions && (
             <CardContent className="p-6">
-              <div className="space-y-6">
+              <div className="space-y-5">
+
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">1</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">1</div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">צפייה בכל המשובים</h4>
-                    <p className="text-sm text-slate-600">בפאנל הניהול תוכל לראות את כל המשובים במערכת, לחפש ולסנן לפי מתמחה/מומחה/פרוצדורה, ולמחוק משובים במידת הצורך.</p>
+                    <h4 className="font-semibold text-slate-800 mb-1">תריס מתמחים</h4>
+                    <p className="text-sm text-slate-600">לחץ על מתמחה לצפייה בפרופיל המלא שלו: סטטיסטיקות, התקדמות לפי פרוצדורות, תוכנית רוטציות, קבצים, סיכום AI ורשימת משובים. ניתן לשנות שלב, למחוק משובים ולהוסיף מידע ידנית.</p>
                   </div>
                 </div>
+
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">2</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">2</div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">אישור בקשות גישה</h4>
-                    <p className="text-sm text-slate-600">כאשר משתמש חדש נכנס עם גוגל ואין לו גישה, הבקשה שלו תופיע בראש הדף. בחר תפקיד (מתמחה/מומחה), בחר את הרשומה המתאימה, ולחץ "אשר" – המייל יתעדכן אוטומטית.</p>
-                    <p className="text-sm text-slate-600 mt-1">ניתן גם להוסיף מיילים מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>.</p>
+                    <h4 className="font-semibold text-slate-800 mb-1">מעקב לפי מחלקה</h4>
+                    <p className="text-sm text-slate-600">צפה בהתקדמות המתמחים לפי מחלקות: מיילדות, גניקולוגיה, פוריות ורוטציה חיצונית.</p>
                   </div>
                 </div>
+
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">3</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">3</div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">עדכון מיילים מראש</h4>
-                    <p className="text-sm text-slate-600">ניתן לרשום את המייל של כל מתמחה/מומחה מראש דרך כפתורי <strong>"מיילים מתמחים"</strong> / <strong>"מיילים מומחים"</strong>. כך הם יזוהו אוטומטית בכניסה הראשונה.</p>
+                    <h4 className="font-semibold text-slate-800 mb-1">טרנדים חריגים</h4>
+                    <p className="text-sm text-slate-600">זיהוי אוטומטי של מתמחים עם ציונים גבוהים/נמוכים חריגים, ומגמות עולות/יורדות ב-3 משובים אחרונים.</p>
                   </div>
                 </div>
+
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center">4</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">4</div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">ניהול שוטף</h4>
-                    <p className="text-sm text-slate-600">לחץ על שם מתמחה לצפייה מפורטת. ניתן לתזמן פגישות, לצפות בסיכומי AI ובדוחות חריגים, ולמחוק משובים במידת הצורך.</p>
+                    <h4 className="font-semibold text-slate-800 mb-1">קביעת פגישות</h4>
+                    <p className="text-sm text-slate-600">תזמן פגישות מנטורינג עם מתמחים ומומחים. המשתתפים מקבלים הזמנה במייל עם פרטי הפגישה.</p>
                   </div>
                 </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">5</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">לוח ניקוד</h4>
+                    <p className="text-sm text-slate-600">דירוג מתמחים ומומחים לפי נקודות שנצברו מהגשת ואישור משובים – ניתן לסנן לפי שבוע, חודש ותפקיד.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">6</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">בקשות גישה ממתינות</h4>
+                    <p className="text-sm text-slate-600">כשמשתמש נכנס לראשונה עם גוגל, בקשתו מופיעה כאן. בחר תפקיד (מתמחה/מומחה), שייך לרשומה קיימת או צור חדשה, ולחץ "אשר" – המייל יתעדכן אוטומטית.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">7</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">ניהול משתמשים (כרטיסי הסטטיסטיקות)</h4>
+                    <p className="text-sm text-slate-600">
+                      לחץ על <strong>מתמחים</strong> לעריכת שמות, מיילים ושלבים, או הוספה/מחיקה של מתמחים.<br/>
+                      לחץ על <strong>מומחים</strong> לאותן פעולות עבור המומחים.<br/>
+                      לחץ על <strong>מנהלים</strong> לעדכון רשימת מנהלי המערכת.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">8</div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800 mb-1">חיפוש ומחיקת משובים</h4>
+                    <p className="text-sm text-slate-600">בתחתית הדף ניתן לחפש ולסנן את כל המשובים במערכת לפי שם מתמחה, מומחה או קוד פרוצדורה, ולמחוק רשומות במידת הצורך.</p>
+                  </div>
+                </div>
+
               </div>
             </CardContent>
           )}
