@@ -29,7 +29,7 @@ export default function BottomNav({ currentPageName }) {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 shadow-lg" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 shadow-lg" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="flex items-center justify-around h-16" dir="rtl">
         {navItems.map((item) => {
           const Icon = item.icon;
