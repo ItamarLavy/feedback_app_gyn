@@ -88,31 +88,31 @@ export default function Home() {
       <div className="min-h-screen w-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
         <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-5 py-8 w-full pb-40">
           {/* Header with Points */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-slate-800 mb-4">
+          <div className="text-center mb-4 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-800 mb-3 md:mb-4">
               ברוך הבא, {userName}!
             </h1>
             
             {/* Points Display */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <Card className="border-2 border-yellow-300 shadow-lg bg-gradient-to-br from-yellow-50 to-amber-50 hover:shadow-xl transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-center gap-3">
-                    <Zap className="w-8 h-8 text-amber-500 fill-amber-400" />
+            <div className="grid grid-cols-2 gap-3 mb-4 md:mb-8">
+              <Card className="border-2 border-yellow-300 shadow-lg bg-gradient-to-br from-yellow-50 to-amber-50">
+                <CardContent className="p-3 md:p-6">
+                  <div className="flex items-center justify-center gap-2 md:gap-3">
+                    <Zap className="w-6 h-6 md:w-8 md:h-8 text-amber-500 fill-amber-400" />
                     <div>
-                      <p className="text-slate-700 text-sm font-medium">סה"כ נקודות</p>
-                      <p className="text-3xl font-bold text-amber-700">{points}</p>
+                      <p className="text-slate-700 text-xs md:text-sm font-medium">סה"כ נקודות</p>
+                      <p className="text-2xl md:text-3xl font-bold text-amber-700">{points}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-              <Card className="border-2 border-teal-300 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50 hover:shadow-xl transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-center gap-3">
-                    <Zap className="w-8 h-8 text-teal-500 fill-teal-400" />
+              <Card className="border-2 border-teal-300 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50">
+                <CardContent className="p-3 md:p-6">
+                  <div className="flex items-center justify-center gap-2 md:gap-3">
+                    <Zap className="w-6 h-6 md:w-8 md:h-8 text-teal-500 fill-teal-400" />
                     <div>
-                      <p className="text-slate-700 text-sm font-medium">השבוע</p>
-                      <p className="text-3xl font-bold text-teal-700">{weeklyRecord}</p>
+                      <p className="text-slate-700 text-xs md:text-sm font-medium">השבוע</p>
+                      <p className="text-2xl md:text-3xl font-bold text-teal-700">{weeklyRecord}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -121,23 +121,23 @@ export default function Home() {
           </div>
 
           {/* Action Panel */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="grid md:grid-cols-2 gap-3 md:gap-6 mb-8">
             {targetUrl && <Link to={targetUrl}>
               <Card className="border-2 border-blue-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-blue-50 to-cyan-50">
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-4">
-                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center group-hover:shadow-lg transition-all ${
+                <CardContent className="p-4 md:p-8">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className={`w-10 h-10 md:w-14 md:h-14 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:shadow-lg transition-all ${
                       isIntern 
                         ? 'bg-gradient-to-br from-blue-200 to-cyan-200 group-hover:from-blue-300 group-hover:to-cyan-300' 
                         : 'bg-gradient-to-br from-purple-200 to-pink-200 group-hover:from-purple-300 group-hover:to-pink-300'
                     }`}>
-                      <Stethoscope className={`w-7 h-7 ${isIntern ? 'text-blue-800' : 'text-purple-800'}`} />
+                      <Stethoscope className={`w-5 h-5 md:w-7 md:h-7 ${isIntern ? 'text-blue-800' : 'text-purple-800'}`} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-2">
+                      <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">
                         {isIntern ? 'מלא משוב כמתמחה' : 'מלא משוב כמומחה'}
                       </h3>
-                      <p className="text-slate-800 font-medium">
+                      <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">
                         {isIntern ? 'שלח משוב עצמי על פרוצדורה' : 'בדוק משובים הממתינים'}
                       </p>
                     </div>
@@ -147,7 +147,7 @@ export default function Home() {
             </Link>}
             {!targetUrl && (
               <Card className="border-0 shadow-xl bg-slate-50">
-                <CardContent className="p-8 text-center">
+                <CardContent className="p-4 md:p-8 text-center">
                   <Loader2 className="w-8 h-8 animate-spin text-teal-600 mx-auto mb-3" />
                   <p className="text-slate-600">טוען...</p>
                 </CardContent>
@@ -156,14 +156,14 @@ export default function Home() {
 
             <Link to="/UserSettings">
               <Card className="border-2 border-slate-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-slate-50 to-slate-100">
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center group-hover:from-slate-500 group-hover:to-slate-600 transition-colors shadow-md">
-                      <Settings className="w-7 h-7 text-white" />
+                <CardContent className="p-4 md:p-8">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className="w-10 h-10 md:w-14 md:h-14 flex-shrink-0 rounded-xl bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center group-hover:from-slate-500 group-hover:to-slate-600 transition-colors shadow-md">
+                      <Settings className="w-5 h-5 md:w-7 md:h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-2">הגדרות</h3>
-                      <p className="text-slate-800 font-medium">עדכן את הפרטים שלך</p>
+                      <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">הגדרות</h3>
+                      <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">עדכן את הפרטים שלך</p>
                     </div>
                   </div>
                 </CardContent>
@@ -172,14 +172,14 @@ export default function Home() {
 
             <Link to={createPageUrl('Instructions')}>
               <Card className="border-2 border-amber-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-amber-50 to-yellow-50">
-                <CardContent className="p-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-200 to-yellow-300 flex items-center justify-center group-hover:from-amber-300 group-hover:to-yellow-400 transition-colors shadow-md">
-                      <BookOpen className="w-7 h-7 text-amber-800" />
+                <CardContent className="p-4 md:p-8">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className="w-10 h-10 md:w-14 md:h-14 flex-shrink-0 rounded-xl bg-gradient-to-br from-amber-200 to-yellow-300 flex items-center justify-center group-hover:from-amber-300 group-hover:to-yellow-400 transition-colors shadow-md">
+                      <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-amber-800" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-2">הוראות שימוש</h3>
-                      <p className="text-slate-700 font-medium">מדריך מפורט לשימוש במערכת</p>
+                      <h3 className="text-base md:text-xl font-bold text-slate-800 mb-0.5 md:mb-2">הוראות שימוש</h3>
+                      <p className="text-sm text-slate-600 md:font-medium md:text-slate-700">מדריך מפורט לשימוש במערכת</p>
                     </div>
                   </div>
                 </CardContent>
@@ -197,29 +197,29 @@ export default function Home() {
   if (isManager) {
     return (
       <div className="min-h-screen w-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
-        <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-12 w-full pb-40">
-          <div className="text-center mb-12">
-             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-6">
-               <Stethoscope className="w-10 h-10 text-white" />
+        <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-6 md:py-12 w-full pb-40">
+          <div className="text-center mb-6 md:mb-12">
+             <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-3 md:mb-6">
+               <Stethoscope className="w-7 h-7 md:w-10 md:h-10 text-white" />
              </div>
-             <h1 className="text-4xl font-bold text-slate-800 mb-3">
+             <h1 className="text-2xl md:text-4xl font-bold text-slate-800 mb-1 md:mb-3">
                ברוך הבא, {userName}
              </h1>
-             <p className="text-xl text-teal-700 font-medium mb-2">הדסה הר הצופים</p>
-             <p className="text-lg text-slate-600">מערכת לניהול ומעקב אחר התקדמות מתמחים</p>
+             <p className="text-base md:text-xl text-teal-700 font-medium mb-0.5 md:mb-2">הדסה הר הצופים</p>
+             <p className="text-sm md:text-lg text-slate-600">מערכת לניהול ומעקב אחר התקדמות מתמחים</p>
            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
              <Link to={createPageUrl('Interns')}>
                <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-8">
-                   <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <Users className="w-7 h-7 text-white" />
+                 <CardContent className="p-4 md:p-8">
+                   <div className="flex items-center gap-3 md:gap-4">
+                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
+                       <Users className="w-5 h-5 md:w-7 md:h-7 text-white" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-900 mb-2">מלא משוב כמתמחה</h3>
-                       <p className="text-slate-800 font-medium">שלח משוב עצמי על פרוצדורה</p>
+                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">מלא משוב כמתמחה</h3>
+                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">שלח משוב עצמי על פרוצדורה</p>
                      </div>
                    </div>
                  </CardContent>
@@ -228,14 +228,14 @@ export default function Home() {
 
              <Link to={createPageUrl('Experts')}>
                <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-8">
-                   <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <Stethoscope className="w-7 h-7 text-white" />
+                 <CardContent className="p-4 md:p-8">
+                   <div className="flex items-center gap-3 md:gap-4">
+                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
+                       <Stethoscope className="w-5 h-5 md:w-7 md:h-7 text-white" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-900 mb-2">מלא משוב כמומחה</h3>
-                       <p className="text-slate-800 font-medium">בדוק משובים הממתינים</p>
+                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">מלא משוב כמומחה</h3>
+                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">בדוק משובים הממתינים</p>
                      </div>
                    </div>
                  </CardContent>
@@ -244,14 +244,14 @@ export default function Home() {
 
              <Link to="/UserSettings">
                <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-8">
-                   <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <Settings className="w-7 h-7 text-white" />
+                 <CardContent className="p-4 md:p-8">
+                   <div className="flex items-center gap-3 md:gap-4">
+                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
+                       <Settings className="w-5 h-5 md:w-7 md:h-7 text-white" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-900 mb-2">חשבון</h3>
-                       <p className="text-slate-800 font-medium">עדכן את הפרטים שלך</p>
+                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">חשבון</h3>
+                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">עדכן את הפרטים שלך</p>
                      </div>
                    </div>
                  </CardContent>
@@ -260,14 +260,14 @@ export default function Home() {
 
              <Link to={createPageUrl('Instructions')}>
                <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-8">
-                   <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <BookOpen className="w-7 h-7 text-white" />
+                 <CardContent className="p-4 md:p-8">
+                   <div className="flex items-center gap-3 md:gap-4">
+                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
+                       <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-white" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-900 mb-2">הוראות שימוש</h3>
-                       <p className="text-slate-800 font-medium">מדריך מפורט לשימוש במערכת</p>
+                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">הוראות שימוש</h3>
+                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">מדריך מפורט לשימוש במערכת</p>
                      </div>
                    </div>
                  </CardContent>
@@ -276,14 +276,14 @@ export default function Home() {
 
              <Link to={createPageUrl('Admin')}>
                <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-8">
-                   <div className="flex items-start gap-4">
-                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <Shield className="w-7 h-7 text-white" />
+                 <CardContent className="p-4 md:p-8">
+                   <div className="flex items-center gap-3 md:gap-4">
+                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
+                       <Shield className="w-5 h-5 md:w-7 md:h-7 text-white" />
                      </div>
                      <div>
-                       <h3 className="text-xl font-bold text-slate-900 mb-2">פאנל ניהול</h3>
-                       <p className="text-slate-800 font-medium">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
+                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פאנל ניהול</h3>
+                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
                      </div>
                    </div>
                  </CardContent>
