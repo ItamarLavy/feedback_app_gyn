@@ -136,11 +136,7 @@ export default function Instructions() {
               <p>תזכורת תישלח אליך <strong>יומיים לפני</strong> הפגישה ו<strong>בבוקר יום הפגישה</strong>.</p>
             </Step>
 
-            <Step num="5" color="blue" icon={ClipboardList} title="הזנה ידנית (תקופת פיילוט בלבד)">
-              <p>ניתן להזין ידנית פרוצדורות שבוצעו <strong>לפני השקת המערכת</strong>, ללא משוב מומחה.</p>
-              <p>פרוצדורות אלה יחושבו לקידמה הכוללת שלך אך יוצגו <span className="font-medium text-slate-500">באפור</span> – ללא דירוג.</p>
-              <p className="text-xs text-slate-400 mt-1">⚠ אפשרות זו תוסר בסוף תקופת הפיילוט.</p>
-            </Step>
+
           </div>
         </Section>
 
