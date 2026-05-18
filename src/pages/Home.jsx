@@ -85,7 +85,7 @@ export default function Home() {
     const weeklyRecord = userPoints?.[0]?.weekly_record || 0;
     
     return (
-      <div className="min-h-screen w-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
         <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-5 py-8 w-full pb-40">
           {/* Header with Points */}
           <div className="text-center mb-4 md:mb-8">
@@ -180,7 +180,7 @@ export default function Home() {
   
   if (isManager) {
     return (
-      <div className="min-h-screen w-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" style={{ overflowX: 'hidden', maxWidth: '100vw' }} dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
         <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-6 md:py-12 w-full pb-40">
           <div className="text-center mb-6 md:mb-12">
              <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-3 md:mb-6">

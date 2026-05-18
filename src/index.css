@@ -7,8 +7,11 @@
     color-scheme: light;
   }
 
-  body {
+  html, body {
+    overflow-x: hidden;
     overscroll-behavior: none;
+    /* חיוני ל-iOS: מבטיח שגלילה תמיד על document ולא על sub-elements */
+    -webkit-overflow-scrolling: auto;
   }
 
   button, [role="button"], svg {
@@ -102,7 +105,21 @@
     padding-bottom: max(0px, env(safe-area-inset-bottom));
   }
 
-  /* מניעת נעילת גלילה על ידי textarea במובייל */
+  /*
+   * תיקון קריטי לגלילה במובייל (iOS Safari):
+   * touch-action: pan-y על כל האלמנטים מבטיח שגלילה אנכית מועברת ל-document.
+   * זה פותר את הבאג שבו iOS "נועל" את הגלילה כשה-touch נוחת על div פנימי.
+   */
+  * {
+    touch-action: pan-y;
+  }
+
+  /* כפתורים ואלמנטים אינטראקטיביים - צריך לאפשר tap */
+  button, a, [role="button"], input[type="checkbox"], input[type="radio"], select {
+    touch-action: manipulation;
+  }
+
+  /* textarea ו-input - overscroll contain כדי שלא ינעלו את הדף */
   textarea {
     touch-action: pan-y;
     overscroll-behavior: contain;
