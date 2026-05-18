@@ -107,4 +107,14 @@
     touch-action: pan-y;
     overscroll-behavior: contain;
   }
+
+  /* אנימציית כניסה לעמוד - ללא overflow שנועל גלילה */
+  .page-transition-enter {
+    animation: pageFadeIn 0.2s ease forwards;
+  }
+
+  @keyframes pageFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
 }
