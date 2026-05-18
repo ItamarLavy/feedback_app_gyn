@@ -3,86 +3,82 @@ import { useQueryClient } from '@tanstack/react-query';
 
 export function usePullToRefresh(queryKey) {
   const queryClient = useQueryClient();
-  const startYRef = useRef(0);
   const containerRef = useRef(null);
+  const startYRef = useRef(0);
   const isDraggingRef = useRef(false);
+  const currentYRef = useRef(0);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    let currentY = 0;
-
     const handleTouchStart = (e) => {
-      if (container.scrollTop === 0) {
+      // רק כשהעמוד בראש הגלילה
+      if (window.scrollY === 0) {
         startYRef.current = e.touches[0].clientY;
         isDraggingRef.current = true;
+        currentYRef.current = 0;
       }
     };
 
     const handleTouchMove = (e) => {
-      if (!isDraggingRef.current) {
-        return;
-      }
+      if (!isDraggingRef.current) return;
 
-      // Allow normal scroll when already scrolled down
-      if (container.scrollTop > 0) {
+      // אם גללנו למטה – בטל
+      if (window.scrollY > 0) {
         isDraggingRef.current = false;
         return;
       }
 
-      currentY = e.touches[0].clientY - startYRef.current;
-      if (currentY > 0) {
-        e.preventDefault();
-        const opacity = Math.min(currentY / 100, 1);
-        
-        // Create or update pull indicator
-        let indicator = container.querySelector('[data-pull-indicator]');
-        if (!indicator) {
-          indicator = document.createElement('div');
-          indicator.setAttribute('data-pull-indicator', 'true');
-          indicator.className = 'fixed top-0 left-1/2 -translate-x-1/2 z-50 transition-all';
-          container.insertBefore(indicator, container.firstChild);
-        }
-        
-        indicator.style.opacity = opacity;
-        indicator.innerHTML = `
-          <div class="bg-teal-500 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium">
-            ${currentY > 80 ? '↑ Release to refresh' : '↓ Pull to refresh'}
-          </div>
-        `;
-        
-        container.style.transform = `translateY(${Math.min(currentY, 80)}px)`;
-      } else {
-        // Finger moved up - end pull and allow normal scroll
+      const deltaY = e.touches[0].clientY - startYRef.current;
+
+      // אם הצבע זז למעלה – בטל
+      if (deltaY <= 0) {
         isDraggingRef.current = false;
+        return;
       }
+
+      currentYRef.current = deltaY;
+
+      // הצג אינדיקטור pull-to-refresh
+      const container = containerRef.current;
+      if (!container) return;
+
+      let indicator = document.getElementById('ptr-indicator');
+      if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'ptr-indicator';
+        indicator.style.cssText = 'position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:9999;pointer-events:none;transition:opacity 0.2s';
+        document.body.appendChild(indicator);
+      }
+      const opacity = Math.min(deltaY / 80, 1);
+      indicator.style.opacity = opacity;
+      indicator.innerHTML = `<div style="background:#0d9488;color:white;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.2)">${deltaY > 80 ? '↑ שחרר לרענון' : '↓ משוך לרענון'}</div>`;
     };
 
     const handleTouchEnd = async () => {
+      if (!isDraggingRef.current) return;
       isDraggingRef.current = false;
-      if (currentY > 80) {
-        container.style.transform = 'translateY(0)';
-        await queryClient.invalidateQueries({ queryKey });
-        currentY = 0;
-      } else {
-        container.style.transform = 'translateY(0)';
-        currentY = 0;
-      }
-      const indicator = container.querySelector('[data-pull-indicator]');
+
+      const indicator = document.getElementById('ptr-indicator');
       if (indicator) indicator.remove();
+
+      if (currentYRef.current > 80) {
+        await queryClient.invalidateQueries({ queryKey });
+      }
+      currentYRef.current = 0;
     };
 
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
-    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    // מאזינים על window, לא על container – כדי לא להפריע לגלילה של תריסים/טבלאות
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      const indicator = document.getElementById('ptr-indicator');
+      if (indicator) indicator.remove();
     };
-  }, [queryClient, queryKey]);
+  }, [queryClient, JSON.stringify(queryKey)]);
 
   return containerRef;
 }
