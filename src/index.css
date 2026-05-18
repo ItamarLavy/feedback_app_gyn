@@ -101,4 +101,10 @@
     padding-top: max(0px, env(safe-area-inset-top));
     padding-bottom: max(0px, env(safe-area-inset-bottom));
   }
+
+  /* מניעת נעילת גלילה על ידי textarea במובייל */
+  textarea {
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
 }

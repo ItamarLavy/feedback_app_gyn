@@ -410,6 +410,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
                   onChange={e => set('intern_verbal_feedback', e.target.value)}
                   placeholder="כתוב על החוויה שלך..."
                   className="min-h-[80px] bg-white border border-gray-300 text-gray-900"
+                  style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
                 />
               </div>
 

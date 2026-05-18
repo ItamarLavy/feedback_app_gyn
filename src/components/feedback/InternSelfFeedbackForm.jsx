@@ -399,6 +399,7 @@ export default function InternSelfFeedbackForm({ interns, experts, onSuccess }) 
                   onChange={(e) => setFormData({ ...formData, intern_verbal_feedback: e.target.value })}
                   placeholder="כתוב על החוויה שלך, מה למדת, מה היה מאתגר..."
                   className="min-h-[120px] bg-white border-slate-200 focus:border-teal-500 focus:ring-teal-500 resize-none"
+                  style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
                 />
               </div>
 
