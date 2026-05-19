@@ -7,11 +7,8 @@
     color-scheme: light;
   }
 
-  html, body {
-    overflow-x: hidden;
+  body {
     overscroll-behavior: none;
-    /* חיוני ל-iOS: מבטיח שגלילה תמיד על document ולא על sub-elements */
-    -webkit-overflow-scrolling: auto;
   }
 
   button, [role="button"], svg {
