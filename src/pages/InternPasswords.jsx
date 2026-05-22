@@ -246,31 +246,35 @@ export default function InternPasswords() {
                       )}
 
                       {/* Stage + Rotation */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <GraduationCap className="w-3 h-3 text-purple-500 flex-shrink-0" />
-                        <Select value={intern.stage || ''} onValueChange={async (val) => {
-                          await base44.entities.Intern.update(intern.id, { stage: val });
-                          queryClient.invalidateQueries({ queryKey: ['interns'] });
-                        }}>
-                          <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 w-36">
-                            <SelectValue placeholder="בחר שלב..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {STAGE_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                        <Stethoscope className="w-3 h-3 text-teal-500 flex-shrink-0" />
-                        <Select value={intern.rotation || ''} onValueChange={async (val) => {
-                          await base44.entities.Intern.update(intern.id, { rotation: val });
-                          queryClient.invalidateQueries({ queryKey: ['interns'] });
-                        }}>
-                          <SelectTrigger className="h-7 text-xs border-teal-200 text-teal-700 w-36">
-                            <SelectValue placeholder="בחר רוטציה..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {ROTATION_OPTIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="flex items-center gap-1">
+                          <GraduationCap className="w-3 h-3 text-purple-500 flex-shrink-0" />
+                          <Select value={intern.stage || ''} onValueChange={async (val) => {
+                            await base44.entities.Intern.update(intern.id, { stage: val });
+                            queryClient.invalidateQueries({ queryKey: ['interns'] });
+                          }}>
+                            <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 flex-1 min-w-0">
+                              <SelectValue placeholder="שלב..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {STAGE_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Stethoscope className="w-3 h-3 text-teal-500 flex-shrink-0" />
+                          <Select value={intern.rotation || ''} onValueChange={async (val) => {
+                            await base44.entities.Intern.update(intern.id, { rotation: val });
+                            queryClient.invalidateQueries({ queryKey: ['interns'] });
+                          }}>
+                            <SelectTrigger className="h-7 text-xs border-teal-200 text-teal-700 flex-1 min-w-0">
+                              <SelectValue placeholder="רוטציה..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {ROTATION_OPTIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
 
                       {/* Stats */}

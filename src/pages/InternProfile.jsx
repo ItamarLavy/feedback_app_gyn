@@ -251,21 +251,21 @@ export default function InternProfile() {
       <InternPersona nickname={intern.nickname} avatar={intern.avatar} />
       <div className="max-w-6xl mx-auto px-5 py-8 pb-40 md:pb-8">
         {/* Header */}
-         <div className="flex items-center justify-between mb-8">
-           <div className="flex items-center gap-3">
-             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center text-blue-800 font-semibold text-xl shadow-md">
+         <div className="flex items-start justify-between mb-6 gap-2">
+           <div className="flex items-center gap-3 min-w-0">
+             <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center text-blue-800 font-semibold text-lg md:text-xl shadow-md flex-shrink-0">
                {intern.name?.[0]}
              </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800">{intern.name}</h1>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
+            <div className="min-w-0">
+              <h1 className="text-xl md:text-2xl font-bold text-slate-800 leading-tight">{intern.name}</h1>
+              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                 {intern.stage && (
-                  <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                  <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-700 text-xs font-semibold px-2 py-0.5 rounded-full">
                     🎓 {intern.stage}
                   </span>
                 )}
                 {intern.rotation && (
-                  <span className="inline-flex items-center gap-1 bg-teal-100 text-teal-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                  <span className="inline-flex items-center gap-1 bg-teal-100 text-teal-700 text-xs font-semibold px-2 py-0.5 rounded-full">
                     🏥 {intern.rotation}
                   </span>
                 )}
@@ -274,10 +274,10 @@ export default function InternProfile() {
           </div>
           <Link 
             to={createPageUrl('Home')}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-white text-sm font-medium bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 transition-all flex-shrink-0"
           >
             חזרה
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
         </div>
 
@@ -327,20 +327,20 @@ export default function InternProfile() {
             </summary>
             <div className="px-4 pb-4 pt-2">
               {/* Summary Stats */}
-              <div className="grid md:grid-cols-5 gap-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
                 {Object.entries(categoryStats).map(([category, stats]) => (
                   <Card key={category} className="border-0 shadow-sm">
-                    <CardContent className="p-4">
-                      <div className="text-center">
-                        <h3 className="font-semibold text-slate-700 mb-2">{category}</h3>
-                        <div className="text-3xl font-bold text-blue-600 mb-1">
-                          {Math.round(stats.totalPercentage)}%
-                        </div>
-                        <p className="text-xs text-slate-500">
-                          {stats.totalCompleted} / {stats.totalRequired}
-                        </p>
-                      </div>
-                    </CardContent>
+                   <CardContent className="p-3 md:p-4">
+                     <div className="text-center">
+                       <h3 className="font-semibold text-slate-700 mb-1 text-sm">{category}</h3>
+                       <div className="text-2xl md:text-3xl font-bold text-blue-600 mb-0.5">
+                         {Math.round(stats.totalPercentage)}%
+                       </div>
+                       <p className="text-xs text-slate-500">
+                         {stats.totalCompleted} / {stats.totalRequired}
+                       </p>
+                     </div>
+                   </CardContent>
                   </Card>
                 ))}
               </div>

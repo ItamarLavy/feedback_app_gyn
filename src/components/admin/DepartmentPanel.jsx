@@ -171,10 +171,10 @@ export default function DepartmentPanel({ department, label, interns }) {
         className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
         onClick={() => setOpen(o => !o)}
       >
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-teal-600" />
-            <span>{label}</span>
+        <CardTitle className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+            <Users className="w-5 h-5 text-teal-600 flex-shrink-0" />
+            <span className="font-semibold text-sm">{label}</span>
             <Badge className="bg-teal-600 text-white text-xs">{activePlans.length + internsByRotation.length} פעילים</Badge>
             {futurePlans.length > 0 && (
               <Badge className="bg-blue-400 text-white text-xs">{futurePlans.length} קרובים</Badge>
@@ -182,11 +182,11 @@ export default function DepartmentPanel({ department, label, interns }) {
             {overdueCount > 0 && (
               <Badge className="bg-red-500 text-white text-xs flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" />
-                {overdueCount} פגישות
+                {overdueCount}
               </Badge>
             )}
           </div>
-          {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+          {open ? <ChevronUp className="w-4 h-4 text-slate-400 flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />}
         </CardTitle>
       </CardHeader>
 
