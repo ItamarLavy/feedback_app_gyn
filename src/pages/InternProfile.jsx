@@ -258,7 +258,18 @@ export default function InternProfile() {
              </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">{intern.name}</h1>
-              <p className="text-slate-500 text-sm">עמוד אישי</p>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                {intern.stage && (
+                  <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                    🎓 {intern.stage}
+                  </span>
+                )}
+                {intern.rotation && (
+                  <span className="inline-flex items-center gap-1 bg-teal-100 text-teal-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                    🏥 {intern.rotation}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <Link 
