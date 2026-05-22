@@ -7,6 +7,7 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 import AnomalousReports from '../components/admin/AnomalousReports';
 import DepartmentPanel from '../components/admin/DepartmentPanel';
+import StageTrackingPanel from '../components/admin/StageTrackingPanel';
 import PointsLeaderboard from '../components/admin/PointsLeaderboard';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
@@ -358,6 +359,9 @@ export default function Admin() {
 
 
 
+        {/* Stage Tracking */}
+        <StageTrackingPanel interns={interns} feedbacks={feedbacks} />
+
         {/* Department Panels - Collapsible */}
         <Card className="border-0 shadow-lg mb-8">
           <CardHeader
@@ -375,8 +379,10 @@ export default function Admin() {
           {showDepartments && (
             <CardContent className="pt-0 space-y-4">
               <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
-              <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
+              <DepartmentPanel department="גינקולוגיה" label="גינקולוגיה" interns={interns} />
               <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
+              <DepartmentPanel department="אונקולוגיה" label="אונקולוגיה" interns={interns} />
+              <DepartmentPanel department="מיון" label="מיון" interns={interns} />
               <DepartmentPanel department="רוטציה חיצונית" label="רוטציה חיצונית" interns={interns} />
             </CardContent>
           )}

@@ -136,6 +136,22 @@ export default function DepartmentPanel({ department, label, interns }) {
     return today < start;
   });
 
+  // מתמחים שמסומן להם rotation תואם (ללא תאריכים)
+  const ROTATION_MAP = {
+    'מיילדות': 'מיילדות',
+    'גניקולוגיה': 'גינקולוגיה',
+    'גינקולוגיה': 'גינקולוגיה',
+    'פוריות': 'פוריות',
+    'אונקולוגיה': 'אונקולוגיה',
+    'מיון': 'מיון',
+    'רוטציה חיצונית': 'רוטציה חיצונית',
+  };
+  const rotationKey = ROTATION_MAP[department] || department;
+  const activePlanInternIds = new Set(activePlans.map(p => p.intern_id));
+  const internsByRotation = interns.filter(i =>
+    i.rotation === rotationKey && !activePlanInternIds.has(i.id)
+  );
+
   const overdueCount = activePlans.reduce((sum, plan) =>
     sum + MEETING_TYPES.filter(mt => isMeetingOverdue(plan, mt.key)).length, 0
   );
@@ -159,7 +175,7 @@ export default function DepartmentPanel({ department, label, interns }) {
           <div className="flex items-center gap-2">
             <Users className="w-5 h-5 text-teal-600" />
             <span>{label}</span>
-            <Badge className="bg-teal-600 text-white text-xs">{activePlans.length} פעילים</Badge>
+            <Badge className="bg-teal-600 text-white text-xs">{activePlans.length + internsByRotation.length} פעילים</Badge>
             {futurePlans.length > 0 && (
               <Badge className="bg-blue-400 text-white text-xs">{futurePlans.length} קרובים</Badge>
             )}
@@ -197,6 +213,34 @@ export default function DepartmentPanel({ department, label, interns }) {
               </div>
             )}
           </div>
+
+          {/* Interns by rotation field (no date plan) */}
+          {internsByRotation.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-teal-400 inline-block"></span>
+                מתמחים לפי רוטציה נוכחית
+              </h4>
+              <div className="space-y-2">
+                {internsByRotation.map(intern => (
+                  <div key={intern.id} className="flex items-center gap-3 p-3 bg-teal-50 rounded-xl border border-teal-200">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                      {intern.name?.[0]}
+                    </div>
+                    <Link
+                      to={createPageUrl('InternDetails') + `?id=${intern.id}`}
+                      className="font-medium text-slate-800 hover:text-teal-700 text-sm flex-1"
+                    >
+                      {intern.name}
+                    </Link>
+                    {intern.stage && (
+                      <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{intern.stage}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Upcoming interns */}
           {futurePlans.length > 0 && (
