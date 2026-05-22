@@ -7,10 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, GraduationCap, Stethoscope, ArrowUpDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const STAGE_OPTIONS = ['תורנות מחלקה', 'מיון', 'שחרור ממיון', 'עצמאי'];
+const ROTATION_OPTIONS = ['גינקולוגיה', 'מיילדות', 'פוריות', 'אונקולוגיה', 'מיון', 'רוטציה חיצונית'];
+const STAGE_ORDER = { 'תורנות מחלקה': 1, 'מיון': 2, 'שחרור ממיון': 3, 'עצמאי': 4 };
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -30,6 +32,7 @@ export default function InternPasswords() {
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [sortBy, setSortBy] = useState('name'); // 'name' | 'stage' | 'rotation'
   const queryClient = useQueryClient();
 
   const { data: interns = [] } = useQuery({
@@ -110,6 +113,16 @@ export default function InternPasswords() {
   ]);
   const pendingRequests = accessRequests.filter(r => !internEmails.has(r.email));
 
+  const sortedInterns = [...interns].sort((a, b) => {
+    if (sortBy === 'stage') {
+      return (STAGE_ORDER[a.stage] || 99) - (STAGE_ORDER[b.stage] || 99);
+    }
+    if (sortBy === 'rotation') {
+      return (a.rotation || 'ת').localeCompare(b.rotation || 'ת', 'he');
+    }
+    return (a.name || '').localeCompare(b.name || '', 'he');
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
       <div className="max-w-4xl mx-auto px-4 py-8 pb-40 md:pb-8">
@@ -133,8 +146,22 @@ export default function InternPasswords() {
           </Link>
         </div>
 
-        {/* Add new button */}
-        <div className="mb-4 flex justify-end">
+        {/* Controls row */}
+        <div className="mb-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-4 h-4 text-slate-500" />
+            <span className="text-sm text-slate-600">מיין לפי:</span>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="h-8 text-xs w-36">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">שם</SelectItem>
+                <SelectItem value="stage">שלב</SelectItem>
+                <SelectItem value="rotation">רוטציה</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button size="sm" onClick={() => setAddingNew(true)} className="bg-blue-600 hover:bg-blue-700">
             <Plus className="w-4 h-4 ml-1" />
             הוסף מתמחה
@@ -162,7 +189,7 @@ export default function InternPasswords() {
 
         {/* Interns list - card-based */}
         <div className="space-y-3 mb-6">
-          {interns.map((intern, index) => {
+          {sortedInterns.map((intern, index) => {
             const isEditingEmail = editingEmail === intern.id;
             const isEditingN = editingName === intern.id;
             const points = userPoints.find(p => p.user_id === intern.id)?.total_points ?? null;
@@ -218,24 +245,36 @@ export default function InternPasswords() {
                         </button>
                       )}
 
-                      {/* Stage */}
-                      <div className="flex items-center gap-2">
+                      {/* Stage + Rotation */}
+                      <div className="flex items-center gap-2 flex-wrap">
                         <GraduationCap className="w-3 h-3 text-purple-500 flex-shrink-0" />
                         <Select value={intern.stage || ''} onValueChange={async (val) => {
                           await base44.entities.Intern.update(intern.id, { stage: val });
                           queryClient.invalidateQueries({ queryKey: ['interns'] });
                         }}>
-                          <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 w-40">
+                          <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 w-36">
                             <SelectValue placeholder="בחר שלב..." />
                           </SelectTrigger>
                           <SelectContent>
                             {STAGE_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                           </SelectContent>
                         </Select>
+                        <Stethoscope className="w-3 h-3 text-teal-500 flex-shrink-0" />
+                        <Select value={intern.rotation || ''} onValueChange={async (val) => {
+                          await base44.entities.Intern.update(intern.id, { rotation: val });
+                          queryClient.invalidateQueries({ queryKey: ['interns'] });
+                        }}>
+                          <SelectTrigger className="h-7 text-xs border-teal-200 text-teal-700 w-36">
+                            <SelectValue placeholder="בחר רוטציה..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ROTATION_OPTIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {/* Stats */}
-                      <div className="flex items-center gap-3 text-xs">
+                      <div className="flex items-center gap-3 text-xs flex-wrap">
                        <span className="flex items-center gap-1 text-teal-600 font-semibold">
                          <MessageSquare className="w-3 h-3" />{feedbackCount}
                        </span>
@@ -243,6 +282,12 @@ export default function InternPasswords() {
                          <span className="flex items-center gap-1 text-amber-600 font-semibold">
                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{points}
                          </span>
+                       )}
+                       {intern.stage && (
+                         <span className="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded text-xs">{intern.stage}</span>
+                       )}
+                       {intern.rotation && (
+                         <span className="bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded text-xs">{intern.rotation}</span>
                        )}
                        <span className="text-slate-400">#{index + 1}</span>
                       </div>
