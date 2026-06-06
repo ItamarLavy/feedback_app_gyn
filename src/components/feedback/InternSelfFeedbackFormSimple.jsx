@@ -10,58 +10,9 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getFormTypeForProcedure } from '@/lib/epaFormTypeMapping';
 import { onFeedbackRequested, getOrCreateUserPoints, addPoints } from '@/hooks/useNotifications';
+import { PROCEDURE_CATEGORIES, SENIOR_INTERN_STAGE } from '@/lib/procedureConstants';
 
 import { useAuth } from '@/lib/AuthContext';
-
-const PROCEDURE_CATEGORIES = {
-  "OB": [
-    "יולדות-ביקורים עם מתמחה","יולדות-ביקור לבד- להציג את הביקור","ביקור יולדות- הצגה לרופא בכיר",
-    "יולדות-לעבור על10 מכתבי שחרור (5 פסיולוגי 5 קיסרי)","יולדות - מכתב שחרור קרע מתקדם",
-    "יולדות - מכתב שחרור מורכב","קבלה לקיסרי - צפיה","קבלה לקיסרי - יום קבלות",
-    "קיסרי- הכרת המטופלת, השכבה, רחצה","הכנסת קטטר","כתיבת דו\"ח ניתוח",
-    "טיפול ביולדת -טיפול בחום אחרי לידה וכו'","PV - אחרי מיילדת או רופא","הכנסת בלון",
-    "תפירה בחדר לידה","פענוח מוניטור","BPP","קבלה במיון יולדות- אנמנזה, אינטראקציה, כיתוב",
-    "קבלה בחדר לידה/ ביקור בחדר לידה","ליווי יולדת בחדר לידה, כולל קבלת לידה (לפחות 5 לידות ראשונות)",
-    "ייעוץ לTOLAC כולל הבנה של התווית נגד","אם ועובר-ניהול יום במחלקה","אם ועובר-העברת מקל בישיבת העברה",
-    "מכתבי שחרור","ניהול מעקב הריון רגיל","ניתוח קיסרי כעוזר","ניתוח קיסרי כמנתח ראשון",
-    "ניהול השראת לידה","ניהול TOLAC","אפיזיוטומיה - ביצוע",
-    "טיפול ביולדת -טיפול במקרה חירום מורכב אחרי לידה","ניהול מקרה במיון המיילדותי",
-    "שליטה וניהול עמדת המיון המיילדותי","ניהול מקרה של הריון בסיכון גבוה (אשפוז יום)",
-    "ניהול מקרה חירום מיילדותי","ניהול לידה מורכבת","ניהול PPH בחדר לידה",
-    "Revision","Manual lysis","ניהול לידת תאומים","לידת VACUUM",
-    "תפירה מורכבת כולל אבחנה של OASIS","ביצוע קיסרי מורכב","ניהול חדר לידה ותורנות"
-  ],
-  "GYN": [
-    "קבלה במיון נשים","קבלה בטרום ניתוח","מעבר על תיק מטופלת - ובדיקת רשימת תיוג",
-    "הכנסת מטופלת לחדר ניתוח, כולל השכבה, SIGN IN, הכנת ציוד ורחצה",
-    "הבנה של שלבי הניתוח פשוט","תפירה וקשירה","כתיבת דו\"ח ניתוח",
-    "ניהול יום במחלקה (כולל כל שלבי היום)","ניהול ביקור בוקר (הכרת נשים, הצגה, תוכנית, רישום)",
-    "מכתבי שחרור","מענה ראשוני למצב חירום","העברת מקל בישיבת העברה",
-    "ניהול מקרה במיון הגינקולוגי (ניהול מלא כולל מעבר לחדר ניתוח במידת הצורך)",
-    "טיפול במטופלת עם סיבוכי הריון צעיר (הפלה מאיימת, אקטופי מסוגים שונים)",
-    "טיפול למטופלת במרפאת נשים","בדיקת PAP/HPV","פיפל","הוצאת IUD","הידרוסונוגרפיה",
-    "הפסקת הריון","ייעוץ על מניעת הריון","טיפול בהפלה נדחית","הכנסת IUD",
-    "ניתוחים קטנים (גרידות, ברתולין)","עזרה בלפרוסקופיה והיסטרוסקופיה",
-    "ניהול מקרה גינקולוגי אמבולטורי מורכב","מקרה ילדות ומתבגרות","קוניזציה",
-    "ייעוץ לנשים עם תלונות של רצפת האגן","הערכה לנשים עם אנדומטרוזיס",
-    "היסטרוסקופיה ניתוחית","כריתת רחם","ניתוחי של רצפת האגן כולל TVH","ניתוח פתוח",
-    "טיפול של סיבוכים של ניתוחים"
-  ],
-  "IVF": [
-    "הערכה של מטופלת/זוג עם אי פוריות כולל תוכנית טיפול",
-    "כתיבת הנחיות לפרופיל הורמונלי ופענוח תשובה","הנחיות בדיקת זרע ופענוח בדיקת זרע",
-    "הערכה של מדדי רזרבה שחלתית","ביצוע בדיקת US למטופלת פריון: AFC, שחלות, הערכת רחם",
-    "הערכה של מטופלת עם הפלות חוזרות/RPF","הערכה של מטופלת לשימור פוריות",
-    "הערכת מטופל/ת ל PGT","ניהול מטופלת בתהליך של IVF","בירור אי פוריות גבר",
-    "IUI","השראת ביוץ","ניהול סיבוכים של ART"
-  ],
-  "ONCO": ["מקרה אמבולטורי של ממאירות גינקולוגית","חדר ניתוח","אשפוז יום","מחלקה","קולפוסקופיה"],
-  "כללי": [
-    "אורך צוואר","הערכת משקל","דופלר של חבל הטבור","הריון צעיר","פתולוגיה בטפולות",
-    "מסירת בשורות רעות -תקשורת מתקדמת על בשורות רעות","מחקר, הבנת הספרות","הוראה",
-    "ניהול תורנות כתורן ראשון","מחקר ופרסום"
-  ]
-};
 
 const FORM_TYPES = [
   { value: 'procedural', label: 'טופס 1 - פעולות פרוצדורליות (ניתוח, תפירה, היסטרוסקופיה...)' },
@@ -101,8 +52,13 @@ function generateProcedureCode(count) {
   return `#${String(count + 1).padStart(3, '0')}`;
 }
 
-export default function InternSelfFeedbackFormSimple({ internId, internName, experts, onSuccess }) {
+export default function InternSelfFeedbackFormSimple({ internId, internName, experts, seniorInterns = [], onSuccess }) {
   const { user } = useAuth();
+  // מנטורים = מומחים + תורן 1 מתקדם
+  const allMentors = [
+    ...experts.map(e => ({ ...e, _type: 'expert' })),
+    ...seniorInterns.map(i => ({ ...i, _type: 'senior_intern', name: `${i.name} (תורן 1 מתקדם)` }))
+  ];
   const emptyForm = {
     expert_id: '',
     procedure_category: '',
@@ -127,7 +83,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
     e.preventDefault();
     setIsSubmitting(true);
     console.log('[InternForm] handleSubmit started, formData:', JSON.stringify(formData));
-    const selectedExpert = experts.find(ex => ex.id === formData.expert_id);
+    const selectedExpert = allMentors.find(ex => ex.id === formData.expert_id);
     console.log('[InternForm] selectedExpert:', selectedExpert);
     const existingFeedbacks = await base44.entities.Feedback.list();
     const code = generateProcedureCode(existingFeedbacks.length);
@@ -159,7 +115,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
     console.log('[InternForm] feedback created, id:', created.id);
 
     // שלח מייל למומחה עם קישור למשוב
-    const expertObj = experts.find(ex => ex.id === formData.expert_id);
+    const expertObj = allMentors.find(ex => ex.id === formData.expert_id);
     const expertEmail = expertObj?.email;
     console.log('[InternForm] expertObj:', expertObj, '| expertEmail:', expertEmail);
     if (expertEmail) {
@@ -294,10 +250,10 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
                 <Label className="text-sm font-normal text-gray-700">מומחה מדריך</Label>
                 <Select value={formData.expert_id} onValueChange={v => set('expert_id', v)}>
                   <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
-                    <SelectValue placeholder="בחר מומחה" />
+                    <SelectValue placeholder="בחר מנטור" />
                   </SelectTrigger>
                   <SelectContent>
-                    {experts.map(ex => <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>)}
+                    {allMentors.map(ex => <SelectItem key={ex.id} value={ex.id}>{ex.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { GraduationCap, ChevronDown, ChevronUp, Star, MessageSquare } from 'lucide-react';
 
 const STAGES = [
-  { key: 'תורנות מחלקה', color: 'bg-sky-100 text-sky-700 border-sky-200', dot: 'bg-sky-400' },
-  { key: 'מיון',          color: 'bg-amber-100 text-amber-700 border-amber-200', dot: 'bg-amber-400' },
-  { key: 'שחרור ממיון',   color: 'bg-emerald-100 text-emerald-700 border-emerald-200', dot: 'bg-emerald-400' },
-  { key: 'עצמאי',        color: 'bg-purple-100 text-purple-700 border-purple-200', dot: 'bg-purple-400' },
+  { key: 'תורן 4',          color: 'bg-sky-100 text-sky-700 border-sky-200', dot: 'bg-sky-400' },
+  { key: 'תורן 3',          color: 'bg-amber-100 text-amber-700 border-amber-200', dot: 'bg-amber-400' },
+  { key: 'תורן 2',          color: 'bg-emerald-100 text-emerald-700 border-emerald-200', dot: 'bg-emerald-400' },
+  { key: 'תורן 1 צעיר',     color: 'bg-purple-100 text-purple-700 border-purple-200', dot: 'bg-purple-400' },
+  { key: 'תורן 1 מתקדם',    color: 'bg-rose-100 text-rose-700 border-rose-200', dot: 'bg-rose-500' },
 ];
 
 function InternChip({ intern, feedbacks }) {

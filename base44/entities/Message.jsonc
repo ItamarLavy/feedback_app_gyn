@@ -1,0 +1,38 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "sender_id": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05e9\u05d5\u05dc\u05d7"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "\u05e9\u05dd \u05d4\u05e9\u05d5\u05dc\u05d7"
+    },
+    "recipient_id": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05e0\u05de\u05e2\u05df"
+    },
+    "recipient_name": {
+      "type": "string",
+      "description": "\u05e9\u05dd \u05d4\u05e0\u05de\u05e2\u05df"
+    },
+    "content": {
+      "type": "string",
+      "description": "\u05ea\u05d5\u05db\u05df \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "\u05d4\u05d0\u05dd \u05d4\u05d4\u05d5\u05d3\u05e2\u05d4 \u05e0\u05e7\u05e8\u05d0\u05d4"
+    }
+  },
+  "required": [
+    "sender_id",
+    "sender_name",
+    "recipient_id",
+    "recipient_name",
+    "content"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "ManagerNote",
+  "type": "object",
+  "properties": {
+    "intern_id": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05de\u05ea\u05de\u05d7\u05d4"
+    },
+    "intern_name": {
+      "type": "string",
+      "description": "\u05e9\u05dd \u05d4\u05de\u05ea\u05de\u05d7\u05d4"
+    },
+    "note_content": {
+      "type": "string",
+      "description": "\u05ea\u05d5\u05db\u05df \u05d4\u05d4\u05e2\u05e8\u05d4/\u05e1\u05d9\u05db\u05d5\u05dd"
+    },
+    "note_type": {
+      "type": "string",
+      "enum": [
+        "\u05e4\u05d2\u05d9\u05e9\u05d4",
+        "\u05de\u05d7\u05e9\u05d1\u05d5\u05ea \u05db\u05dc\u05dc\u05d9\u05d5\u05ea",
+        "\u05d4\u05ea\u05e7\u05d3\u05de\u05d5\u05ea",
+        "\u05d0\u05d7\u05e8"
+      ],
+      "default": "\u05de\u05d7\u05e9\u05d1\u05d5\u05ea \u05db\u05dc\u05dc\u05d9\u05d5\u05ea",
+      "description": "\u05e1\u05d5\u05d2 \u05d4\u05d4\u05e2\u05e8\u05d4"
+    }
+  },
+  "required": [
+    "intern_id",
+    "note_content"
+  ]
+}

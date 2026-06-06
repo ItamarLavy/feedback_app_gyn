@@ -75,6 +75,11 @@ function StarRating({ value, onChange, readOnly = false }) {
 export default function ExpertFeedbackDetailWithAuth() {
   const urlParams = new URLSearchParams(window.location.search);
   const expertId = urlParams.get('id');
+  // intern_id used when a senior intern (תורן 1 מתקדם) acts as mentor
+  const seniorInternId = urlParams.get('intern_id');
+  const effectiveId = expertId || seniorInternId;
+  const isSeniorInternMode = !!seniorInternId && !expertId;
+
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -89,29 +94,35 @@ export default function ExpertFeedbackDetailWithAuth() {
   const [editingId, setEditingId] = useState(null);
 
   const { data: expert } = useQuery({
-    queryKey: ['expert', expertId],
+    queryKey: ['expert', effectiveId, isSeniorInternMode],
     queryFn: async () => {
+      if (isSeniorInternMode) {
+        // תורן 1 מתקדם - משתמש כמנטור
+        const interns = await base44.entities.Intern.list();
+        const intern = interns.find(i => i.id === seniorInternId);
+        return intern ? { ...intern, _isSeniorIntern: true } : null;
+      }
       const experts = await base44.entities.Expert.list();
       return experts.find(e => e.id === expertId);
     },
-    enabled: !!expertId
+    enabled: !!effectiveId
   });
 
   const { data: allFeedbacks = [] } = useQuery({
-    queryKey: ['feedbacks-for-expert', expertId],
-    queryFn: () => base44.entities.Feedback.filter({ expert_id: expertId }, '-created_date'),
-    enabled: !!expertId
+    queryKey: ['feedbacks-for-expert', effectiveId],
+    queryFn: () => base44.entities.Feedback.filter({ expert_id: effectiveId }, '-created_date'),
+    enabled: !!effectiveId
   });
 
   const { data: expertMeetings = [] } = useQuery({
-    queryKey: ['expert-meetings', expertId],
+    queryKey: ['expert-meetings', effectiveId],
     queryFn: async () => {
       const allMeetings = await base44.entities.FeedbackMeeting.list('-meeting_date');
       return allMeetings.filter(m => 
-        m.invited_experts && m.invited_experts.some(e => e.id === expertId)
+        m.invited_experts && m.invited_experts.some(e => e.id === effectiveId)
       );
     },
-    enabled: !!expertId
+    enabled: !!effectiveId
   });
 
   const updateFeedbackMutation = useMutation({
@@ -131,8 +142,7 @@ export default function ExpertFeedbackDetailWithAuth() {
   });
 
   useEffect(() => {
-    if (!expert) return;
-    // השתמש ב-Expert entity id (לא user id) כי מומחים לאו דווקא הם users
+    if (!expert || isSeniorInternMode) return;
     getOrCreateUserPoints(expertId, expert.name, 'expert').catch(() => {});
     sendExpertWeeklySummary(expertId, expert.name, expert.email).catch(() => {});
     checkExpertWeeklyReminder(expertId, expert.name, expert.email).catch(() => {});

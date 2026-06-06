@@ -67,6 +67,7 @@ export const AuthProvider = ({ children }) => {
           base44.entities.Expert.filter({ email2: currentUser.email }),
           base44.entities.Manager.filter({ email: currentUser.email }),
         ]);
+        // תורן 1 מתקדם מקבל גם הרשאת מנטור - אבל עדיין נרשם כ-intern
 
         const allInterns = [...interns, ...interns2];
         const allExperts = [...experts, ...experts2];

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, GraduationCap, Stethoscope, ArrowUpDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const STAGE_OPTIONS = ['תורנות מחלקה', 'מיון', 'שחרור ממיון', 'עצמאי'];
+import { STAGE_OPTIONS } from '@/lib/procedureConstants';
 const ROTATION_OPTIONS = ['גינקולוגיה', 'מיילדות', 'פוריות', 'אונקולוגיה', 'מיון', 'רוטציה חיצונית'];
 const STAGE_ORDER = { 'תורנות מחלקה': 1, 'מיון': 2, 'שחרור ממיון': 3, 'עצמאי': 4 };
 import { useAuth } from '@/lib/AuthContext';

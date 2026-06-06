@@ -47,10 +47,17 @@ export default function Home() {
 
     const interns = await base44.entities.Intern.filter({ email });
     if (interns.length > 0) {
-      setUserType('intern');
-      setInternId(interns[0].id);
-      setUserName(interns[0].name || user.full_name || '');
-      setTargetUrl(createPageUrl('InternProfile') + `?id=${interns[0].id}`);
+      const intern = interns[0];
+      setInternId(intern.id);
+      setUserName(intern.name || user.full_name || '');
+      // תורן 1 מתקדם - יכול גם לגשת כמנטור
+      if (intern.stage === 'תורן 1 מתקדם') {
+        setUserType('senior_intern');
+        setTargetUrl(createPageUrl('InternProfile') + `?id=${intern.id}`);
+      } else {
+        setUserType('intern');
+        setTargetUrl(createPageUrl('InternProfile') + `?id=${intern.id}`);
+      }
       setChecking(false);
       return;
     }
@@ -79,8 +86,9 @@ export default function Home() {
   }
 
   // מתמחה / מומחה – דף הבית עם נקודות ופנלים
-  if (userType === 'intern' || userType === 'expert') {
-    const isIntern = userType === 'intern';
+  if (userType === 'intern' || userType === 'expert' || userType === 'senior_intern') {
+    const isIntern = userType === 'intern' || userType === 'senior_intern';
+    const isSeniorIntern = userType === 'senior_intern';
     const points = userPoints?.[0]?.total_points || 0;
     const weeklyRecord = userPoints?.[0]?.weekly_record || 0;
     
@@ -126,12 +134,8 @@ export default function Home() {
               <Card className="border-2 border-blue-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-blue-50 to-cyan-50">
                 <CardContent className="p-4 md:p-8">
                   <div className="flex items-center gap-3 md:gap-4">
-                    <div className={`w-10 h-10 md:w-14 md:h-14 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:shadow-lg transition-all ${
-                      isIntern 
-                        ? 'bg-gradient-to-br from-blue-200 to-cyan-200 group-hover:from-blue-300 group-hover:to-cyan-300' 
-                        : 'bg-gradient-to-br from-purple-200 to-pink-200 group-hover:from-purple-300 group-hover:to-pink-300'
-                    }`}>
-                      <Stethoscope className={`w-5 h-5 md:w-7 md:h-7 ${isIntern ? 'text-blue-800' : 'text-purple-800'}`} />
+                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:shadow-lg transition-all bg-gradient-to-br from-blue-200 to-cyan-200 group-hover:from-blue-300 group-hover:to-cyan-300">
+                      <Stethoscope className="w-5 h-5 md:w-7 md:h-7 text-blue-800" />
                     </div>
                     <div>
                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">
@@ -145,6 +149,24 @@ export default function Home() {
                 </CardContent>
               </Card>
             </Link>}
+            {/* תורן 1 מתקדם - גישה נוספת כמנטור */}
+            {isSeniorIntern && internId && (
+              <Link to={createPageUrl('ExpertFeedbackDetailWithAuth') + `?intern_id=${internId}`}>
+                <Card className="border-2 border-purple-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-purple-50 to-pink-50">
+                  <CardContent className="p-4 md:p-8">
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl flex-shrink-0 flex items-center justify-center group-hover:shadow-lg transition-all bg-gradient-to-br from-purple-200 to-pink-200 group-hover:from-purple-300 group-hover:to-pink-300">
+                        <Stethoscope className="w-5 h-5 md:w-7 md:h-7 text-purple-800" />
+                      </div>
+                      <div>
+                        <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">מלא משוב כמנטור</h3>
+                        <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">בדוק משובים שממתינים לאישורך</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            )}
             {!targetUrl && (
               <Card className="border-0 shadow-xl bg-slate-50">
                 <CardContent className="p-4 md:p-8 text-center">
