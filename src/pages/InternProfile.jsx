@@ -192,7 +192,13 @@ export default function InternProfile() {
                 internId={internId}
                 internName={intern.name}
                 experts={experts}
-                seniorInterns={seniorInterns.filter(s => s.id !== internId)}
+                seniorInterns={seniorInterns.filter(s =>
+                  s.id !== internId &&
+                  !experts.some(e =>
+                    (e.email && e.email === s.email) ||
+                    (e.name && e.name === s.name)
+                  )
+                )}
                 onSuccess={() => {
                   queryClient.invalidateQueries({ queryKey: ['intern-feedbacks', internId] });
                   setShowFeedbackForm(false);
