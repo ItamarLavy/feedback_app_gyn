@@ -1,0 +1,54 @@
+{
+  "name": "MonthlyProcedureUpload",
+  "type": "object",
+  "properties": {
+    "intern_id": {
+      "type": "string",
+      "description": "\u05de\u05d6\u05d4\u05d4 \u05d4\u05de\u05ea\u05de\u05d7\u05d4"
+    },
+    "intern_name": {
+      "type": "string",
+      "description": "\u05e9\u05dd \u05d4\u05de\u05ea\u05de\u05d7\u05d4"
+    },
+    "year_month": {
+      "type": "string",
+      "description": "\u05d7\u05d5\u05d3\u05e9 \u05d4\u05d4\u05e2\u05dc\u05d0\u05d4 \u05d1\u05e4\u05d5\u05e8\u05de\u05d8 YYYY-MM"
+    },
+    "upload_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u05ea\u05d0\u05e8\u05d9\u05da \u05d5\u05e9\u05e2\u05ea \u05d4\u05d4\u05e2\u05dc\u05d0\u05d4"
+    },
+    "procedures_data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "procedure_name": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "\u05d4\u05e4\u05e8\u05d5\u05e6\u05d3\u05d5\u05e8\u05d5\u05ea \u05e9\u05d4\u05d5\u05e2\u05dc\u05d5"
+    },
+    "total_procedures": {
+      "type": "number",
+      "description": "\u05e1\u05da \u05d4\u05e4\u05e8\u05d5\u05e6\u05d3\u05d5\u05e8\u05d5\u05ea \u05d1\u05d4\u05e2\u05dc\u05d0\u05d4"
+    },
+    "notes": {
+      "type": "string",
+      "description": "\u05d4\u05e2\u05e8\u05d5\u05ea"
+    }
+  },
+  "required": [
+    "intern_id",
+    "intern_name",
+    "year_month"
+  ]
+}

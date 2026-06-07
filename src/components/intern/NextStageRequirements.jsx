@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, CheckCircle2, Circle, Clock } from 'lucide-react';
@@ -48,7 +49,8 @@ export default function NextStageRequirements({ internStage, stageStartDate, fee
     if (!requirements) return [];
     return requirements.map(req => {
       const { feedbackCount, manualCount, total } = countForCode(req.code, feedbacks, manualCounts);
-      const done = Math.min(total, req.required);
+      // מעבר שלב נספר רק על פי משובים (feedbackCount), לא ספירה ידנית
+      const done = Math.min(feedbackCount, req.required);
       const completed = done >= req.required;
       return { ...req, feedbackCount, manualCount, total, done, completed };
     });

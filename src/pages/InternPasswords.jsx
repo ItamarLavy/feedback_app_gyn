@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, GraduationCap, Stethoscope, ArrowUpDown } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import AlertsBadge from '@/components/notifications/AlertsBadge';
 
 import { STAGE_OPTIONS } from '@/lib/procedureConstants';
 const ROTATION_OPTIONS = ['גינקולוגיה', 'מיילדות', 'פוריות', 'אונקולוגיה', 'מיון', 'רוטציה חיצונית'];
@@ -214,6 +215,7 @@ export default function InternPasswords() {
                           <button onClick={() => { setEditingName(intern.id); setNameValue(intern.name || ''); }} className="text-slate-400 hover:text-blue-600">
                             <Pencil className="w-3 h-3" />
                           </button>
+                          <AlertsBadge personId={intern.id} role="intern" />
                         </div>
                       )}
 

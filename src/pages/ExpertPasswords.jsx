@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, Bell } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
+import AlertsBadge from '@/components/notifications/AlertsBadge';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
@@ -176,6 +177,7 @@ export default function ExpertPasswords() {
                           <button onClick={() => { setEditingName(expert.id); setNameValue(expert.name || ''); }} className="text-slate-400 hover:text-purple-600">
                             <Pencil className="w-3 h-3" />
                           </button>
+                          <AlertsBadge personId={expert.id} role="expert" />
                         </div>
                       )}
 

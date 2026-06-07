@@ -18,6 +18,7 @@ import AvatarSetup from '@/components/intern/AvatarSetup';
 import InternPersona from '@/components/intern/InternPersona';
 import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
 import NextStageRequirements from '@/components/intern/NextStageRequirements';
+import MonthlyTableUpload from '@/components/intern/MonthlyTableUpload';
 
 import { PROCEDURE_REQUIREMENTS } from '@/lib/procedureConstants';
 
@@ -184,6 +185,9 @@ export default function InternProfile() {
             manualCounts={manualCounts}
           />
         </div>
+
+        {/* Monthly Table Upload */}
+        <MonthlyTableUpload internId={internId} internName={intern.name} />
 
         {/* Add Feedback Form */}
         <div className="mb-8">

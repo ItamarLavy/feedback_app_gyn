@@ -6,6 +6,7 @@ import { createPageUrl } from '@/utils';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 import AnomalousReports from '../components/admin/AnomalousReports';
+import AlertsBadge from '../components/notifications/AlertsBadge';
 import DepartmentPanel from '../components/admin/DepartmentPanel';
 import StageTrackingPanel from '../components/admin/StageTrackingPanel';
 import PointsLeaderboard from '../components/admin/PointsLeaderboard';
@@ -319,10 +320,11 @@ export default function Admin() {
                          </div>
                          <div className="flex-1 min-w-0">
                            <div className="flex items-center gap-1.5">
-                             <p className="font-semibold text-slate-800 text-sm">{intern.name}</p>
-                             {needsReminder && (
-                               <span className="text-xs text-amber-600 font-medium">⚠</span>
-                             )}
+                               <p className="font-semibold text-slate-800 text-sm">{intern.name}</p>
+                               {needsReminder && (
+                                 <span className="text-xs text-amber-600 font-medium">⚠</span>
+                               )}
+                               <AlertsBadge personId={intern.id} role="intern" />
                            </div>
                            <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
                              {intern.stage && (
