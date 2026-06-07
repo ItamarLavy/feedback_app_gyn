@@ -9,6 +9,7 @@ import { User, ArrowLeft, ClipboardList, ListChecks, Shield, GraduationCap } fro
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { STAGE_OPTIONS, PROCEDURE_REQUIREMENTS } from '@/lib/procedureConstants';
+import NextStageRequirements from '../components/intern/NextStageRequirements';
 import AIProgressSummary from '../components/admin/AIProgressSummary';
 import RotationPlanEditor from '../components/admin/RotationPlanEditor';
 import InternFilesManager from '../components/admin/InternFilesManager';
@@ -190,6 +191,15 @@ export default function InternDetails() {
         {/* AI Summary */}
         <div className="mb-8">
           <AIProgressSummary intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} internFiles={internFiles} />
+        </div>
+
+        {/* Next Stage Requirements */}
+        <div className="mb-8">
+          <NextStageRequirements
+            internStage={intern?.stage}
+            feedbacks={feedbacks}
+            manualCounts={manualCounts}
+          />
         </div>
 
         {/* Detailed Progress Button */}

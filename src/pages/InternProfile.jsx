@@ -17,6 +17,7 @@ import { getOrCreateUserPoints, sendInternWeeklySummary, sendFridayChampionMessa
 import AvatarSetup from '@/components/intern/AvatarSetup';
 import InternPersona from '@/components/intern/InternPersona';
 import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
+import NextStageRequirements from '@/components/intern/NextStageRequirements';
 
 import { PROCEDURE_REQUIREMENTS } from '@/lib/procedureConstants';
 
@@ -173,6 +174,15 @@ export default function InternProfile() {
 
         {/* Mentoring Meetings */}
         <MyMentoringMeetings internId={internId} />
+
+        {/* Next Stage Requirements */}
+        <div className="mb-8">
+          <NextStageRequirements
+            internStage={intern.stage}
+            feedbacks={feedbacks}
+            manualCounts={manualCounts}
+          />
+        </div>
 
         {/* Add Feedback Form */}
         <div className="mb-8">
