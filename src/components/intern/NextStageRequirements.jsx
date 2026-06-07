@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, CheckCircle2, Circle } from 'lucide-react';
+import { TrendingUp, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { STAGE_TRANSITION_REQUIREMENTS, EPA_CODE_TO_PROCEDURE_NAMES } from '@/lib/procedureConstants';
 
 const NEXT_STAGE_LABEL = {
@@ -40,7 +40,7 @@ function countForCode(code, feedbacks, manualCounts) {
   return { feedbackCount, manualCount, total: feedbackCount + manualCount };
 }
 
-export default function NextStageRequirements({ internStage, feedbacks = [], manualCounts = [] }) {
+export default function NextStageRequirements({ internStage, stageStartDate, feedbacks = [], manualCounts = [] }) {
   const nextStage = NEXT_STAGE_LABEL[internStage];
   const requirements = STAGE_TRANSITION_REQUIREMENTS[internStage];
 
@@ -68,6 +68,10 @@ export default function NextStageRequirements({ internStage, feedbacks = [], man
   const totalCount = items.length;
   const overallPct = Math.round((completedCount / totalCount) * 100);
 
+  const daysInStage = stageStartDate
+    ? Math.floor((new Date() - new Date(stageStartDate)) / (1000 * 60 * 60 * 24))
+    : null;
+
   return (
     <Card className="border-0 shadow-lg">
       <CardHeader className="pb-3">
@@ -76,9 +80,17 @@ export default function NextStageRequirements({ internStage, feedbacks = [], man
             <TrendingUp className="w-4 h-4 text-teal-600" />
             <span>מה נדרש למעבר ל{nextStage}?</span>
           </div>
-          <Badge className={`${overallPct === 100 ? 'bg-green-600' : 'bg-teal-600'}`}>
-            {completedCount} / {totalCount} הושלמו
-          </Badge>
+          <div className="flex items-center gap-2">
+            {daysInStage !== null && (
+              <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                <Clock className="w-3 h-3" />
+                <span>{daysInStage} ימים בשלב</span>
+              </div>
+            )}
+            <Badge className={`${overallPct === 100 ? 'bg-green-600' : 'bg-teal-600'}`}>
+              {completedCount} / {totalCount} הושלמו
+            </Badge>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>

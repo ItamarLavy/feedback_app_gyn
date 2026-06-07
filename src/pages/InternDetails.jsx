@@ -5,8 +5,9 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import FeedbackCardDetailed from '../components/feedback/FeedbackCardDetailed';
 import InternStats from '../components/admin/InternStats';
-import { User, ArrowLeft, ClipboardList, ListChecks, Shield, GraduationCap } from 'lucide-react';
+import { User, ArrowLeft, ClipboardList, ListChecks, Shield, GraduationCap, Calendar } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 import { STAGE_OPTIONS, PROCEDURE_REQUIREMENTS } from '@/lib/procedureConstants';
 import NextStageRequirements from '../components/intern/NextStageRequirements';
@@ -156,6 +157,17 @@ export default function InternDetails() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center gap-2 mt-1.5">
+                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <Input
+                  type="date"
+                  value={intern?.stage_start_date || ''}
+                  onChange={async (e) => {
+                    await base44.entities.Intern.update(internId, { stage_start_date: e.target.value });
+                    queryClient.invalidateQueries({ queryKey: ['intern', internId] });
+                  }}
+                  className="h-7 text-xs border-slate-200 text-slate-600 w-44 px-2"
+                /></div>
             </div>
           </div>
           <Link 
@@ -197,6 +209,7 @@ export default function InternDetails() {
         <div className="mb-8">
           <NextStageRequirements
             internStage={intern?.stage}
+            stageStartDate={intern?.stage_start_date}
             feedbacks={feedbacks}
             manualCounts={manualCounts}
           />

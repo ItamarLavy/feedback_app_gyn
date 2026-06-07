@@ -179,6 +179,7 @@ export default function InternProfile() {
         <div className="mb-8">
           <NextStageRequirements
             internStage={intern.stage}
+            stageStartDate={intern.stage_start_date}
             feedbacks={feedbacks}
             manualCounts={manualCounts}
           />
