@@ -192,13 +192,15 @@ export default function InternProfile() {
                 internId={internId}
                 internName={intern.name}
                 experts={experts}
-                seniorInterns={seniorInterns.filter(s =>
-                  s.id !== internId &&
-                  !experts.some(e =>
-                    (e.email && e.email === s.email) ||
-                    (e.name && e.name === s.name)
-                  )
-                )}
+                seniorInterns={seniorInterns.filter(s => {
+                  if (s.id === internId) return false;
+                  const sLastName = s.name?.split(' ').pop()?.toLowerCase();
+                  return !experts.some(e => {
+                    if (e.email && s.email && e.email.toLowerCase() === s.email.toLowerCase()) return true;
+                    const eLastName = e.name?.split(' ').pop()?.toLowerCase();
+                    return sLastName && eLastName && sLastName === eLastName;
+                  });
+                })}
                 onSuccess={() => {
                   queryClient.invalidateQueries({ queryKey: ['intern-feedbacks', internId] });
                   setShowFeedbackForm(false);
