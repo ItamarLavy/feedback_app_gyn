@@ -10,7 +10,7 @@ import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getFormTypeForProcedure } from '@/lib/epaFormTypeMapping';
 import { onFeedbackRequested, getOrCreateUserPoints, addPoints } from '@/hooks/useNotifications';
-import { PROCEDURE_CATEGORIES, SENIOR_INTERN_STAGE } from '@/lib/procedureConstants';
+import { PROCEDURE_CATEGORIES, SENIOR_INTERN_STAGE, STAGE_TRANSITION_REQUIREMENTS, EPA_CODE_TO_PROCEDURE_NAMES } from '@/lib/procedureConstants';
 
 import { useAuth } from '@/lib/AuthContext';
 
@@ -52,7 +52,27 @@ function generateProcedureCode(count) {
   return `#${String(count + 1).padStart(3, '0')}`;
 }
 
-export default function InternSelfFeedbackFormSimple({ internId, internName, experts, seniorInterns = [], onSuccess }) {
+// בונה רשימה שטוחה של פרוצדורות לפי שלב נוכחי של המתמחה
+function getProceduresForStage(internStage) {
+  const requirements = STAGE_TRANSITION_REQUIREMENTS[internStage];
+  if (!requirements) return [];
+  const result = []; // [{category, procedure}]
+  requirements.forEach(req => {
+    const names = EPA_CODE_TO_PROCEDURE_NAMES[req.code] || [req.label];
+    names.forEach(name => {
+      // מצא את הקטגוריה שבה הפרוצדורה הזו נמצאת
+      const category = Object.keys(PROCEDURE_CATEGORIES).find(cat =>
+        PROCEDURE_CATEGORIES[cat].includes(name)
+      ) || req.category;
+      if (!result.some(r => r.procedure === name)) {
+        result.push({ category, procedure: name });
+      }
+    });
+  });
+  return result;
+}
+
+export default function InternSelfFeedbackFormSimple({ internId, internName, internStage, experts, seniorInterns = [], onSuccess }) {
   const { user } = useAuth();
   // מנטורים = מומחים + תורן 1 מתקדם
   const allMentors = [
@@ -76,6 +96,15 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [procedureCode, setProcedureCode] = useState('');
+  // 'stage' = רק פרוצדורות לשלב הנוכחי, 'all' = כל הפרוצדורות, null = לא נבחר
+  const [procedureMode, setProcedureMode] = useState(null);
+
+  const stageProcedures = getProceduresForStage(internStage); // [{category, procedure}]
+  const stageProceduresByCategory = stageProcedures.reduce((acc, { category, procedure }) => {
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(procedure);
+    return acc;
+  }, {});
 
   const set = (key, val) => setFormData(prev => ({ ...prev, [key]: val }));
 
@@ -213,7 +242,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
   const hasRating = formData.intern_overall_rating > 0 || formData.intern_knowledge_rating > 0 ||
     formData.intern_clinical_skill_rating > 0 || formData.intern_communication_rating > 0;
 
-  const isValid = formData.expert_id && formData.procedure_category && formData.procedure_type &&
+  const isValid = procedureMode && formData.expert_id && formData.procedure_category && formData.procedure_type &&
     formData.form_type && (hasRating || formData.intern_independence !== null);
 
   return (
@@ -258,34 +287,79 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, exp
                 </Select>
               </div>
 
-              {/* קטגוריה + פרוצדורה */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-normal text-gray-700">קטגוריה</Label>
-                  <Select value={formData.procedure_category} onValueChange={v => setFormData(p => ({ ...p, procedure_category: v, procedure_type: '' }))}>
-                    <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
-                      <SelectValue placeholder="בחר קטגוריה" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.keys(PROCEDURE_CATEGORIES).map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-normal text-gray-700">פרוצדורה</Label>
-                  <Select value={formData.procedure_type} onValueChange={v => {
-                    const autoFormType = getFormTypeForProcedure(v);
-                    setFormData(p => ({ ...p, procedure_type: v, form_type: autoFormType || p.form_type }));
-                  }} disabled={!formData.procedure_category}>
-                    <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
-                      <SelectValue placeholder="בחר פרוצדורה" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(PROCEDURE_CATEGORIES[formData.procedure_category] || []).map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+              {/* בחירת מצב פרוצדורה */}
+              <div className="space-y-3">
+                <Label className="text-sm font-normal text-gray-700">סוג פרוצדורה</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {stageProcedures.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProcedureMode('stage');
+                        setFormData(p => ({ ...p, procedure_category: '', procedure_type: '' }));
+                      }}
+                      className={`p-3 rounded-lg border-2 text-sm font-medium transition-all text-right ${
+                        procedureMode === 'stage'
+                          ? 'border-teal-500 bg-teal-50 text-teal-800'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-teal-300'
+                      }`}
+                    >
+                      <div className="font-semibold mb-0.5">🎯 לפי שלב שלי</div>
+                      <div className="text-xs text-gray-500">פרוצדורות הנדרשות למעבר שלב</div>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProcedureMode('all');
+                      setFormData(p => ({ ...p, procedure_category: '', procedure_type: '' }));
+                    }}
+                    className={`p-3 rounded-lg border-2 text-sm font-medium transition-all text-right ${
+                      procedureMode === 'all'
+                        ? 'border-purple-500 bg-purple-50 text-purple-800'
+                        : 'border-gray-200 bg-white text-gray-700 hover:border-purple-300'
+                    } ${stageProcedures.length === 0 ? 'col-span-2' : ''}`}
+                  >
+                    <div className="font-semibold mb-0.5">📋 כל הפרוצדורות</div>
+                    <div className="text-xs text-gray-500">כל הפרוצדורות במערכת</div>
+                  </button>
                 </div>
               </div>
+
+              {/* קטגוריה + פרוצדורה */}
+              {procedureMode && (
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-normal text-gray-700">קטגוריה</Label>
+                    <Select value={formData.procedure_category} onValueChange={v => setFormData(p => ({ ...p, procedure_category: v, procedure_type: '' }))}>
+                      <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
+                        <SelectValue placeholder="בחר קטגוריה" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(procedureMode === 'stage' ? stageProceduresByCategory : PROCEDURE_CATEGORIES).map(c => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-normal text-gray-700">פרוצדורה</Label>
+                    <Select value={formData.procedure_type} onValueChange={v => {
+                      const autoFormType = getFormTypeForProcedure(v);
+                      setFormData(p => ({ ...p, procedure_type: v, form_type: autoFormType || p.form_type }));
+                    }} disabled={!formData.procedure_category}>
+                      <SelectTrigger className="h-10 bg-white border border-gray-300 text-gray-900">
+                        <SelectValue placeholder="בחר פרוצדורה" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {((procedureMode === 'stage' ? stageProceduresByCategory : PROCEDURE_CATEGORIES)[formData.procedure_category] || []).map(p => (
+                          <SelectItem key={p} value={p}>{p}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
 
               {/* סוג טופס */}
               <div className="space-y-2">

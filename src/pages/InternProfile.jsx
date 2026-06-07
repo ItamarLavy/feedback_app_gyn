@@ -191,6 +191,7 @@ export default function InternProfile() {
               <InternSelfFeedbackFormSimple
                 internId={internId}
                 internName={intern.name}
+                internStage={intern.stage}
                 experts={experts}
                 seniorInterns={seniorInterns.filter(s => {
                   if (s.id === internId) return false;
