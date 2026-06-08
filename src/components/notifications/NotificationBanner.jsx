@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 export default function NotificationBanner({ userId }) {
   const [notifications, setNotifications] = useState([]);
   const [visible, setVisible] = useState([]);
+  const debounceRef = useRef(null);
 
   const fetchUnread = async () => {
     if (!userId) return;
@@ -20,14 +21,22 @@ export default function NotificationBanner({ userId }) {
     setVisible(due.map(n => n.id));
   };
 
+  const debouncedFetch = () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(fetchUnread, 2000);
+  };
+
   useEffect(() => {
     fetchUnread();
     const unsubscribe = base44.entities.Notification.subscribe((event) => {
       if (event.data?.recipient_user_id === userId && !event.data?.is_read) {
-        fetchUnread();
+        debouncedFetch();
       }
     });
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [userId]);
 
   const dismiss = async (id) => {
