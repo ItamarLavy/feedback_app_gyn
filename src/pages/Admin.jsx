@@ -382,7 +382,7 @@ export default function Admin() {
           {showDepartments && (
             <CardContent className="pt-2 space-y-3">
               <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
-              <DepartmentPanel department="גינקולוגיה" label="גינקולוגיה" interns={interns} />
+              <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
               <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
               <DepartmentPanel department="אונקולוגיה" label="אונקולוגיה" interns={interns} />
               <DepartmentPanel department="מיון" label="מיון" interns={interns} />
