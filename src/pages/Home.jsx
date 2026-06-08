@@ -107,31 +107,7 @@ export default function Home() {
               ברוך הבא, {userName}!
             </h1>
             
-            {/* Points Display */}
-            <div className="grid grid-cols-2 gap-3 mb-4 md:mb-8">
-              <Card className="border-2 border-yellow-300 shadow-lg bg-gradient-to-br from-yellow-50 to-amber-50">
-                <CardContent className="p-3 md:p-6">
-                  <div className="flex items-center justify-center gap-2 md:gap-3">
-                    <Zap className="w-6 h-6 md:w-8 md:h-8 text-amber-500 fill-amber-400" />
-                    <div>
-                      <p className="text-slate-700 text-xs md:text-sm font-medium">סה"כ נקודות</p>
-                      <p className="text-2xl md:text-3xl font-bold text-amber-700">{points}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="border-2 border-teal-300 shadow-lg bg-gradient-to-br from-teal-50 to-cyan-50">
-                <CardContent className="p-3 md:p-6">
-                  <div className="flex items-center justify-center gap-2 md:gap-3">
-                    <Zap className="w-6 h-6 md:w-8 md:h-8 text-teal-500 fill-teal-400" />
-                    <div>
-                      <p className="text-slate-700 text-xs md:text-sm font-medium">השבוע</p>
-                      <p className="text-2xl md:text-3xl font-bold text-teal-700">{weeklyRecord}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+  
           </div>
 
           {/* Action Panel */}
