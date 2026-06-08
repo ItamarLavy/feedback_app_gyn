@@ -8,10 +8,10 @@ import { format, isPast } from 'date-fns';
 
 export default function MyMentoringMeetings({ internId }) {
   const { data: myMeetings = [] } = useQuery({
-    queryKey: ['mentoring-meetings-intern', internId],
+    queryKey: ['feedback-meetings-intern', internId],
     queryFn: async () => {
-      const all = await base44.entities.MentoringMeeting.list('-meeting_date', 200);
-      return all.filter(m => m.intern_ids && m.intern_ids.includes(internId));
+      const all = await base44.entities.FeedbackMeeting.list('-meeting_date', 200);
+      return all.filter(m => m.intern_id === internId);
     },
     enabled: !!internId
   });
@@ -26,7 +26,7 @@ export default function MyMentoringMeetings({ internId }) {
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <CalendarDays className="w-5 h-5 text-indigo-600" />
-          פגישות מנטורינג שלי
+          שיחות משוב שלי
           {upcoming.length > 0 && (
             <Badge className="bg-indigo-600 text-white text-xs">{upcoming.length} קרובות</Badge>
           )}
@@ -58,6 +58,7 @@ export default function MyMentoringMeetings({ internId }) {
 
 function MeetingItem({ meeting, past = false }) {
   const dateObj = new Date(meeting.meeting_date);
+  const expertNames = meeting.invited_experts?.map(e => e.name).join(', ') || '';
   return (
     <div className={`flex items-start gap-3 p-3 rounded-xl border ${past ? 'bg-slate-50 border-slate-200 opacity-70' : 'bg-indigo-50 border-indigo-200'}`}>
       <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex flex-col items-center justify-center text-xs font-bold ${past ? 'bg-slate-200 text-slate-600' : 'bg-indigo-100 text-indigo-700'}`}>
@@ -65,17 +66,17 @@ function MeetingItem({ meeting, past = false }) {
         <span className="uppercase text-[10px]">{format(dateObj, 'MMM')}</span>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-slate-800 text-sm">{meeting.title}</p>
+        <p className="font-semibold text-slate-800 text-sm">שיחת משוב</p>
         <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-slate-500">
           <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{format(dateObj, 'HH:mm')}</span>
           {meeting.location && (
             <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{meeting.location}</span>
           )}
         </div>
-        {(meeting.expert_names || []).length > 0 && (
+        {expertNames && (
           <div className="flex items-center gap-1 mt-1.5 text-xs text-slate-500">
             <Users className="w-3 h-3" />
-            <span>{meeting.expert_names.join(', ')}</span>
+            <span>{expertNames}</span>
           </div>
         )}
         {meeting.notes && <p className="text-xs text-slate-500 mt-1 italic">{meeting.notes}</p>}
