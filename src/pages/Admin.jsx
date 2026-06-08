@@ -7,30 +7,24 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 import AnomalousReports from '../components/admin/AnomalousReports';
 import AlertsBadge from '../components/notifications/AlertsBadge';
-import DepartmentPanel from '../components/admin/DepartmentPanel';
-import StageTrackingPanel from '../components/admin/StageTrackingPanel';
+import InternsPanel from '../components/admin/InternsPanel';
 import PointsLeaderboard from '../components/admin/PointsLeaderboard';
-import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import MentoringMeetingManager from '../components/admin/MentoringMeetingManager';
-import UnassignedInterns from '../components/admin/UnassignedInterns';
-import { 
+import {
   Shield, Users, ClipboardList,
   Star, Search, Filter, Clock, BookOpen, Stethoscope, Trash2, Mail,
-  Trophy, TrendingUp, ChevronDown, ChevronUp, Building2, GraduationCap
+  Trophy, TrendingUp, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format, differenceInHours } from 'date-fns';
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
-const MANAGER_NAMES = ['יובל לביא', 'רונית גלעד', 'צביקה שמעונוביץ'];
-const RATING_KEYS = ['knowledge_rating', 'manual_skill_rating', 'professionalism_rating', 'independence_rating'];
 
 export default function Admin() {
   const { user, isAuthenticated: isLoggedIn } = useAuth();
@@ -38,16 +32,11 @@ export default function Admin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
   const [showAdminInstructions, setShowAdminInstructions] = useState(false);
-  const [showInternsList, setShowInternsList] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [showDepartments, setShowDepartments] = useState(false);
   const [showAnomalous, setShowAnomalous] = useState(false);
   const [showAccessRequests, setShowAccessRequests] = useState(false);
-  const [selectedModal, setSelectedModal] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
   const pullToRefreshRef = usePullToRefresh(['feedbacks']);
-
 
   const { data: feedbacks = [] } = useQuery({
     queryKey: ['feedbacks'],
@@ -55,12 +44,9 @@ export default function Admin() {
     enabled: isAuthenticated
   });
 
-  // שלח התראות למנהלים על משובים שלא נענו מעל שבוע
   useEffect(() => {
     if (!isAuthenticated || feedbacks.length === 0 || !user?.id) return;
-    const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
-    if (!isManager) return;
-
+    if (!(MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin')) return;
     const checkOverdue = async () => {
       const overdue = feedbacks.filter(f =>
         f.status === 'pending_expert_review' &&
@@ -98,31 +84,9 @@ export default function Admin() {
     enabled: isAuthenticated
   });
 
-  const { data: rotationPlansRaw = [] } = useQuery({
-    queryKey: ['rotationPlans'],
-    queryFn: () => base44.entities.InternRotationPlan.list(),
-    enabled: isAuthenticated
-  });
-
-  // לכל מתמחה - מצא את הרוטציה הנוכחית: is_current=true, או לחלופין לפי תאריך
-  const today = new Date().toISOString().slice(0, 10);
-  const rotationPlans = rotationPlansRaw.filter(r =>
-    r.is_current ||
-    (r.start_date && r.end_date && r.start_date <= today && r.end_date >= today)
-  );
-
   const { data: experts = [] } = useQuery({
     queryKey: ['experts'],
     queryFn: () => base44.entities.Expert.list(),
-    enabled: isAuthenticated
-  });
-
-  const { data: userPoints = [] } = useQuery({
-    queryKey: ['userPoints'],
-    queryFn: async () => {
-      const points = await base44.entities.UserPoints.list();
-      return points;
-    },
     enabled: isAuthenticated
   });
 
@@ -141,21 +105,8 @@ export default function Admin() {
     return matchesSearch && matchesProcedure;
   });
 
-  // Count pending expert reviews
   const pendingExpertReviews = feedbacks.filter(f => f.status === 'pending_expert_review').length;
-  const completedReviews = feedbacks.filter(f => f.status === 'completed').length;
-
-  // Stats - Only expert ratings
   const totalFeedbacks = feedbacks.length;
-  const expertRatings = [];
-  feedbacks.forEach(f => {
-    ['expert_knowledge_rating', 'expert_manual_skill_rating', 'expert_professionalism_rating', 'expert_independence_rating'].forEach(key => {
-      if (f[key] && f[key] > 0) expertRatings.push(f[key]);
-    });
-  });
-  const avgRating = expertRatings.length > 0 
-    ? (expertRatings.reduce((a, b) => a + b, 0) / expertRatings.length).toFixed(1)
-    : 0;
 
   if (!isAuthenticated) {
     return (
@@ -172,23 +123,20 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-emerald-50/40 to-cyan-100" dir="rtl">
       <div ref={pullToRefreshRef} className="max-w-6xl mx-auto px-5 py-8 pb-40 md:pb-8">
-        {/* Header */}
-        <div className="flex flex-col gap-4 mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-slate-800">פאנל ניהול</h1>
-              <p className="text-slate-500 text-sm">צפייה בכל המשובים</p>
-            </div>
-          </div>
 
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg">
+            <Shield className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">פאנל ניהול</h1>
+            <p className="text-slate-500 text-sm">צפייה בכל המשובים</p>
+          </div>
         </div>
 
-        {/* Stats Cards - 5 in a row on mobile too */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-5 gap-1.5 md:gap-4 mb-8">
-          {/* סה"כ משובים */}
           <Card className="border-0 shadow-md bg-gradient-to-br from-white to-emerald-50">
             <CardContent className="p-2 md:p-5">
               <div className="flex flex-col items-center md:items-start gap-1 md:gap-2">
@@ -203,7 +151,6 @@ export default function Admin() {
             </CardContent>
           </Card>
 
-          {/* ממתינים למומחה */}
           <Card className={`border-0 shadow-md ${pendingExpertReviews > 0 ? 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-300' : 'bg-gradient-to-br from-white to-yellow-50'}`}>
             <CardContent className="p-2 md:p-5">
               <div className="flex flex-col items-center md:items-start gap-1 md:gap-2">
@@ -218,7 +165,6 @@ export default function Admin() {
             </CardContent>
           </Card>
 
-          {/* מתמחים */}
           <Link to={createPageUrl('InternPasswords')} className="no-underline">
             <Card className="border-0 shadow-md bg-gradient-to-br from-white to-cyan-50 hover:shadow-lg transition-all cursor-pointer h-full">
               <CardContent className="p-2 md:p-5">
@@ -235,7 +181,6 @@ export default function Admin() {
             </Card>
           </Link>
 
-          {/* מומחים */}
           <Link to={createPageUrl('ExpertPasswords')} className="no-underline">
             <Card className="border-0 shadow-md bg-gradient-to-br from-white to-purple-50 hover:shadow-lg transition-all cursor-pointer h-full">
               <CardContent className="p-2 md:p-5">
@@ -252,7 +197,6 @@ export default function Admin() {
             </Card>
           </Link>
 
-          {/* מנהלים */}
           <Link to={createPageUrl('ManagerEmails')} className="no-underline">
             <Card className="border-0 shadow-md bg-gradient-to-br from-white to-teal-50 hover:shadow-lg transition-all cursor-pointer h-full">
               <CardContent className="p-2 md:p-5">
@@ -270,136 +214,12 @@ export default function Admin() {
           </Link>
         </div>
 
-        {/* Interns List - Collapsible */}
-         <Card className="border-0 shadow-lg mb-8">
-           <CardHeader
-             className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-             onClick={() => setShowInternsList(prev => !prev)}
-           >
-             <CardTitle className="flex items-center justify-between text-lg">
-               <div className="flex items-center gap-2">
-                 <Users className="w-5 h-5 text-teal-600" />
-                 מתמחים ({interns.length})
-               </div>
-               <span className="text-slate-400 text-lg">{showInternsList ? '▲' : '▼'}</span>
-             </CardTitle>
-           </CardHeader>
-           {showInternsList && <CardContent>
-             <div className="flex flex-col gap-3">
-                  {interns.map(intern => {
-                    const internFeedbacks = feedbacks.filter(f => f.intern_id === intern.id);
-                    const internRatings = [];
-                    internFeedbacks.forEach(f => {
-                      RATING_KEYS.forEach(key => {
-                        if (f[key] && f[key] > 0) internRatings.push(f[key]);
-                      });
-                    });
-                    const avg = internRatings.length > 0
-                      ? (internRatings.reduce((a, b) => a + b, 0) / internRatings.length).toFixed(1)
-                      : '-';
+        {/* Unified Interns Panel */}
+        <InternsPanel interns={interns} feedbacks={feedbacks} />
 
-                    const lastFeedback = internFeedbacks[0];
-                    const needsReminder = lastFeedback 
-                      ? (Date.now() - new Date(lastFeedback.created_date).getTime()) > 7 * 24 * 60 * 60 * 1000
-                      : internFeedbacks.length > 0;
-
-                    const currentRotation = rotationPlans.find(r => r.intern_id === intern.id);
-
-                    return (
-                      <Link
-                       key={intern.id}
-                       to={createPageUrl('InternDetails') + `?id=${intern.id}`}
-                       className={`flex flex-col gap-2 p-3 rounded-xl transition-all border ${
-                         needsReminder 
-                           ? 'bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-amber-200 hover:border-amber-300 shadow-sm' 
-                           : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-teal-300 shadow-sm'
-                       }`}
-                      >
-                       <div className="flex items-center gap-3">
-                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
-                           {intern.name?.[0]}
-                         </div>
-                         <div className="flex-1 min-w-0">
-                           <div className="flex items-center gap-1.5">
-                               <p className="font-semibold text-slate-800 text-sm">{intern.name}</p>
-                               {needsReminder && (
-                                 <span className="text-xs text-amber-600 font-medium">⚠</span>
-                               )}
-                               <AlertsBadge personId={intern.id} role="intern" />
-                           </div>
-                           <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-                             {intern.stage && (
-                               <span className="flex items-center gap-0.5 text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-medium">
-                                 <GraduationCap className="w-2.5 h-2.5" />{intern.stage}
-                               </span>
-                             )}
-                             {currentRotation && (
-                               <span className="flex items-center gap-0.5 text-xs bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded-full font-medium">
-                                 <Building2 className="w-2.5 h-2.5" />{currentRotation.department}
-                               </span>
-                             )}
-                             <span className="flex items-center gap-1 text-xs text-slate-500">
-                               <Star className="w-3 h-3 fill-amber-400 text-amber-400 flex-shrink-0" />
-                               {avg}
-                               <span className="text-slate-300">•</span>
-                               {internFeedbacks.length} משובים
-                             </span>
-                           </div>
-                         </div>
-                       </div>
-                       <InternProgressBadges feedbacks={internFeedbacks} />
-                      </Link>
-                    );
-                  })}
-                  {interns.length === 0 && (
-                    <p className="text-center text-slate-500 py-8">אין מתמחים במערכת</p>
-                  )}
-                </div>
-           </CardContent>}
-         </Card>
-
-
-
-
-
-        {/* Stage Tracking */}
-        <StageTrackingPanel interns={interns} feedbacks={feedbacks} />
-
-        {/* Department Panels - Collapsible */}
+        {/* Anomalous Reports */}
         <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-            onClick={() => setShowDepartments(prev => !prev)}
-          >
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <Stethoscope className="w-5 h-5 text-teal-600" />
-                מעקב לפי מחלקה
-              </div>
-              {showDepartments ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-            </CardTitle>
-          </CardHeader>
-          {showDepartments && (
-            <CardContent className="pt-2 space-y-3">
-              <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
-              <DepartmentPanel department="גניקולוגיה" label="גניקולוגיה" interns={interns} />
-              <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
-              <DepartmentPanel department="אונקולוגיה" label="אונקולוגיה" interns={interns} />
-              <DepartmentPanel department="מיון" label="מיון" interns={interns} />
-              <DepartmentPanel department="רוטציה חיצונית" label="רוטציה חיצונית" interns={interns} />
-
-              {/* מתמחים שלא משובצים לאף מחלקה היום */}
-              <UnassignedInterns interns={interns} rotationPlans={rotationPlansRaw} />
-            </CardContent>
-          )}
-        </Card>
-
-        {/* Anomalous Reports - Collapsible */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-            onClick={() => setShowAnomalous(prev => !prev)}
-          >
+          <CardHeader className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl" onClick={() => setShowAnomalous(p => !p)}>
             <CardTitle className="flex items-center justify-between text-lg">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-red-500" />
@@ -418,12 +238,9 @@ export default function Admin() {
         {/* Mentoring Meetings */}
         <MentoringMeetingManager interns={interns} experts={experts} />
 
-        {/* Points Leaderboard - Collapsible */}
+        {/* Points Leaderboard */}
         <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-            onClick={() => setShowLeaderboard(prev => !prev)}
-          >
+          <CardHeader className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl" onClick={() => setShowLeaderboard(p => !p)}>
             <CardTitle className="flex items-center justify-between text-lg">
               <div className="flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-amber-500" />
@@ -432,19 +249,12 @@ export default function Admin() {
               {showLeaderboard ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
             </CardTitle>
           </CardHeader>
-          {showLeaderboard && (
-            <CardContent className="pt-0">
-              <PointsLeaderboard />
-            </CardContent>
-          )}
+          {showLeaderboard && <CardContent className="pt-0"><PointsLeaderboard /></CardContent>}
         </Card>
 
-        {/* Access Requests - Collapsible */}
+        {/* Access Requests */}
         <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-            onClick={() => setShowAccessRequests(prev => !prev)}
-          >
+          <CardHeader className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl" onClick={() => setShowAccessRequests(p => !p)}>
             <CardTitle className="flex items-center justify-between text-lg">
               <div className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-amber-500" />
@@ -460,12 +270,9 @@ export default function Admin() {
           )}
         </Card>
 
-        {/* Admin Instructions - Collapsible */}
+        {/* Admin Instructions */}
         <Card className="border-0 shadow-lg mb-8">
-          <CardHeader
-            className="bg-teal-50 border-b border-teal-100 cursor-pointer select-none hover:bg-teal-100 transition-colors rounded-xl"
-            onClick={() => setShowAdminInstructions(!showAdminInstructions)}
-          >
+          <CardHeader className="bg-teal-50 border-b border-teal-100 cursor-pointer select-none hover:bg-teal-100 transition-colors rounded-xl" onClick={() => setShowAdminInstructions(p => !p)}>
             <CardTitle className="flex items-center justify-between text-teal-900">
               <div className="flex items-center gap-3">
                 <BookOpen className="w-5 h-5" />
@@ -477,94 +284,34 @@ export default function Admin() {
           {showAdminInstructions && (
             <CardContent className="p-6">
               <div className="space-y-5">
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">1</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">תריס מתמחים</h4>
-                    <p className="text-sm text-slate-600">לחץ על מתמחה לצפייה בפרופיל המלא שלו: סטטיסטיקות, התקדמות לפי פרוצדורות, תוכנית רוטציות, קבצים, סיכום AI ורשימת משובים. ניתן לשנות שלב, למחוק משובים ולהוסיף מידע ידנית.</p>
+                {[
+                  { n: 1, title: 'תריס מתמחים', text: 'לחץ על מתמחה לצפייה בפרופיל המלא שלו. ניתן לעבור בין תצוגת א״ב, שלב או מחלקה.' },
+                  { n: 2, title: 'טרנדים חריגים', text: 'זיהוי אוטומטי של מתמחים עם ציונים גבוהים/נמוכים חריגים, ומגמות עולות/יורדות ב-3 משובים אחרונים.' },
+                  { n: 3, title: 'קביעת פגישות', text: 'תזמן פגישות מנטורינג עם מתמחים ומומחים. המשתתפים מקבלים הזמנה במייל עם פרטי הפגישה.' },
+                  { n: 4, title: 'לוח ניקוד', text: 'דירוג מתמחים ומומחים לפי נקודות שנצברו מהגשת ואישור משובים.' },
+                  { n: 5, title: 'בקשות גישה ממתינות', text: 'כשמשתמש נכנס לראשונה עם גוגל, בקשתו מופיעה כאן. בחר תפקיד, שייך לרשומה קיימת ולחץ "אשר".' },
+                  { n: 6, title: 'חיפוש ומחיקת משובים', text: 'בתחתית הדף ניתן לחפש ולסנן את כל המשובים במערכת ולמחוק רשומות במידת הצורך.' },
+                ].map(({ n, title, text }) => (
+                  <div key={n} className="flex gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">{n}</div>
+                    <div>
+                      <h4 className="font-semibold text-slate-800 mb-1">{title}</h4>
+                      <p className="text-sm text-slate-600">{text}</p>
+                    </div>
                   </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">2</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">מעקב לפי מחלקה</h4>
-                    <p className="text-sm text-slate-600">צפה בהתקדמות המתמחים לפי מחלקות: מיילדות, גניקולוגיה, פוריות ורוטציה חיצונית.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">3</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">טרנדים חריגים</h4>
-                    <p className="text-sm text-slate-600">זיהוי אוטומטי של מתמחים עם ציונים גבוהים/נמוכים חריגים, ומגמות עולות/יורדות ב-3 משובים אחרונים.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">4</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">קביעת פגישות</h4>
-                    <p className="text-sm text-slate-600">תזמן פגישות מנטורינג עם מתמחים ומומחים. המשתתפים מקבלים הזמנה במייל עם פרטי הפגישה.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">5</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">לוח ניקוד</h4>
-                    <p className="text-sm text-slate-600">דירוג מתמחים ומומחים לפי נקודות שנצברו מהגשת ואישור משובים – ניתן לסנן לפי שבוע, חודש ותפקיד.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">6</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">בקשות גישה ממתינות</h4>
-                    <p className="text-sm text-slate-600">כשמשתמש נכנס לראשונה עם גוגל, בקשתו מופיעה כאן. בחר תפקיד (מתמחה/מומחה), שייך לרשומה קיימת או צור חדשה, ולחץ "אשר" – המייל יתעדכן אוטומטית.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">7</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">ניהול משתמשים (כרטיסי הסטטיסטיקות)</h4>
-                    <p className="text-sm text-slate-600">
-                      לחץ על <strong>מתמחים</strong> לעריכת שמות, מיילים ושלבים, או הוספה/מחיקה של מתמחים.<br/>
-                      לחץ על <strong>מומחים</strong> לאותן פעולות עבור המומחים.<br/>
-                      לחץ על <strong>מנהלים</strong> לעדכון רשימת מנהלי המערכת.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">8</div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">חיפוש ומחיקת משובים</h4>
-                    <p className="text-sm text-slate-600">בתחתית הדף ניתן לחפש ולסנן את כל המשובים במערכת לפי שם מתמחה, מומחה או קוד פרוצדורה, ולמחוק רשומות במידת הצורך.</p>
-                  </div>
-                </div>
-
+                ))}
               </div>
             </CardContent>
           )}
         </Card>
 
-        {/* Filters */}
+        {/* Feedbacks Search + List */}
         <div className="space-y-4">
-          <div className="text-xs text-slate-500">
-            חיפוש לפי שם מתמחה, מומחה, או קוד פרוצדורה (לדוגמה: #001)
-          </div>
+          <p className="text-xs text-slate-500">חיפוש לפי שם מתמחה, מומחה, או קוד פרוצדורה (לדוגמה: #001)</p>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <Input
-                placeholder="חיפוש..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pr-10 h-12 bg-white border-slate-200"
-              />
+              <Input placeholder="חיפוש..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 h-12 bg-white border-slate-200" />
             </div>
             <Select value={filterProcedure} onValueChange={setFilterProcedure}>
               <SelectTrigger className="w-full md:w-48 h-12 bg-white border-slate-200">
@@ -573,48 +320,36 @@ export default function Admin() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">כל הפרוצדורות</SelectItem>
-                {procedures.map(proc => (
-                  <SelectItem key={proc} value={proc}>{proc}</SelectItem>
-                ))}
+                {procedures.map(proc => <SelectItem key={proc} value={proc}>{proc}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* Feedbacks List - Compact */}
-         <div className="space-y-2 mt-6">
-           {filteredFeedbacks.map(feedback => (
-             <div key={feedback.id} className="bg-white rounded-lg p-2 md:p-3 border border-slate-200 hover:border-teal-300 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-3 text-sm md:text-base">
-               <div className="flex flex-wrap items-center gap-2 flex-1">
-                 <span className="font-mono text-teal-700 font-semibold">{feedback.procedure_id_code}</span>
-                 <span className="text-slate-700 font-medium truncate">{feedback.intern_name}</span>
-                 <span className="text-slate-600 truncate hidden sm:inline">{feedback.expert_name}</span>
-                 <span className="text-slate-600 truncate">{feedback.procedure_type}</span>
-                 {feedback.procedure_date && (
-                   <span className="text-xs text-slate-500">{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
-                 )}
-                 <Badge className={`text-xs ${feedback.status === 'completed' ? 'bg-green-600' : 'bg-amber-600'}`}>
-                   {feedback.status === 'completed' ? 'הושלם' : 'ממתין'}
-                 </Badge>
-               </div>
-
-               <Button
-                 variant="ghost"
-                 size="icon"
-                 onClick={() => handleDeleteFeedback(feedback.id)}
-                 className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8"
-               >
-                 <Trash2 className="w-4 h-4" />
-               </Button>
-             </div>
-           ))}
-           {filteredFeedbacks.length === 0 && (
-             <div className="text-center py-12 text-slate-500">
-               לא נמצאו משובים
-             </div>
-           )}
-         </div>
-
+        <div className="space-y-2 mt-6">
+          {filteredFeedbacks.map(feedback => (
+            <div key={feedback.id} className="bg-white rounded-lg p-2 md:p-3 border border-slate-200 hover:border-teal-300 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-3 text-sm md:text-base">
+              <div className="flex flex-wrap items-center gap-2 flex-1">
+                <span className="font-mono text-teal-700 font-semibold">{feedback.procedure_id_code}</span>
+                <span className="text-slate-700 font-medium truncate">{feedback.intern_name}</span>
+                <span className="text-slate-600 truncate hidden sm:inline">{feedback.expert_name}</span>
+                <span className="text-slate-600 truncate">{feedback.procedure_type}</span>
+                {feedback.procedure_date && (
+                  <span className="text-xs text-slate-500">{format(new Date(feedback.procedure_date), 'dd/MM/yyyy')}</span>
+                )}
+                <Badge className={`text-xs ${feedback.status === 'completed' ? 'bg-green-600' : 'bg-amber-600'}`}>
+                  {feedback.status === 'completed' ? 'הושלם' : 'ממתין'}
+                </Badge>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => handleDeleteFeedback(feedback.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          {filteredFeedbacks.length === 0 && (
+            <div className="text-center py-12 text-slate-500">לא נמצאו משובים</div>
+          )}
+        </div>
 
       </div>
     </div>
