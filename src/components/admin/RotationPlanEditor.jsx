@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Plus, Trash2, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, Plus, Trash2, Calendar, CheckSquare, Square } from 'lucide-react';
 import { format, parseISO, differenceInDays } from 'date-fns';
 
 const DEPARTMENTS = ['גניקולוגיה', 'מיילדות', 'פוריות', 'כללי', 'רוטציה חיצונית'];
@@ -46,6 +46,11 @@ export default function RotationPlanEditor({ intern }) {
     setFormData(emptyPlan);
     setShowForm(false);
     setSaving(false);
+  };
+
+  const handleToggleMeeting = async (plan, field) => {
+    await base44.entities.InternRotationPlan.update(plan.id, { [field]: !plan[field], [`${field.replace('_done', '_date')}`]: !plan[field] ? new Date().toISOString().split('T')[0] : null });
+    queryClient.invalidateQueries({ queryKey: ['rotation-plans', internId] });
   };
 
   const handleDelete = async (id) => {
@@ -189,9 +194,6 @@ export default function RotationPlanEditor({ intern }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold text-slate-800">{plan.department}</span>
-                      {plan.stage_name && (
-                        <span className="text-slate-500 text-sm">· {plan.stage_name}</span>
-                      )}
                       <Badge className={status.color + ' border-0 text-xs'}>{status.label}</Badge>
                       {plan.is_current && (
                         <Badge className="bg-teal-600 text-white text-xs">נוכחי</Badge>
@@ -208,6 +210,33 @@ export default function RotationPlanEditor({ intern }) {
                     {plan.notes && (
                       <p className="text-xs text-slate-400 mt-1">{plan.notes}</p>
                     )}
+                    {/* צ'קליסט פגישות */}
+                    <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-3 gap-2">
+                      {[
+                        { field: 'meeting_opening_done', dateField: 'meeting_opening_date', label: 'פגישת פתיחה' },
+                        { field: 'meeting_middle_done', dateField: 'meeting_middle_date', label: 'פגישת אמצע' },
+                        { field: 'meeting_closing_done', dateField: 'meeting_closing_date', label: 'פגישת סיום' },
+                      ].map(({ field, dateField, label }) => (
+                        <button
+                          key={field}
+                          onClick={() => handleToggleMeeting(plan, field)}
+                          className={`flex flex-col items-center gap-1 p-2 rounded-lg border text-xs transition-all ${
+                            plan[field]
+                              ? 'bg-teal-50 border-teal-300 text-teal-700'
+                              : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-teal-200'
+                          }`}
+                        >
+                          {plan[field]
+                            ? <CheckSquare className="w-4 h-4 text-teal-600" />
+                            : <Square className="w-4 h-4 text-slate-400" />
+                          }
+                          <span className="font-medium">{label}</span>
+                          {plan[field] && plan[dateField] && (
+                            <span className="text-teal-500 text-[10px]">{format(parseISO(plan[dateField]), 'dd/MM/yy')}</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <Button
