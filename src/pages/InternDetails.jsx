@@ -15,6 +15,7 @@ import AIProgressSummary from '../components/admin/AIProgressSummary';
 import RotationPlanEditor from '../components/admin/RotationPlanEditor';
 import InternFilesManager from '../components/admin/InternFilesManager';
 import MyMentoringMeetings from '../components/intern/MyMentoringMeetings';
+import MentoringMeetingManager from '../components/admin/MentoringMeetingManager';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +60,16 @@ export default function InternDetails() {
     queryKey: ['intern-files', internId],
     queryFn: () => base44.entities.MeetingSummary.filter({ intern_id: internId }, '-meeting_date'),
     enabled: !!internId
+  });
+
+  const { data: experts = [] } = useQuery({
+    queryKey: ['experts'],
+    queryFn: () => base44.entities.Expert.list(),
+  });
+
+  const { data: allInterns = [] } = useQuery({
+    queryKey: ['interns'],
+    queryFn: () => base44.entities.Intern.list(),
   });
 
   const handleDeleteFeedback = async (feedbackId) => {
@@ -249,7 +260,12 @@ export default function InternDetails() {
             <span className="text-base">🤝</span> פגישות מנטורינג
           </summary>
           <div className="px-4 pb-4 pt-2">
-            <MyMentoringMeetings internId={internId} />
+            <MentoringMeetingManager
+              interns={allInterns}
+              experts={experts}
+              preselectedInternId={internId}
+              embedded={true}
+            />
           </div>
         </details>
 

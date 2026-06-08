@@ -5,16 +5,13 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
-import AnomalousReports from '../components/admin/AnomalousReports';
 import AlertsBadge from '../components/notifications/AlertsBadge';
 import InternsPanel from '../components/admin/InternsPanel';
 import PointsLeaderboard from '../components/admin/PointsLeaderboard';
-import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
-import MentoringMeetingManager from '../components/admin/MentoringMeetingManager';
 import {
   Shield, Users, ClipboardList,
-  Star, Search, Filter, Clock, BookOpen, Stethoscope, Trash2, Mail,
-  Trophy, TrendingUp, ChevronDown, ChevronUp
+  Search, Filter, Clock, Stethoscope, Trash2,
+  Trophy, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,10 +28,7 @@ export default function Admin() {
   const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
-  const [showAdminInstructions, setShowAdminInstructions] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [showAnomalous, setShowAnomalous] = useState(false);
-  const [showAccessRequests, setShowAccessRequests] = useState(false);
   const queryClient = useQueryClient();
   const pullToRefreshRef = usePullToRefresh(['feedbacks']);
 
@@ -215,28 +209,7 @@ export default function Admin() {
         </div>
 
         {/* Unified Interns Panel */}
-        <InternsPanel interns={interns} feedbacks={feedbacks} />
-
-        {/* Anomalous Reports */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl" onClick={() => setShowAnomalous(p => !p)}>
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-red-500" />
-                טרנדים חריגים
-              </div>
-              {showAnomalous ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-            </CardTitle>
-          </CardHeader>
-          {showAnomalous && (
-            <CardContent className="pt-0">
-              <AnomalousReports feedbacks={feedbacks} interns={interns} />
-            </CardContent>
-          )}
-        </Card>
-
-        {/* Mentoring Meetings */}
-        <MentoringMeetingManager interns={interns} experts={experts} />
+        <InternsPanel interns={interns} feedbacks={feedbacks} defaultOpen={true} />
 
         {/* Points Leaderboard */}
         <Card className="border-0 shadow-lg mb-8">
@@ -250,59 +223,6 @@ export default function Admin() {
             </CardTitle>
           </CardHeader>
           {showLeaderboard && <CardContent className="pt-0"><PointsLeaderboard /></CardContent>}
-        </Card>
-
-        {/* Access Requests */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl" onClick={() => setShowAccessRequests(p => !p)}>
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-amber-500" />
-                בקשות גישה ממתינות
-              </div>
-              {showAccessRequests ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-            </CardTitle>
-          </CardHeader>
-          {showAccessRequests && (
-            <CardContent className="pt-0">
-              <AccessRequestsPanel interns={interns} experts={experts} queryClient={queryClient} />
-            </CardContent>
-          )}
-        </Card>
-
-        {/* Admin Instructions */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader className="bg-teal-50 border-b border-teal-100 cursor-pointer select-none hover:bg-teal-100 transition-colors rounded-xl" onClick={() => setShowAdminInstructions(p => !p)}>
-            <CardTitle className="flex items-center justify-between text-teal-900">
-              <div className="flex items-center gap-3">
-                <BookOpen className="w-5 h-5" />
-                הוראות שימוש
-              </div>
-              <span className="text-teal-500 text-lg">{showAdminInstructions ? '▲' : '▼'}</span>
-            </CardTitle>
-          </CardHeader>
-          {showAdminInstructions && (
-            <CardContent className="p-6">
-              <div className="space-y-5">
-                {[
-                  { n: 1, title: 'תריס מתמחים', text: 'לחץ על מתמחה לצפייה בפרופיל המלא שלו. ניתן לעבור בין תצוגת א״ב, שלב או מחלקה.' },
-                  { n: 2, title: 'טרנדים חריגים', text: 'זיהוי אוטומטי של מתמחים עם ציונים גבוהים/נמוכים חריגים, ומגמות עולות/יורדות ב-3 משובים אחרונים.' },
-                  { n: 3, title: 'קביעת פגישות', text: 'תזמן פגישות מנטורינג עם מתמחים ומומחים. המשתתפים מקבלים הזמנה במייל עם פרטי הפגישה.' },
-                  { n: 4, title: 'לוח ניקוד', text: 'דירוג מתמחים ומומחים לפי נקודות שנצברו מהגשת ואישור משובים.' },
-                  { n: 5, title: 'בקשות גישה ממתינות', text: 'כשמשתמש נכנס לראשונה עם גוגל, בקשתו מופיעה כאן. בחר תפקיד, שייך לרשומה קיימת ולחץ "אשר".' },
-                  { n: 6, title: 'חיפוש ומחיקת משובים', text: 'בתחתית הדף ניתן לחפש ולסנן את כל המשובים במערכת ולמחוק רשומות במידת הצורך.' },
-                ].map(({ n, title, text }) => (
-                  <div key={n} className="flex gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-semibold flex items-center justify-center text-sm">{n}</div>
-                    <div>
-                      <h4 className="font-semibold text-slate-800 mb-1">{title}</h4>
-                      <p className="text-sm text-slate-600">{text}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          )}
         </Card>
 
         {/* Feedbacks Search + List */}

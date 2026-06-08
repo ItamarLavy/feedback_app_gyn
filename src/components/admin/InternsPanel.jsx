@@ -366,8 +366,8 @@ const VIEWS = [
   { key: 'dept',  label: 'מחלקה' },
 ];
 
-export default function InternsPanel({ interns, feedbacks }) {
-  const [open, setOpen] = useState(false);
+export default function InternsPanel({ interns, feedbacks, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
   const [view, setView] = useState('alpha');
 
   const { data: rotationPlans = [] } = useQuery({
