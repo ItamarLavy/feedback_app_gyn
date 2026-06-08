@@ -498,7 +498,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                               variant="outline"
                               onClick={() => handleStatusChange(meeting, 'בוטל')}
                             >
-                              ביטול פגישה
+                              ביטול שיחה
                             </Button>
                           </>
                         )}
