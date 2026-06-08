@@ -157,7 +157,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
 
     try {
       console.log('[FeedbackMeetingManager] creating meeting, intern:', selectedIntern?.name, 'date:', formData.meeting_date);
-      await createMeetingMutation.mutateAsync({
+      const createdMeeting = await createMeetingMutation.mutateAsync({
         intern_id: formData.intern_id,
         intern_name: selectedIntern?.name,
         meeting_date: formData.meeting_date,
@@ -186,6 +186,14 @@ export default function FeedbackMeetingManager({ interns, experts }) {
         );
         await Promise.all(meetingEmailPromises);
         await sendQuestionnaireEmails(selectedIntern?.name, recipients);
+        
+        // שליחת calendar invite
+        try {
+          await base44.functions.invoke('sendCalendarInvites', { meeting_id: createdMeeting.id });
+        } catch (calendarErr) {
+          console.warn('Calendar invite error:', calendarErr);
+        }
+        
         toast.success(`הפגישה נקבעה ומיילים נשלחו ל-${recipients.length} נמענים`);
       } else {
         toast.success('הפגישה נקבעה (לא נמצאו כתובות מייל לשליחה)');
