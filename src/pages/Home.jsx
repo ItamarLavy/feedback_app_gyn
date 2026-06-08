@@ -145,10 +145,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">
-                        {isIntern ? 'מלא משוב כמתמחה' : 'מלא משוב כמומחה'}
+                       {isIntern ? 'פרופיל מתמחה' : 'פרופיל בכיר'}
                       </h3>
                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">
-                        {isIntern ? 'שלח משוב עצמי על פרוצדורה' : 'בדוק משובים הממתינים'}
+                       {isIntern ? 'צפה בפרופיל שלך ומלא משוב עצמי על פרוצדורה' : 'צפה בפרופיל שלך ובמשובים הממתינים לאישורך'}
                       </p>
                     </div>
                   </div>
@@ -165,8 +165,8 @@ export default function Home() {
                         <Stethoscope className="w-5 h-5 md:w-7 md:h-7 text-purple-800" />
                       </div>
                       <div>
-                        <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">מלא משוב כמנטור</h3>
-                        <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">בדוק משובים שממתינים לאישורך</p>
+                        <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פרופיל בכיר</h3>
+                        <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפה בפרופיל הבכיר שלך ואשר משובים הממתינים</p>
                       </div>
                     </div>
                   </CardContent>
@@ -230,8 +230,8 @@ export default function Home() {
                        <Users className="w-5 h-5 md:w-7 md:h-7 text-white" />
                      </div>
                      <div>
-                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">מלא משוב כמתמחה</h3>
-                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">שלח משוב עצמי על פרוצדורה</p>
+                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פרופיל מתמחה</h3>
+                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפה בפרופיל המתמחה ומלא משוב עצמי על פרוצדורה</p>
                      </div>
                    </div>
                  </CardContent>
@@ -246,8 +246,8 @@ export default function Home() {
                        <Stethoscope className="w-5 h-5 md:w-7 md:h-7 text-white" />
                      </div>
                      <div>
-                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">מלא משוב כמומחה</h3>
-                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">בדוק משובים הממתינים</p>
+                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פרופיל בכיר</h3>
+                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפה בפרופיל הבכיר ואשר משובים הממתינים</p>
                      </div>
                    </div>
                  </CardContent>
