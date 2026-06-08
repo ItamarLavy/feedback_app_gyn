@@ -15,7 +15,8 @@ export function useTabNavigation() {
     const currentPath = location.pathname;
 
     // If clicking the active tab (same root), reset to root
-    if (currentPath.startsWith(rootPath) && lastTabRef.current === rootPath) {
+    const isOnRoot = rootPath === '/' ? currentPath === '/' : currentPath.startsWith(rootPath);
+    if (isOnRoot && lastTabRef.current === rootPath) {
       navigate(rootPath);
       stackRef.current[rootPath] = [rootPath];
       return;
@@ -41,6 +42,7 @@ export function useTabNavigation() {
   };
 
   const isTabActive = (rootPath) => {
+    if (rootPath === '/') return location.pathname === '/';
     return location.pathname.startsWith(rootPath);
   };
 
