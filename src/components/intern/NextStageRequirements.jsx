@@ -69,6 +69,11 @@ export default function NextStageRequirements({ internStage, stageStartDate, fee
   const totalCount = items.length;
   const overallPct = Math.round((completedCount / totalCount) * 100);
 
+  // אחוז כולל: סך פרוצדורות שבוצעו מתוך סך הנדרשות
+  const totalRequired = items.reduce((s, i) => s + i.required, 0);
+  const totalDone = items.reduce((s, i) => s + Math.min(i.done, i.required), 0);
+  const totalPct = totalRequired > 0 ? Math.round((totalDone / totalRequired) * 100) : 0;
+
   const daysInStage = stageStartDate
     ? Math.floor((new Date() - new Date(stageStartDate)) / (1000 * 60 * 60 * 24))
     : null;
@@ -88,9 +93,12 @@ export default function NextStageRequirements({ internStage, stageStartDate, fee
                 <span>{daysInStage} ימים בשלב</span>
               </div>
             )}
-            <Badge className={`${overallPct === 100 ? 'bg-green-600' : 'bg-teal-600'}`}>
-              {completedCount} / {totalCount} הושלמו
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-blue-600">{totalPct}% מסה"כ פרוצדורות</Badge>
+              <Badge className={`${overallPct === 100 ? 'bg-green-600' : 'bg-teal-600'}`}>
+                {completedCount} / {totalCount} EPA
+              </Badge>
+            </div>
           </div>
         </CardTitle>
       </CardHeader>

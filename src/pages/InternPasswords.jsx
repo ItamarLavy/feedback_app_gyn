@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, GraduationCap, Stethoscope, ArrowUpDown } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, GraduationCap, Stethoscope, ArrowUpDown, Cake } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AlertsBadge from '@/components/notifications/AlertsBadge';
 
@@ -281,6 +281,21 @@ export default function InternPasswords() {
                             </SelectContent>
                           </Select>
                         </div>
+                      </div>
+
+                      {/* Birthday */}
+                      <div className="flex items-center gap-1">
+                        <Cake className="w-3 h-3 text-pink-400 flex-shrink-0" />
+                        <input
+                          type="date"
+                          value={intern.birthday || ''}
+                          onChange={async (e) => {
+                            await base44.entities.Intern.update(intern.id, { birthday: e.target.value });
+                            queryClient.invalidateQueries({ queryKey: ['interns'] });
+                          }}
+                          className="text-xs border border-pink-200 rounded px-1 py-0.5 text-slate-600 bg-white"
+                          title="יום הולדת"
+                        />
                       </div>
 
                       {/* Stats */}

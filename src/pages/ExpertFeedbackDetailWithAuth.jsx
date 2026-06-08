@@ -256,7 +256,7 @@ export default function ExpertFeedbackDetailWithAuth() {
             <details className="bg-white rounded-lg border border-slate-200 shadow-lg">
               <summary className="px-4 py-3 cursor-pointer hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 font-medium text-slate-700 flex items-center gap-2 transition-colors">
                 <Calendar className="w-4 h-4" />
-                פגישות מנטורינג ({upcomingMeetings.length + pastMeetings.length})
+                שיחות משוב ({upcomingMeetings.length + pastMeetings.length})
               </summary>
               <div className="px-4 pb-4 pt-2">
                 {/* Upcoming Meetings */}
@@ -377,6 +377,32 @@ export default function ExpertFeedbackDetailWithAuth() {
                             <span className="font-medium text-slate-700">{feedback.procedure_type}</span>
                           </div>
                         </div>
+
+                        {/* Intern self-ratings - always visible */}
+                        {(() => {
+                          const fields = getRatingFields(feedback.form_type || 'procedural');
+                          const hasInternRatings = fields.some(f => (feedback[f.internKey] || 0) > 0) || feedback.intern_verbal_feedback;
+                          return hasInternRatings ? (
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-2">
+                              <p className="text-xs font-semibold text-blue-700 mb-1">הערכה עצמית של המתמחה:</p>
+                              {fields.filter(f => (feedback[f.internKey] || 0) > 0).map(f => (
+                                <div key={f.key} className="flex items-center justify-between text-xs">
+                                  <span className="text-slate-600">{f.label}</span>
+                                  <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className={`w-3 h-3 ${i < (feedback[f.internKey] || 0) ? 'fill-blue-400 text-blue-400' : 'text-slate-200'}`} />)}</div>
+                                </div>
+                              ))}
+                              {feedback.intern_independence !== undefined && feedback.intern_independence !== null && (
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-slate-600">עצמאות</span>
+                                  <span className={`font-medium ${feedback.intern_independence ? 'text-green-600' : 'text-red-500'}`}>{feedback.intern_independence ? 'כן' : 'לא'}</span>
+                                </div>
+                              )}
+                              {feedback.intern_verbal_feedback && (
+                                <p className="text-xs text-blue-800 border-t border-blue-200 pt-2 mt-1">{feedback.intern_verbal_feedback}</p>
+                              )}
+                            </div>
+                          ) : null;
+                        })()}
 
                         {/* Form or fill button */}
                         {isEditing ? (

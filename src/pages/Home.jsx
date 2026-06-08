@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap, Users, Settings } from 'lucide-react';
+import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap, Users, Settings, Cake } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/AuthContext';
@@ -21,6 +21,20 @@ export default function Home() {
   const pullToRefreshRef = usePullToRefresh(['user']);
   const [internId, setInternId] = useState(null);
   const [expertId, setExpertId] = useState(null);
+  const [showBirthdays, setShowBirthdays] = useState(false);
+
+  const { data: allInterns = [] } = useQuery({
+    queryKey: ['all-interns-bday'],
+    queryFn: () => base44.entities.Intern.list(),
+    enabled: !!user?.id
+  });
+
+  const todayBirthdays = allInterns.filter(intern => {
+    if (!intern.birthday) return false;
+    const bday = new Date(intern.birthday);
+    const now = new Date();
+    return bday.getDate() === now.getDate() && bday.getMonth() === now.getMonth();
+  });
 
   const { data: userPoints } = useQuery({
     queryKey: ['user-points', user?.id],
@@ -110,6 +124,30 @@ export default function Home() {
   
           </div>
 
+          {/* Birthday Button */}
+          {todayBirthdays.length > 0 && (
+            <div className="mb-4">
+              <button
+                onClick={() => setShowBirthdays(s => !s)}
+                className="w-full bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500 text-white rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-semibold shadow-md transition-all"
+              >
+                <Cake className="w-5 h-5" />
+                🎂 יום הולדת היום! ({todayBirthdays.length})
+              </button>
+              {showBirthdays && (
+                <div className="mt-2 bg-white rounded-xl border border-pink-200 shadow p-3 space-y-2">
+                  {todayBirthdays.map(intern => (
+                    <div key={intern.id} className="flex items-center gap-2 text-sm text-slate-700">
+                      <Cake className="w-4 h-4 text-pink-400" />
+                      <span className="font-medium">{intern.name}</span>
+                      <span className="text-pink-500">🎉</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Action Panel */}
           <div className="grid md:grid-cols-2 gap-3 md:gap-6 mb-8">
             {targetUrl && <Link to={targetUrl}>
@@ -186,6 +224,30 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
         <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-6 md:py-12 w-full pb-40">
+          {/* Birthday Banner for manager */}
+          {todayBirthdays.length > 0 && (
+            <div className="mb-4">
+              <button
+                onClick={() => setShowBirthdays(s => !s)}
+                className="w-full bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500 text-white rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-semibold shadow-md transition-all"
+              >
+                <Cake className="w-5 h-5" />
+                🎂 יום הולדת היום! ({todayBirthdays.length})
+              </button>
+              {showBirthdays && (
+                <div className="mt-2 bg-white rounded-xl border border-pink-200 shadow p-3 space-y-2">
+                  {todayBirthdays.map(intern => (
+                    <div key={intern.id} className="flex items-center gap-2 text-sm text-slate-700">
+                      <Cake className="w-4 h-4 text-pink-400" />
+                      <span className="font-medium">{intern.name}</span>
+                      <span className="text-pink-500">🎉</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="text-center mb-6 md:mb-12">
              <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-3 md:mb-6">
                <Stethoscope className="w-7 h-7 md:w-10 md:h-10 text-white" />

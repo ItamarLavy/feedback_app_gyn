@@ -160,6 +160,19 @@ export default function InternProfile() {
                     🏥 {intern.rotation}
                   </span>
                 )}
+                <span className="inline-flex items-center gap-1 text-xs text-pink-500">
+                  🎂
+                  <input
+                    type="date"
+                    value={intern.birthday || ''}
+                    onChange={async (e) => {
+                      await base44.entities.Intern.update(intern.id, { birthday: e.target.value });
+                      queryClient.invalidateQueries({ queryKey: ['intern', internId] });
+                    }}
+                    className="text-xs border border-pink-200 rounded px-1 py-0.5 text-slate-600 bg-white"
+                    title="יום הולדת"
+                  />
+                </span>
               </div>
             </div>
           </div>
@@ -244,7 +257,7 @@ export default function InternProfile() {
         {/* Mentoring Meetings - collapsible */}
         <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
-            <span className="text-base">🤝</span> פגישות מנטורינג
+            <span className="text-base">💬</span> שיחות משוב
           </summary>
           <div className="px-4 pb-4 pt-2">
             <MyMentoringMeetings internId={internId} />

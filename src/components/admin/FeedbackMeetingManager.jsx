@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { addPoints } from '@/hooks/useNotifications';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -211,8 +212,22 @@ export default function FeedbackMeetingManager({ interns, experts }) {
     }
   };
 
-  const handleStatusChange = (meeting, newStatus) => {
+  const handleStatusChange = async (meeting, newStatus) => {
     updateMeetingMutation.mutate({ id: meeting.id, data: { ...meeting, status: newStatus } });
+    // +5 נקודות למתמחה על שיחת משוב שהתקיימה
+    if (newStatus === 'התקיים') {
+      try {
+        const internsList = await base44.entities.Intern.list();
+        const intern = internsList.find(i => i.id === meeting.intern_id);
+        if (intern) {
+          const allUsers = await base44.entities.User.list();
+          const internUser = allUsers.find(u => u.email === intern.email);
+          if (internUser) {
+            await addPoints(internUser.id, intern.name, 'intern', 5);
+          }
+        }
+      } catch(e) { console.warn('points for meeting error', e); }
+    }
   };
 
   const upcomingMeetings = meetings.filter(m => {
@@ -245,7 +260,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2 text-amber-800">
               <AlertCircle className="w-5 h-5" />
-              תזכורות לפגישות משוב (כל 6 חודשים)
+              תזכורות לשיחות משוב (כל 6 חודשים)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -255,8 +270,8 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                   <p className="font-medium text-slate-800">{intern.name}</p>
                   <p className="text-sm text-slate-600">
                     {lastMeeting
-                      ? `פגישה אחרונה: ${format(parseISO(lastMeeting.meeting_date), 'dd/MM/yyyy')} - יש לתאם פגישה חדשה`
-                      : 'לא נקבעה פגישה עדיין - יש לתאם פגישת משוב ראשונה'}
+                      ? `שיחה אחרונה: ${format(parseISO(lastMeeting.meeting_date), 'dd/MM/yyyy')} - יש לתאם שיחה חדשה`
+                      : 'לא נקבעה שיחה עדיין - יש לתאם שיחת משוב ראשונה'}
                   </p>
                 </div>
               ))}
@@ -299,8 +314,8 @@ export default function FeedbackMeetingManager({ interns, experts }) {
         <CardHeader>
           <CardTitle className="text-lg flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-teal-600" />
-              ניהול פגישות משוב
+            <Calendar className="w-5 h-5 text-teal-600" />
+            ניהול שיחות משוב
             </span>
             <div className="flex items-center gap-2">
               <a
@@ -315,7 +330,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
               {isManager && (
                 <Button size="sm" onClick={() => setShowForm(!showForm)} className="bg-teal-600 hover:bg-teal-700">
                   <Plus className="w-4 h-4 ml-1" />
-                  קבע פגישה
+                  קבע שיחה
                 </Button>
               )}
             </div>
@@ -391,7 +406,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
 
               <div className="flex gap-2">
                 <Button type="submit" disabled={!formData.intern_id || !formData.meeting_date || sending}>
-                  {sending ? 'קובע ושולח...' : 'קבע פגישה ושלח שאלון'}
+                  {sending ? 'קובע ושולח...' : 'קבע שיחה ושלח שאלון'}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
                   ביטול
@@ -476,7 +491,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
                               className="text-green-600 border-green-600 hover:bg-green-50"
                             >
                               <CheckCircle className="w-3 h-3 ml-1" />
-                              סמן כהתקיים
+                              סמן כהתקיימה (+5 נקודות)
                             </Button>
                             <Button
                               size="sm"

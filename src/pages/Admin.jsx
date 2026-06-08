@@ -11,8 +11,9 @@ import PointsLeaderboard from '../components/admin/PointsLeaderboard';
 import {
   Shield, Users, ClipboardList,
   Search, Filter, Clock, Stethoscope, Trash2,
-  Trophy, ChevronDown, ChevronUp, X
+  Trophy, ChevronDown, ChevronUp, X, MessageSquare
 } from 'lucide-react';
+import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -30,6 +31,7 @@ export default function Admin() {
   const [filterProcedure, setFilterProcedure] = useState('all');
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showAdmins, setShowAdmins] = useState(false);
+  const [showMeetings, setShowMeetings] = useState(false);
 
   const { data: adminUsers = [] } = useQuery({
     queryKey: ['admin-users'],
@@ -249,6 +251,24 @@ export default function Admin() {
 
         {/* Unified Interns Panel */}
         <InternsPanel interns={interns} feedbacks={feedbacks} />
+
+        {/* שיחות משוב */}
+        <Card className="border-0 shadow-lg mb-8">
+          <CardHeader className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl" onClick={() => setShowMeetings(p => !p)}>
+            <CardTitle className="flex items-center justify-between text-lg">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-teal-600" />
+                שיחות משוב
+              </div>
+              {showMeetings ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+            </CardTitle>
+          </CardHeader>
+          {showMeetings && (
+            <CardContent className="pt-0">
+              <FeedbackMeetingManager interns={interns} experts={experts} />
+            </CardContent>
+          )}
+        </Card>
 
         {/* Points Leaderboard */}
         <Card className="border-0 shadow-lg mb-8">
