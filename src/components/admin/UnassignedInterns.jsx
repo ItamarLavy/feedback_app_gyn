@@ -8,9 +8,9 @@ import { parseISO } from 'date-fns';
 export default function UnassignedInterns({ interns, rotationPlans }) {
   const today = new Date();
 
-  // מתמחים שיש להם רוטציה פעילה היום
+  // מתמחים שיש להם רשומה בתוכנית ההתמחות עם תאריכים שמכסים את היום
   const assignedInternIds = new Set(
-    rotationPlans
+    (rotationPlans || [])
       .filter(p => {
         if (!p.start_date || !p.end_date) return false;
         const start = parseISO(p.start_date);

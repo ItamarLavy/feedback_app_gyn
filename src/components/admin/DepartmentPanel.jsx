@@ -125,31 +125,16 @@ export default function DepartmentPanel({ department, label, interns }) {
   });
 
   const activePlans = allPlans.filter(p => {
+    if (!p.start_date || !p.end_date) return false;
     const start = parseISO(p.start_date);
     const end = parseISO(p.end_date);
     return today >= start && today <= end;
   });
 
   const futurePlans = allPlans.filter(p => {
-    const start = parseISO(p.start_date);
-    return today < start;
+    if (!p.start_date) return false;
+    return today < parseISO(p.start_date);
   });
-
-  // מתמחים שמסומן להם rotation תואם (ללא תאריכים)
-  const ROTATION_MAP = {
-    'מיילדות': 'מיילדות',
-    'גניקולוגיה': 'גינקולוגיה',
-    'גינקולוגיה': 'גינקולוגיה',
-    'פוריות': 'פוריות',
-    'אונקולוגיה': 'אונקולוגיה',
-    'מיון': 'מיון',
-    'רוטציה חיצונית': 'רוטציה חיצונית',
-  };
-  const rotationKey = ROTATION_MAP[department] || department;
-  const activePlanInternIds = new Set(activePlans.map(p => p.intern_id));
-  const internsByRotation = interns.filter(i =>
-    i.rotation === rotationKey && !activePlanInternIds.has(i.id)
-  );
 
   const overdueCount = activePlans.reduce((sum, plan) =>
     sum + MEETING_TYPES.filter(mt => isMeetingOverdue(plan, mt.key)).length, 0
@@ -164,7 +149,7 @@ export default function DepartmentPanel({ department, label, interns }) {
     queryClient.invalidateQueries({ queryKey: ['rotation-plans-dept', department] });
   };
 
-  const totalActive = activePlans.length + internsByRotation.length;
+  const totalActive = activePlans.length;
 
   return (
     <div className={`rounded-xl border p-4 ${overdueCount > 0 ? 'border-red-200 bg-red-50/30' : 'border-slate-200 bg-slate-50/50'}`}>
@@ -185,7 +170,7 @@ export default function DepartmentPanel({ department, label, interns }) {
       </div>
 
       {/* Active plans with meeting tracking */}
-      {activePlans.length === 0 && internsByRotation.length === 0 ? (
+      {activePlans.length === 0 ? (
         <p className="text-xs text-slate-400 py-2 text-center">אין מתמחים פעילים כרגע</p>
       ) : (
         <div className="space-y-3">
@@ -196,22 +181,6 @@ export default function DepartmentPanel({ department, label, interns }) {
               interns={interns}
               onToggleMeeting={handleToggleMeeting}
             />
-          ))}
-          {internsByRotation.map(intern => (
-            <div key={intern.id} className="flex items-center gap-3 p-3 bg-teal-50 rounded-xl border border-teal-200">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
-                {intern.name?.[0]}
-              </div>
-              <Link
-                to={createPageUrl('InternDetails') + `?id=${intern.id}`}
-                className="font-medium text-slate-800 hover:text-teal-700 text-sm flex-1"
-              >
-                {intern.name}
-              </Link>
-              {intern.stage && (
-                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{intern.stage}</span>
-              )}
-            </div>
           ))}
         </div>
       )}
