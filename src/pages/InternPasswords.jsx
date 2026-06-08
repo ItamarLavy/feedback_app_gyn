@@ -83,7 +83,11 @@ export default function InternPasswords() {
   };
 
   const handleDeleteIntern = async (internId) => {
-    await base44.entities.Intern.delete(internId);
+    try {
+      await base44.entities.Intern.delete(internId);
+    } catch (e) {
+      // Entity may already be deleted - ignore not found errors
+    }
     queryClient.invalidateQueries({ queryKey: ['interns'] });
     setConfirmDelete(null);
   };
