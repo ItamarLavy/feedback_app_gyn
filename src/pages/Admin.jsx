@@ -11,7 +11,7 @@ import PointsLeaderboard from '../components/admin/PointsLeaderboard';
 import {
   Shield, Users, ClipboardList,
   Search, Filter, Clock, Stethoscope, Trash2,
-  Trophy, ChevronDown, ChevronUp
+  Trophy, ChevronDown, ChevronUp, X
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,13 @@ export default function Admin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showAdmins, setShowAdmins] = useState(false);
+
+  const { data: adminUsers = [] } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: () => base44.entities.User.filter({ role: 'admin' }),
+    enabled: isAuthenticated
+  });
   const queryClient = useQueryClient();
   const pullToRefreshRef = usePullToRefresh(['feedbacks']);
 
@@ -191,8 +198,8 @@ export default function Admin() {
             </Card>
           </Link>
 
-          <Link to={createPageUrl('ManagerEmails')} className="no-underline">
-            <Card className="border-0 shadow-md bg-gradient-to-br from-white to-teal-50 hover:shadow-lg transition-all cursor-pointer h-full">
+          <div className="no-underline cursor-pointer" onClick={() => setShowAdmins(true)}>
+            <Card className="border-0 shadow-md bg-gradient-to-br from-white to-teal-50 hover:shadow-lg transition-all h-full">
               <CardContent className="p-2 md:p-5">
                 <div className="flex flex-col items-center md:items-start gap-1 md:gap-2">
                   <div className="w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-teal-200 to-emerald-300 flex items-center justify-center">
@@ -200,12 +207,44 @@ export default function Admin() {
                   </div>
                   <div className="text-center md:text-right">
                     <p className="text-slate-500 text-[10px] md:text-xs leading-tight">מנהלים</p>
-                    <p className="text-lg md:text-2xl font-bold text-slate-800">{MANAGER_EMAILS.length}</p>
+                    <p className="text-lg md:text-2xl font-bold text-slate-800">{adminUsers.length}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </Link>
+          </div>
+
+          {/* Admins Modal */}
+          {showAdmins && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowAdmins(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" dir="rtl" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-teal-600" /> מנהלים ({adminUsers.length})
+                  </h2>
+                  <button onClick={() => setShowAdmins(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {adminUsers.map(u => (
+                    <div key={u.id} className="flex items-center gap-3 p-3 bg-teal-50 rounded-xl border border-teal-100">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                        {u.full_name?.[0] || '?'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-slate-800 text-sm truncate">{u.full_name}</p>
+                        <p className="text-xs text-slate-500 truncate">{u.email}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {adminUsers.length === 0 && (
+                    <p className="text-center text-slate-400 py-4 text-sm">אין מנהלים רשומים</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Unified Interns Panel */}
