@@ -27,7 +27,6 @@ const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org
 export default function InternDetails() {
   const { user, isAuthenticated: isLoggedIn } = useAuth();
   const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
-  const [showDetailedProgress, setShowDetailedProgress] = useState(false);
   const queryClient = useQueryClient();
   
   const urlParams = new URLSearchParams(window.location.search);
@@ -180,63 +179,42 @@ export default function InternDetails() {
         </div>
 
         {/* Stats */}
-        <div className="mb-8">
-          <InternStats 
-            feedbacks={feedbacks} 
-            internName={intern?.name}
-          />
-        </div>
-
-        {/* Mentoring Meetings */}
-        <MyMentoringMeetings internId={internId} />
-
-        {/* Rotation Plan */}
-        <div className="mb-8">
-          <RotationPlanEditor intern={intern} />
-        </div>
-
-        {/* Intern Files */}
-        <div className="mb-8">
-          <InternFilesManager intern={intern} />
-        </div>
-
-        {/* AI Summary */}
-        <div className="mb-8">
-          <AIProgressSummary intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} internFiles={internFiles} />
-        </div>
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden" open>
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">📈</span> סטטיסטיקות ודירוגים
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <InternStats feedbacks={feedbacks} internName={intern?.name} />
+          </div>
+        </details>
 
         {/* Next Stage Requirements */}
-        <div className="mb-8">
-          <NextStageRequirements
-            internStage={intern?.stage}
-            stageStartDate={intern?.stage_start_date}
-            feedbacks={feedbacks}
-            manualCounts={manualCounts}
-          />
-        </div>
-
-        {/* Detailed Progress Button */}
-        <div className="mb-8">
-          <Button
-            onClick={() => setShowDetailedProgress(!showDetailedProgress)}
-            className="w-full bg-gradient-to-l from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 h-12"
-          >
-            <ListChecks className="w-5 h-5 ml-2" />
-            {showDetailedProgress ? 'הסתר' : 'הצג'} התקדמות מפורטת לפי פרוצדורות
-          </Button>
-        </div>
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden" open>
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">🎯</span> דרישות מעבר שלב
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <NextStageRequirements
+              internStage={intern?.stage}
+              stageStartDate={intern?.stage_start_date}
+              feedbacks={feedbacks}
+              manualCounts={manualCounts}
+            />
+          </div>
+        </details>
 
         {/* Detailed Progress by Category */}
-        {showDetailedProgress && (
-          <div className="space-y-6 mb-8">
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <ListChecks className="w-4 h-4 text-teal-600" /> התקדמות מפורטת לפי פרוצדורות
+          </summary>
+          <div className="px-4 pb-4 pt-2 space-y-4">
             {Object.entries(categoryStats).map(([category, stats]) => (
-              <Card key={category} className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
+              <Card key={category} className="border-0 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center justify-between text-base">
                     <span>{category}</span>
-                    <Badge className="bg-teal-600">
-                      {Math.round(stats.totalPercentage)}% הושלם
-                    </Badge>
+                    <Badge className="bg-teal-600">{Math.round(stats.totalPercentage)}% הושלם</Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -246,31 +224,15 @@ export default function InternDetails() {
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-slate-700">{proc.name}</span>
                           <div className="flex items-center gap-2">
-                            {proc.manualCount > 0 && (
-                              <span className="text-slate-400 text-xs">
-                                ({proc.manualCount} ידני)
-                              </span>
-                            )}
-                            <span className="text-slate-500 font-medium">
-                              {proc.totalCount} / {proc.required}
-                            </span>
+                            {proc.manualCount > 0 && <span className="text-slate-400 text-xs">({proc.manualCount} ידני)</span>}
+                            <span className="text-slate-500 font-medium">{proc.totalCount} / {proc.required}</span>
                           </div>
                         </div>
                         <div className="w-full bg-slate-100 rounded-full h-2 relative overflow-hidden">
-                          {/* ביצועים ידניים - רקע אפור */}
                           {proc.manualCount > 0 && (
-                            <div
-                              className="absolute h-2 bg-slate-300 rounded-full"
-                              style={{ width: `${Math.min(proc.manualPercentage, 100)}%` }}
-                            />
+                            <div className="absolute h-2 bg-slate-300 rounded-full" style={{ width: `${Math.min(proc.manualPercentage, 100)}%` }} />
                           )}
-                          {/* ביצועים עם משוב - כחול/ירוק */}
-                          <div
-                            className={`absolute h-2 rounded-full transition-all ${
-                              proc.percentage >= 100 ? 'bg-green-500' : 'bg-teal-500'
-                            }`}
-                            style={{ width: `${proc.percentage}%` }}
-                          />
+                          <div className={`absolute h-2 rounded-full transition-all ${proc.percentage >= 100 ? 'bg-green-500' : 'bg-teal-500'}`} style={{ width: `${proc.percentage}%` }} />
                         </div>
                       </div>
                     ))}
@@ -279,34 +241,67 @@ export default function InternDetails() {
               </Card>
             ))}
           </div>
-        )}
+        </details>
+
+        {/* Mentoring Meetings */}
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">🤝</span> פגישות מנטורינג
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <MyMentoringMeetings internId={internId} />
+          </div>
+        </details>
+
+        {/* Rotation Plan */}
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">🗓️</span> תוכנית רוטציות
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <RotationPlanEditor intern={intern} />
+          </div>
+        </details>
+
+        {/* Intern Files */}
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">📁</span> קבצים ומסמכים
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <InternFilesManager intern={intern} />
+          </div>
+        </details>
+
+        {/* AI Summary */}
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">🤖</span> סיכום AI
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <AIProgressSummary intern={intern} feedbacks={feedbacks} manualCounts={manualCounts} internFiles={internFiles} />
+          </div>
+        </details>
 
         {/* Feedbacks */}
-        <Card className="border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <ClipboardList className="w-5 h-5 text-teal-600" />
-              משובים ({feedbacks.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {feedbacks.map(feedback => (
-                <FeedbackCardDetailed 
-                  key={feedback.id} 
-                  feedback={feedback} 
-                  showDelete={true}
-                  onDelete={handleDeleteFeedback}
-                />
-              ))}
-              {feedbacks.length === 0 && (
-                <div className="text-center py-12 text-slate-500">
-                  אין משובים עדיין למתמחה זה
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <ClipboardList className="w-4 h-4 text-teal-600" /> משובים ({feedbacks.length})
+          </summary>
+          <div className="px-4 pb-4 pt-2 space-y-4">
+            {feedbacks.map(feedback => (
+              <FeedbackCardDetailed
+                key={feedback.id}
+                feedback={feedback}
+                showDelete={true}
+                onDelete={handleDeleteFeedback}
+              />
+            ))}
+            {feedbacks.length === 0 && (
+              <div className="text-center py-12 text-slate-500">אין משובים עדיין למתמחה זה</div>
+            )}
+          </div>
+        </details>
       </div>
     </div>
   );

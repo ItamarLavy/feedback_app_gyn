@@ -174,27 +174,8 @@ export default function InternProfile() {
 
 
 
-        {/* Rotation Plan */}
-        <MyRotationPlan internId={internId} />
-
-        {/* Mentoring Meetings */}
-        <MyMentoringMeetings internId={internId} />
-
-        {/* Next Stage Requirements */}
-        <div className="mb-8">
-          <NextStageRequirements
-            internStage={intern.stage}
-            stageStartDate={intern.stage_start_date}
-            feedbacks={feedbacks}
-            manualCounts={manualCounts}
-          />
-        </div>
-
-        {/* Monthly Table Upload */}
-        <MonthlyTableUpload internId={internId} internName={intern.name} />
-
-        {/* Add Feedback Form */}
-        <div className="mb-8">
+        {/* Add Feedback Form - ראש העמוד */}
+        <div className="mb-6">
           {showFeedbackForm ? (
             <div>
               <InternSelfFeedbackFormSimple
@@ -234,6 +215,51 @@ export default function InternProfile() {
             </Button>
           )}
         </div>
+
+        {/* Next Stage Requirements - collapsible */}
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">🎯</span> דרישות מעבר שלב
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <NextStageRequirements
+              internStage={intern.stage}
+              stageStartDate={intern.stage_start_date}
+              feedbacks={feedbacks}
+              manualCounts={manualCounts}
+            />
+          </div>
+        </details>
+
+        {/* Rotation Plan - collapsible */}
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">🗓️</span> תוכנית רוטציות
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <MyRotationPlan internId={internId} />
+          </div>
+        </details>
+
+        {/* Mentoring Meetings - collapsible */}
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">🤝</span> פגישות מנטורינג
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <MyMentoringMeetings internId={internId} />
+          </div>
+        </details>
+
+        {/* Monthly Table Upload - collapsible */}
+        <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors list-none">
+            <span className="text-base">📊</span> העלאת טבלה חודשית
+          </summary>
+          <div className="px-4 pb-4 pt-2">
+            <MonthlyTableUpload internId={internId} internName={intern.name} />
+          </div>
+        </details>
 
         {/* Progress Tracking - Collapsible */}
         <div className="mb-8">
