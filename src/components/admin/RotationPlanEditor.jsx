@@ -35,7 +35,7 @@ export default function RotationPlanEditor({ intern }) {
   });
 
   const handleSave = async () => {
-    if (!formData.department || !formData.start_date || !formData.end_date) return;
+    if (!internId || !formData.department || !formData.start_date || !formData.end_date) return;
     setSaving(true);
     await base44.entities.InternRotationPlan.create({
       ...formData,
