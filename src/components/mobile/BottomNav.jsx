@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Home, Shield, Settings, Lightbulb, Star } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
-import { useTabNavigation } from '@/hooks/useTabNavigation';
 import ImprovementSuggestionModal from '@/components/feedback/ImprovementSuggestionModal';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -11,7 +10,10 @@ const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org
 export default function BottomNav({ currentPageName }) {
   const { user } = useAuth();
   const location = useLocation();
-  const { handleTabPress, isTabActive } = useTabNavigation();
+  const isTabActive = (rootPath) => {
+    if (rootPath === '/') return location.pathname === '/';
+    return location.pathname.startsWith(rootPath);
+  };
   const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
   const [showSuggestion, setShowSuggestion] = useState(false);
 
@@ -29,8 +31,9 @@ export default function BottomNav({ currentPageName }) {
         { label: 'חשבון', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' }
       ];
 
+  const navigate = useNavigate();
   const handleNavClick = (item) => {
-    handleTabPress(item.path, item.root);
+    navigate(item.path);
   };
 
   return (
