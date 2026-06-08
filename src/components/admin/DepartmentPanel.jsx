@@ -121,7 +121,10 @@ export default function DepartmentPanel({ department, label, interns }) {
 
   const { data: allPlans = [] } = useQuery({
     queryKey: ['rotation-plans-dept', department],
-    queryFn: () => base44.entities.InternRotationPlan.filter({ department }, 'start_date'),
+    queryFn: async () => {
+      const all = await base44.entities.InternRotationPlan.list('start_date');
+      return all.filter(p => p.department === department);
+    },
   });
 
   const activePlans = allPlans.filter(p => {

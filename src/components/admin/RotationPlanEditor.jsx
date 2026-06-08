@@ -121,15 +121,7 @@ export default function RotationPlanEditor({ intern }) {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <label className="text-xs text-slate-600 mb-1 block">שם השלב</label>
-                <Input
-                  placeholder="לדוג': בסיס, מיון..."
-                  value={formData.stage_name}
-                  onChange={e => setFormData(d => ({ ...d, stage_name: e.target.value }))}
-                  className="h-9 bg-white"
-                />
-              </div>
+
               {formData.department === 'רוטציה חיצונית' && (
                 <div className="col-span-2">
                   <label className="text-xs text-slate-600 mb-1 block">מיקום הרוטציה (פנימית, כירורגיה וכו') *</label>

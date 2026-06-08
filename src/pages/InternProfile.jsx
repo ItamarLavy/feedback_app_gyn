@@ -19,6 +19,7 @@ import InternPersona from '@/components/intern/InternPersona';
 import InternSelfFeedbackFormSimple from '../components/feedback/InternSelfFeedbackFormSimple';
 import NextStageRequirements from '@/components/intern/NextStageRequirements';
 import MonthlyTableUpload from '@/components/intern/MonthlyTableUpload';
+import MyRotationPlan from '@/components/intern/MyRotationPlan';
 
 import { PROCEDURE_REQUIREMENTS } from '@/lib/procedureConstants';
 
@@ -172,6 +173,9 @@ export default function InternProfile() {
         </div>
 
 
+
+        {/* Rotation Plan */}
+        <MyRotationPlan internId={internId} />
 
         {/* Mentoring Meetings */}
         <MyMentoringMeetings internId={internId} />
