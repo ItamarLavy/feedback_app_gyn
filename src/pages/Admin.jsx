@@ -209,7 +209,7 @@ export default function Admin() {
         </div>
 
         {/* Unified Interns Panel */}
-        <InternsPanel interns={interns} feedbacks={feedbacks} defaultOpen={true} />
+        <InternsPanel interns={interns} feedbacks={feedbacks} />
 
         {/* Points Leaderboard */}
         <Card className="border-0 shadow-lg mb-8">
