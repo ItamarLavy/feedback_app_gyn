@@ -216,7 +216,7 @@ export default function Admin() {
 
           {/* Admins Modal */}
           {showAdmins && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowAdmins(false)}>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 overflow-y-auto" onClick={() => setShowAdmins(false)}>
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" dir="rtl" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">

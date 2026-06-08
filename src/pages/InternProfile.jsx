@@ -175,7 +175,7 @@ export default function InternProfile() {
 
 
         {/* Add Feedback Form - ראש העמוד */}
-        <div className="mb-6">
+        <div className="mb-6 w-full">
           {showFeedbackForm ? (
             <div>
               <InternSelfFeedbackFormSimple

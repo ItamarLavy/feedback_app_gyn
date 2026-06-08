@@ -57,7 +57,7 @@ function StarRating({ value, onChange, readOnly = false }) {
           type="button"
           disabled={readOnly}
           onClick={() => !readOnly && onChange(n)}
-          className={`w-7 h-7 rounded text-sm font-semibold border transition-colors ${
+          className={`w-9 h-9 rounded text-sm font-semibold border transition-colors ${
             value === n
               ? 'bg-teal-600 text-white border-teal-600'
               : readOnly

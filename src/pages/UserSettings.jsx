@@ -57,7 +57,7 @@ export default function UserSettings() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto px-4 py-8 pb-40 md:pb-8">
         <h1 className="text-3xl font-bold text-slate-800 mb-8">הגדרות</h1>
 
         {/* User Info Card */}

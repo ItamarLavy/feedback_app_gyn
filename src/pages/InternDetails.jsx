@@ -154,12 +154,12 @@ export default function InternDetails() {
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-slate-800">{intern?.name || 'טוען...'}</h1>
               <div className="flex items-center gap-2 mt-1">
-                <GraduationCap className="w-3.5 h-3.5 text-purple-500" />
+                <GraduationCap className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" />
                 <Select value={intern?.stage || ''} onValueChange={async (val) => {
                   await base44.entities.Intern.update(internId, { stage: val });
                   queryClient.invalidateQueries({ queryKey: ['intern', internId] });
                 }}>
-                  <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 w-44">
+                  <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 w-full max-w-[160px]">
                     <SelectValue placeholder="בחר שלב..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -168,7 +168,7 @@ export default function InternDetails() {
                 </Select>
               </div>
               <div className="flex items-center gap-2 mt-1.5">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <Calendar className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                 <Input
                   type="date"
                   value={intern?.stage_start_date || ''}
@@ -176,8 +176,9 @@ export default function InternDetails() {
                     await base44.entities.Intern.update(internId, { stage_start_date: e.target.value });
                     queryClient.invalidateQueries({ queryKey: ['intern', internId] });
                   }}
-                  className="h-7 text-xs border-slate-200 text-slate-600 w-44 px-2"
-                /></div>
+                  className="h-7 text-xs border-slate-200 text-slate-600 w-full max-w-[160px] px-2"
+                />
+              </div>
             </div>
           </div>
           <Link 
