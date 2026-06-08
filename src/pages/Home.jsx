@@ -20,6 +20,7 @@ export default function Home() {
   const [userName, setUserName] = useState('');
   const pullToRefreshRef = usePullToRefresh(['user']);
   const [internId, setInternId] = useState(null);
+  const [expertId, setExpertId] = useState(null);
 
   const { data: userPoints } = useQuery({
     queryKey: ['user-points', user?.id],
@@ -54,6 +55,11 @@ export default function Home() {
       if (intern.stage === 'תורן 1 מתקדם') {
         setUserType('senior_intern');
         setTargetUrl(createPageUrl('InternProfile') + `?id=${intern.id}`);
+        // חפש גם ב-Expert entity לצורך כפתור המנטור
+        const experts = await base44.entities.Expert.filter({ email });
+        if (experts.length > 0) {
+          setExpertId(experts[0].id);
+        }
       } else {
         setUserType('intern');
         setTargetUrl(createPageUrl('InternProfile') + `?id=${intern.id}`);
@@ -149,9 +155,9 @@ export default function Home() {
                 </CardContent>
               </Card>
             </Link>}
-            {/* תורן 1 מתקדם - גישה נוספת כמנטור */}
-            {isSeniorIntern && internId && (
-              <Link to={createPageUrl('ExpertFeedbackDetailWithAuth') + `?intern_id=${internId}`}>
+            {/* תורן 1 מתקדם - גישה נוספת כמומחה */}
+            {isSeniorIntern && (
+              <Link to={expertId ? createPageUrl('ExpertFeedbackDetailWithAuth') + `?id=${expertId}` : createPageUrl('ExpertFeedbackDetailWithAuth')}>
                 <Card className="border-2 border-purple-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-purple-50 to-pink-50">
                   <CardContent className="p-4 md:p-8">
                     <div className="flex items-center gap-3 md:gap-4">
