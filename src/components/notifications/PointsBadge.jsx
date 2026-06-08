@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -6,39 +6,31 @@ import { base44 } from '@/api/base44Client';
 export default function PointsBadge({ userId }) {
   const [points, setPoints] = useState(null);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [lastPoints, setLastPoints] = useState(null);
   const [diff, setDiff] = useState(0);
+  const lastPointsRef = useRef(null);
 
   useEffect(() => {
     if (!userId) return;
 
-    const fetchPoints = async () => {
-      const res = await base44.entities.UserPoints.filter({ user_id: userId });
-      if (res.length > 0) {
-        const newPoints = res[0].total_points || 0;
-        if (lastPoints !== null && newPoints > lastPoints) {
-          setDiff(newPoints - lastPoints);
-          setShowAnimation(true);
-          setTimeout(() => setShowAnimation(false), 2500);
-        }
-        setLastPoints(newPoints);
-        setPoints(newPoints);
-      } else {
-        setPoints(0);
-      }
-    };
+    // טעינה ראשונית אחת בלבד
+    base44.entities.UserPoints.filter({ user_id: userId }).then(res => {
+      const newPoints = res.length > 0 ? (res[0].total_points || 0) : 0;
+      lastPointsRef.current = newPoints;
+      setPoints(newPoints);
+    });
 
-    fetchPoints();
-
-    // הירשם לעדכונים בזמן אמת
+    // עדכונים בזמן אמת דרך subscribe בלבד
     const unsubscribe = base44.entities.UserPoints.subscribe((event) => {
       if (event.data?.user_id === userId) {
         const newPoints = event.data.total_points || 0;
-        setDiff(prev => newPoints - (lastPoints || 0));
-        setShowAnimation(true);
-        setTimeout(() => setShowAnimation(false), 2500);
+        const prev = lastPointsRef.current ?? 0;
+        if (newPoints > prev) {
+          setDiff(newPoints - prev);
+          setShowAnimation(true);
+          setTimeout(() => setShowAnimation(false), 2500);
+        }
+        lastPointsRef.current = newPoints;
         setPoints(newPoints);
-        setLastPoints(newPoints);
       }
     });
 
