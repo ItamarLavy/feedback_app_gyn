@@ -13,6 +13,7 @@ import PointsLeaderboard from '../components/admin/PointsLeaderboard';
 import InternProgressBadges from '../components/intern/InternProgressBadges';
 import AccessRequestsPanel from '../components/admin/AccessRequestsPanel';
 import MentoringMeetingManager from '../components/admin/MentoringMeetingManager';
+import UnassignedInterns from '../components/admin/UnassignedInterns';
 import { 
   Shield, Users, ClipboardList,
   Star, Search, Filter, Clock, BookOpen, Stethoscope, Trash2, Mail,
@@ -379,13 +380,16 @@ export default function Admin() {
             </CardTitle>
           </CardHeader>
           {showDepartments && (
-            <CardContent className="pt-0 space-y-4">
+            <CardContent className="pt-2 space-y-3">
               <DepartmentPanel department="מיילדות" label="מיילדות" interns={interns} />
               <DepartmentPanel department="גינקולוגיה" label="גינקולוגיה" interns={interns} />
               <DepartmentPanel department="פוריות" label="פוריות" interns={interns} />
               <DepartmentPanel department="אונקולוגיה" label="אונקולוגיה" interns={interns} />
               <DepartmentPanel department="מיון" label="מיון" interns={interns} />
               <DepartmentPanel department="רוטציה חיצונית" label="רוטציה חיצונית" interns={interns} />
+
+              {/* מתמחים שלא משובצים לאף מחלקה היום */}
+              <UnassignedInterns interns={interns} rotationPlans={rotationPlansRaw} />
             </CardContent>
           )}
         </Card>

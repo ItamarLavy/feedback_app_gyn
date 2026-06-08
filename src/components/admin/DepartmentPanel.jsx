@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -117,7 +117,6 @@ function InternRotationCard({ plan, interns, onToggleMeeting }) {
 
 export default function DepartmentPanel({ department, label, interns }) {
   const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
   const today = new Date();
 
   const { data: allPlans = [] } = useQuery({
@@ -165,113 +164,83 @@ export default function DepartmentPanel({ department, label, interns }) {
     queryClient.invalidateQueries({ queryKey: ['rotation-plans-dept', department] });
   };
 
+  const totalActive = activePlans.length + internsByRotation.length;
+
   return (
-    <Card className={`border-0 shadow-lg ${overdueCount > 0 ? 'ring-2 ring-red-300' : ''}`}>
-      <CardHeader
-        className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl"
-        onClick={() => setOpen(o => !o)}
-      >
-        <CardTitle className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-            <Users className="w-5 h-5 text-teal-600 flex-shrink-0" />
-            <span className="font-semibold text-sm">{label}</span>
-            <Badge className="bg-teal-600 text-white text-xs">{activePlans.length + internsByRotation.length} פעילים</Badge>
-            {futurePlans.length > 0 && (
-              <Badge className="bg-blue-400 text-white text-xs">{futurePlans.length} קרובים</Badge>
-            )}
-            {overdueCount > 0 && (
-              <Badge className="bg-red-500 text-white text-xs flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" />
-                {overdueCount}
-              </Badge>
-            )}
-          </div>
-          {open ? <ChevronUp className="w-4 h-4 text-slate-400 flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />}
-        </CardTitle>
-      </CardHeader>
+    <div className={`rounded-xl border p-4 ${overdueCount > 0 ? 'border-red-200 bg-red-50/30' : 'border-slate-200 bg-slate-50/50'}`}>
+      {/* Department Header */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <Users className="w-4 h-4 text-teal-600 flex-shrink-0" />
+        <span className="font-semibold text-slate-800">{label}</span>
+        <Badge className="bg-teal-600 text-white text-xs">{totalActive} פעילים</Badge>
+        {futurePlans.length > 0 && (
+          <Badge className="bg-blue-400 text-white text-xs">{futurePlans.length} קרובים</Badge>
+        )}
+        {overdueCount > 0 && (
+          <Badge className="bg-red-500 text-white text-xs flex items-center gap-1">
+            <AlertTriangle className="w-3 h-3" />
+            {overdueCount} פגישות באיחור
+          </Badge>
+        )}
+      </div>
 
-      {open && (
-        <CardContent className="space-y-5">
-          {/* Active interns */}
-          <div>
-            <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
-              מתמחים פעילים כעת
-            </h4>
-            {activePlans.length === 0 ? (
-              <p className="text-xs text-slate-400 py-4 text-center">אין מתמחים פעילים כרגע</p>
-            ) : (
-              <div className="space-y-3">
-                {activePlans.map(plan => (
-                  <InternRotationCard
-                    key={plan.id}
-                    plan={plan}
-                    interns={interns}
-                    onToggleMeeting={handleToggleMeeting}
-                  />
-                ))}
+      {/* Active plans with meeting tracking */}
+      {activePlans.length === 0 && internsByRotation.length === 0 ? (
+        <p className="text-xs text-slate-400 py-2 text-center">אין מתמחים פעילים כרגע</p>
+      ) : (
+        <div className="space-y-3">
+          {activePlans.map(plan => (
+            <InternRotationCard
+              key={plan.id}
+              plan={plan}
+              interns={interns}
+              onToggleMeeting={handleToggleMeeting}
+            />
+          ))}
+          {internsByRotation.map(intern => (
+            <div key={intern.id} className="flex items-center gap-3 p-3 bg-teal-50 rounded-xl border border-teal-200">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                {intern.name?.[0]}
               </div>
-            )}
-          </div>
-
-          {/* Interns by rotation field (no date plan) */}
-          {internsByRotation.length > 0 && (
-            <div>
-              <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-teal-400 inline-block"></span>
-                מתמחים לפי רוטציה נוכחית
-              </h4>
-              <div className="space-y-2">
-                {internsByRotation.map(intern => (
-                  <div key={intern.id} className="flex items-center gap-3 p-3 bg-teal-50 rounded-xl border border-teal-200">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
-                      {intern.name?.[0]}
-                    </div>
-                    <Link
-                      to={createPageUrl('InternDetails') + `?id=${intern.id}`}
-                      className="font-medium text-slate-800 hover:text-teal-700 text-sm flex-1"
-                    >
-                      {intern.name}
-                    </Link>
-                    {intern.stage && (
-                      <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{intern.stage}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <Link
+                to={createPageUrl('InternDetails') + `?id=${intern.id}`}
+                className="font-medium text-slate-800 hover:text-teal-700 text-sm flex-1"
+              >
+                {intern.name}
+              </Link>
+              {intern.stage && (
+                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{intern.stage}</span>
+              )}
             </div>
-          )}
-
-          {/* Upcoming interns */}
-          {futurePlans.length > 0 && (
-            <div>
-              <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-400 inline-block"></span>
-                מתמחים שיצטרפו בקרוב
-              </h4>
-              <div className="space-y-2">
-                {futurePlans.map(plan => (
-                  <div key={plan.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-200">
-                    <div>
-                      <Link
-                        to={createPageUrl('InternDetails') + `?id=${plan.intern_id}`}
-                        className="font-medium text-slate-800 hover:text-teal-700 text-sm"
-                      >
-                        {plan.intern_name || '—'}
-                      </Link>
-                      {plan.stage_name && <span className="text-xs text-slate-500 mr-1">· {plan.stage_name}</span>}
-                    </div>
-                    <div className="text-xs text-blue-700 font-medium flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {format(parseISO(plan.start_date), 'dd/MM/yyyy')}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </CardContent>
+          ))}
+        </div>
       )}
-    </Card>
+
+      {/* Upcoming interns */}
+      {futurePlans.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-slate-200">
+          <h4 className="text-xs font-semibold text-slate-500 mb-2 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-blue-400 inline-block"></span>
+            יצטרפו בקרוב
+          </h4>
+          <div className="space-y-1.5">
+            {futurePlans.map(plan => (
+              <div key={plan.id} className="flex items-center justify-between p-2.5 bg-blue-50 rounded-lg border border-blue-200">
+                <Link
+                  to={createPageUrl('InternDetails') + `?id=${plan.intern_id}`}
+                  className="font-medium text-slate-800 hover:text-teal-700 text-sm"
+                >
+                  {plan.intern_name || '—'}
+                </Link>
+                <div className="text-xs text-blue-700 font-medium flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  {format(parseISO(plan.start_date), 'dd/MM/yyyy')}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
