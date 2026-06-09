@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap, Users, Settings, Cake } from 'lucide-react';
+import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap, Users, Settings, Cake, Trophy } from 'lucide-react';
+import PointsLeaderboard from '@/components/admin/PointsLeaderboard';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from '@/lib/AuthContext';
@@ -161,7 +162,7 @@ export default function Home() {
           )}
 
           {/* Action Panel */}
-          <div className="grid md:grid-cols-2 gap-3 md:gap-6 mb-8">
+          <div className="grid md:grid-cols-2 gap-3 md:gap-6 mb-6">
             {targetUrl && <Link to={targetUrl}>
               <Card className="border-2 border-blue-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-blue-50 to-cyan-50">
                 <CardContent className="p-4 md:p-8">
@@ -224,6 +225,16 @@ export default function Home() {
               </Card>
             </Link>
           </div>
+          {/* Leaderboard */}
+          <Card className="shadow-xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Trophy className="w-5 h-5 text-amber-500" />
+                <h2 className="text-lg font-bold text-slate-800">לוח הניקוד</h2>
+              </div>
+              <PointsLeaderboard />
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -328,6 +339,17 @@ export default function Home() {
                </Card>
              </Link>
              </div>
+
+             {/* Leaderboard */}
+             <Card className="mt-3 md:mt-6 shadow-xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
+               <CardContent className="p-4 md:p-6">
+                 <div className="flex items-center gap-2 mb-4">
+                   <Trophy className="w-5 h-5 text-amber-500" />
+                   <h2 className="text-lg font-bold text-slate-800">לוח הניקוד</h2>
+                 </div>
+                 <PointsLeaderboard />
+               </CardContent>
+             </Card>
             </div>
             </div>
             );
