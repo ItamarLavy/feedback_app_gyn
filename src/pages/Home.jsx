@@ -274,11 +274,11 @@ export default function Home() {
              <p className="text-sm md:text-lg text-slate-600">מערכת לניהול ומעקב אחר התקדמות מתמחים</p>
            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+          <div className="flex flex-col gap-3 md:gap-6">
              {/* כפתור פרופיל מתמחה – רק אם המנהל גם מתמחה */}
              {internId && (
-               <Link to={createPageUrl('InternProfile') + `?id=${internId}`}>
-                 <Card className="border-2 border-blue-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-blue-50 to-cyan-50">
+               <Link to={createPageUrl('InternProfile') + `?id=${internId}`} className="w-full">
+                 <Card className="border-2 border-blue-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group w-full bg-gradient-to-br from-blue-50 to-cyan-50">
                    <CardContent className="p-4 md:p-8">
                      <div className="flex items-center gap-3 md:gap-4">
                        <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center group-hover:from-blue-300 group-hover:to-cyan-300 transition-colors flex-shrink-0 shadow-md">
@@ -296,8 +296,8 @@ export default function Home() {
 
              {/* כפתור פרופיל בכיר – רק אם המנהל גם מומחה */}
              {expertId && (
-               <Link to={createPageUrl('ExpertFeedbackDetailWithAuth') + `?id=${expertId}`}>
-                 <Card className="border-2 border-purple-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-purple-50 to-pink-50">
+               <Link to={createPageUrl('ExpertFeedbackDetailWithAuth') + `?id=${expertId}`} className="w-full">
+                 <Card className="border-2 border-purple-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group w-full bg-gradient-to-br from-purple-50 to-pink-50">
                    <CardContent className="p-4 md:p-8">
                      <div className="flex items-center gap-3 md:gap-4">
                        <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center group-hover:from-purple-300 group-hover:to-pink-300 transition-colors flex-shrink-0 shadow-md">
@@ -312,22 +312,6 @@ export default function Home() {
                  </Card>
                </Link>
              )}
-
-             <Link to={createPageUrl('Admin')}>
-               <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-4 md:p-8">
-                   <div className="flex items-center gap-3 md:gap-4">
-                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <Shield className="w-5 h-5 md:w-7 md:h-7 text-white" />
-                     </div>
-                     <div>
-                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פאנל ניהול</h3>
-                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפייה בכל המשובים, ניהול מתמחים ומומחים</p>
-                     </div>
-                   </div>
-                 </CardContent>
-               </Card>
-             </Link>
              </div>
 
              {/* Birthdays - Manager */}
