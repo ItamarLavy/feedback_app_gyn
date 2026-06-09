@@ -151,15 +151,7 @@ export default function Home() {
   
           </div>
 
-          {/* Birthday Button - only show if user has birthday today */}
-          {userBirthdayToday && (
-            <div className="mb-4">
-              <div className="w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-semibold shadow-md">
-                <Cake className="w-5 h-5" />
-                🎂 יום הולדת שלך היום! 🎉
-              </div>
-            </div>
-          )}
+
 
           {/* Action Panel */}
           <div className="grid md:grid-cols-2 gap-3 md:gap-6 mb-6">
@@ -253,15 +245,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
         <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-6 md:py-12 w-full pb-40">
-          {/* Birthday Banner for manager - only show if manager has birthday today */}
-          {userBirthdayToday && (
-            <div className="mb-4">
-              <div className="w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-semibold shadow-md">
-                <Cake className="w-5 h-5" />
-                🎂 יום הולדת שלך היום! 🎉
-              </div>
-            </div>
-          )}
+
 
           <div className="text-center mb-6 md:mb-12">
              <div className="inline-flex items-center justify-center w-14 h-14 md:w-20 md:h-20 rounded-2xl bg-gradient-to-bl from-teal-500 to-teal-600 shadow-lg shadow-teal-500/30 mb-3 md:mb-6">
