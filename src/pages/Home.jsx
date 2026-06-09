@@ -61,10 +61,27 @@ export default function Home() {
 
   const checkUserRole = async () => {
     const email = user.email;
+    const isManagerUser = MANAGER_EMAILS.includes(email) || user.role === 'admin';
 
-    if (MANAGER_EMAILS.includes(email) || user.role === 'admin') {
-      setUserType('manager');
+    if (isManagerUser) {
       setUserName(user.full_name || '');
+      // בדוק אם המנהל גם מתמחה או מומחה
+      const [interns, experts] = await Promise.all([
+        base44.entities.Intern.filter({ email }),
+        base44.entities.Expert.filter({ email }),
+      ]);
+      if (interns.length > 0) {
+        const intern = interns[0];
+        setInternId(intern.id);
+        setTargetUrl(createPageUrl('InternProfile') + `?id=${intern.id}`);
+        if (intern.stage === 'תורן 1 מתקדם' && experts.length > 0) {
+          setExpertId(experts[0].id);
+        }
+      } else if (experts.length > 0) {
+        setExpertId(experts[0].id);
+        setTargetUrl(createPageUrl('ExpertFeedbackDetailWithAuth') + `?id=${experts[0].id}`);
+      }
+      setUserType('manager');
       setChecking(false);
       return;
     }
@@ -241,37 +258,43 @@ export default function Home() {
            </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-             <Link to={createPageUrl('Interns')}>
-               <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-4 md:p-8">
-                   <div className="flex items-center gap-3 md:gap-4">
-                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <Users className="w-5 h-5 md:w-7 md:h-7 text-white" />
+             {/* כפתור פרופיל מתמחה – רק אם המנהל גם מתמחה */}
+             {internId && (
+               <Link to={createPageUrl('InternProfile') + `?id=${internId}`}>
+                 <Card className="border-2 border-blue-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-blue-50 to-cyan-50">
+                   <CardContent className="p-4 md:p-8">
+                     <div className="flex items-center gap-3 md:gap-4">
+                       <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center group-hover:from-blue-300 group-hover:to-cyan-300 transition-colors flex-shrink-0 shadow-md">
+                         <Stethoscope className="w-5 h-5 md:w-7 md:h-7 text-blue-800" />
+                       </div>
+                       <div>
+                         <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פרופיל מתמחה</h3>
+                         <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפה בפרופיל שלך ומלא משוב עצמי על פרוצדורה</p>
+                       </div>
                      </div>
-                     <div>
-                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פרופיל מתמחה</h3>
-                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפה בפרופיל המתמחה ומלא משוב עצמי על פרוצדורה</p>
-                     </div>
-                   </div>
-                 </CardContent>
-               </Card>
-             </Link>
+                   </CardContent>
+                 </Card>
+               </Link>
+             )}
 
-             <Link to={createPageUrl('Experts')}>
-               <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-4 md:p-8">
-                   <div className="flex items-center gap-3 md:gap-4">
-                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <Stethoscope className="w-5 h-5 md:w-7 md:h-7 text-white" />
+             {/* כפתור פרופיל בכיר – רק אם המנהל גם מומחה */}
+             {expertId && (
+               <Link to={createPageUrl('ExpertFeedbackDetailWithAuth') + `?id=${expertId}`}>
+                 <Card className="border-2 border-purple-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-purple-50 to-pink-50">
+                   <CardContent className="p-4 md:p-8">
+                     <div className="flex items-center gap-3 md:gap-4">
+                       <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center group-hover:from-purple-300 group-hover:to-pink-300 transition-colors flex-shrink-0 shadow-md">
+                         <Stethoscope className="w-5 h-5 md:w-7 md:h-7 text-purple-800" />
+                       </div>
+                       <div>
+                         <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פרופיל בכיר</h3>
+                         <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפה בפרופיל הבכיר ואשר משובים הממתינים</p>
+                       </div>
                      </div>
-                     <div>
-                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">פרופיל בכיר</h3>
-                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">צפה בפרופיל הבכיר ואשר משובים הממתינים</p>
-                     </div>
-                   </div>
-                 </CardContent>
-               </Card>
-             </Link>
+                   </CardContent>
+                 </Card>
+               </Link>
+             )}
 
              <Link to={createPageUrl('Instructions')}>
                <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
