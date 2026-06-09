@@ -124,8 +124,8 @@ export default function InternPasswords() {
               <Users className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-slate-800">מיילים מתמחים</h1>
-              <p className="text-slate-500 text-xs md:text-sm">רשימת כתובות מייל של מתמחים</p>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-800">פרטי מתמחים</h1>
+              <p className="text-slate-500 text-xs md:text-sm">ניהול פרטי קשר ומידע על המתמחים</p>
             </div>
           </div>
           <Link
