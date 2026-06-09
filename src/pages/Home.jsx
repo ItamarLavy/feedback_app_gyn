@@ -235,9 +235,7 @@ export default function Home() {
                 >
                   <div className="flex items-center gap-2">
                     <Cake className="w-5 h-5 text-pink-500" />
-                    <span className="text-base font-bold text-slate-800">
-                      יום הולדת ל: {todayBirthdays.map(i => i.name).join(', ')}
-                    </span>
+                    <span className="text-base font-bold text-slate-800">יום הולדת ל:</span>
                   </div>
                   {showBirthdays ? <ArrowLeft className="w-4 h-4 rotate-90 text-pink-400" /> : <ArrowLeft className="w-4 h-4 -rotate-90 text-pink-400" />}
                 </button>
@@ -381,9 +379,7 @@ export default function Home() {
                    >
                      <div className="flex items-center gap-2">
                        <Cake className="w-5 h-5 text-pink-500" />
-                       <span className="text-base font-bold text-slate-800">
-                         יום הולדת ל: {todayBirthdays.map(i => i.name).join(', ')}
-                       </span>
+                       <span className="text-base font-bold text-slate-800">יום הולדת ל:</span>
                      </div>
                      {showBirthdays ? <ArrowLeft className="w-4 h-4 rotate-90 text-pink-400" /> : <ArrowLeft className="w-4 h-4 -rotate-90 text-pink-400" />}
                    </button>

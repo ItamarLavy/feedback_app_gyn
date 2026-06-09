@@ -67,7 +67,17 @@ export default function PointsLeaderboard({ defaultExpanded = false }) {
     return points;
   };
 
-  const enriched = userPoints
+  // dedupe: keep one record per user_id (highest total_points wins)
+  const dedupedPoints = Object.values(
+    userPoints.reduce((acc, p) => {
+      if (!acc[p.user_id] || (p.total_points || 0) > (acc[p.user_id].total_points || 0)) {
+        acc[p.user_id] = p;
+      }
+      return acc;
+    }, {})
+  );
+
+  const enriched = dedupedPoints
     .filter(p => roleFilter === 'all' || p.user_role === roleFilter)
     .map(p => ({
       ...p,
