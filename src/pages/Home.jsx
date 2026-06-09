@@ -22,7 +22,7 @@ export default function Home() {
   const pullToRefreshRef = usePullToRefresh(['user']);
   const [internId, setInternId] = useState(null);
   const [expertId, setExpertId] = useState(null);
-  const [showBirthdays, setShowBirthdays] = useState(false);
+  const [showBirthdays, setShowBirthdays] = useState(true);
 
   const { data: allInterns = [] } = useQuery({
     queryKey: ['all-interns-bday'],
@@ -225,6 +225,37 @@ export default function Home() {
               </Card>
             </Link>
           </div>
+          {/* Birthday Collapsible */}
+          {todayBirthdays.length > 0 && (
+            <Card className="shadow-xl border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-rose-50 mb-4">
+              <CardContent className="p-4 md:p-6">
+                <button
+                  onClick={() => setShowBirthdays(v => !v)}
+                  className="w-full flex items-center justify-between gap-2 text-right"
+                >
+                  <div className="flex items-center gap-2">
+                    <Cake className="w-5 h-5 text-pink-500" />
+                    <span className="text-base font-bold text-slate-800">
+                      יום הולדת ל: {todayBirthdays.map(i => i.name).join(', ')}
+                    </span>
+                  </div>
+                  {showBirthdays ? <ArrowLeft className="w-4 h-4 rotate-90 text-pink-400" /> : <ArrowLeft className="w-4 h-4 -rotate-90 text-pink-400" />}
+                </button>
+                {showBirthdays && (
+                  <div className="mt-3 space-y-2">
+                    {todayBirthdays.map(intern => (
+                      <div key={intern.id} className="flex items-center gap-2 bg-white/70 rounded-lg px-3 py-2">
+                        <span className="text-xl">🎂</span>
+                        <span className="font-semibold text-slate-800">{intern.name}</span>
+                        <span className="text-pink-500 text-sm">יום הולדת שמח! 🎉</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Leaderboard */}
           <Card className="shadow-xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">
             <CardContent className="p-4 md:p-6">
@@ -339,6 +370,37 @@ export default function Home() {
                </Card>
              </Link>
              </div>
+
+             {/* Birthday Collapsible - Manager */}
+             {todayBirthdays.length > 0 && (
+               <Card className="mt-3 md:mt-6 shadow-xl border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-rose-50">
+                 <CardContent className="p-4 md:p-6">
+                   <button
+                     onClick={() => setShowBirthdays(v => !v)}
+                     className="w-full flex items-center justify-between gap-2 text-right"
+                   >
+                     <div className="flex items-center gap-2">
+                       <Cake className="w-5 h-5 text-pink-500" />
+                       <span className="text-base font-bold text-slate-800">
+                         יום הולדת ל: {todayBirthdays.map(i => i.name).join(', ')}
+                       </span>
+                     </div>
+                     {showBirthdays ? <ArrowLeft className="w-4 h-4 rotate-90 text-pink-400" /> : <ArrowLeft className="w-4 h-4 -rotate-90 text-pink-400" />}
+                   </button>
+                   {showBirthdays && (
+                     <div className="mt-3 space-y-2">
+                       {todayBirthdays.map(intern => (
+                         <div key={intern.id} className="flex items-center gap-2 bg-white/70 rounded-lg px-3 py-2">
+                           <span className="text-xl">🎂</span>
+                           <span className="font-semibold text-slate-800">{intern.name}</span>
+                           <span className="text-pink-500 text-sm">יום הולדת שמח! 🎉</span>
+                         </div>
+                       ))}
+                     </div>
+                   )}
+                 </CardContent>
+               </Card>
+             )}
 
              {/* Leaderboard */}
              <Card className="mt-3 md:mt-6 shadow-xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50">

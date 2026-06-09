@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Star, Medal } from 'lucide-react';
+import { Trophy, Star, Medal, ChevronDown, ChevronUp } from 'lucide-react';
 import { startOfWeek, startOfMonth } from 'date-fns';
 
 const PERIOD_TABS = [
@@ -19,9 +19,10 @@ function getRankIcon(rank) {
   return <span className="w-5 h-5 flex items-center justify-center text-sm text-slate-500 font-bold">{rank + 1}</span>;
 }
 
-export default function PointsLeaderboard() {
+export default function PointsLeaderboard({ defaultExpanded = false }) {
   const [period, setPeriod] = useState('all');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [expanded, setExpanded] = useState(defaultExpanded);
 
   const { data: userPoints = [] } = useQuery({
     queryKey: ['userPoints'],
@@ -117,7 +118,7 @@ export default function PointsLeaderboard() {
           <p className="text-center text-slate-400 py-6">אין נתונים לתקופה זו</p>
         ) : (
           <div className="space-y-2">
-            {enriched.map((entry, idx) => (
+            {(expanded ? enriched : enriched.slice(0, 3)).map((entry, idx) => (
               <div
                 key={entry.id}
                 className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
@@ -150,6 +151,14 @@ export default function PointsLeaderboard() {
                 </div>
               </div>
             ))}
+            {enriched.length > 3 && (
+              <button
+                onClick={() => setExpanded(e => !e)}
+                className="w-full flex items-center justify-center gap-1 py-2 text-sm text-amber-700 font-medium hover:text-amber-900 transition-colors"
+              >
+                {expanded ? <><ChevronUp className="w-4 h-4" /> הצג פחות</> : <><ChevronDown className="w-4 h-4" /> הצג את כל {enriched.length} המשתתפים</>}
+              </button>
+            )}
           </div>
         )}
       </div>
