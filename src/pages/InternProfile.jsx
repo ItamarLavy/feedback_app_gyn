@@ -139,7 +139,6 @@ export default function InternProfile() {
           onDone={(nick, av) => setShowAvatarSetup(false)}
         />
       )}
-      <InternPersona nickname={intern.nickname} avatar={intern.avatar} />
       <div className="max-w-6xl mx-auto px-5 py-8 pb-40 md:pb-8">
         {/* Header */}
          <div className="flex items-start justify-between mb-6 gap-2">
@@ -148,7 +147,10 @@ export default function InternProfile() {
                {intern.name?.[0]}
              </div>
             <div className="min-w-0">
-              <h1 className="text-xl md:text-2xl font-bold text-slate-800 leading-tight">{intern.name}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl md:text-2xl font-bold text-slate-800 leading-tight">{intern.name}</h1>
+                <InternPersona nickname={intern.nickname} avatar={intern.avatar} />
+              </div>
               <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                 {intern.stage && (
                   <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-700 text-xs font-semibold px-2 py-0.5 rounded-full">

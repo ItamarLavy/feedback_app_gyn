@@ -115,36 +115,35 @@ export default function NextStageRequirements({ internStage, stageStartDate, fee
           {items.map((item) => (
             <div
               key={item.code}
-              className={`flex items-center justify-between rounded-lg px-3 py-2 ${
+              className={`rounded-lg px-3 py-2 ${
                 item.completed ? 'bg-green-50 border border-green-200' : 'bg-slate-50 border border-slate-200'
               }`}
             >
-              <div className="flex items-center gap-2 min-w-0">
-                {item.completed ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                ) : (
-                  <Circle className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                )}
-                <div className="min-w-0">
-                  <p className={`text-sm font-medium truncate ${item.completed ? 'text-green-700 line-through' : 'text-slate-700'}`}>
+              {/* שורה עליונה: אייקון + שם + ספירה */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2 min-w-0">
+                  {item.completed ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                  ) : (
+                    <Circle className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" />
+                  )}
+                  <p className={`text-sm font-medium leading-snug ${item.completed ? 'text-green-700 line-through' : 'text-slate-700'}`}>
                     {item.label}
                   </p>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className={`text-xs px-1.5 py-0.5 rounded ${CATEGORY_COLORS[item.category] || 'bg-slate-100 text-slate-600'}`}>
-                      {item.code}
-                    </span>
-                    {item.manualCount > 0 && (
-                      <span className="text-xs text-slate-400">({item.manualCount} ידני)</span>
-                    )}
-                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0 mr-2">
-                <span className={`text-sm font-bold ${item.completed ? 'text-green-600' : item.done > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
-                  {item.done} / {item.required}
+                <span className={`text-sm font-bold flex-shrink-0 ${item.completed ? 'text-green-600' : item.done > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
+                  {item.done}/{item.required}
                 </span>
-                {/* mini bar */}
-                <div className="w-16 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+              </div>
+              {/* שורה תחתונה: קוד + פס התקדמות */}
+              <div className="flex items-center gap-2 mt-1.5 pr-6">
+                <span className={`text-xs px-1.5 py-0.5 rounded flex-shrink-0 ${CATEGORY_COLORS[item.category] || 'bg-slate-100 text-slate-600'}`}>
+                  {item.code}
+                </span>
+                {item.manualCount > 0 && (
+                  <span className="text-xs text-slate-400 flex-shrink-0">({item.manualCount} ידני)</span>
+                )}
+                <div className="flex-1 bg-slate-200 rounded-full h-1.5 overflow-hidden">
                   <div
                     className={`h-1.5 rounded-full ${item.completed ? 'bg-green-500' : 'bg-teal-500'}`}
                     style={{ width: `${Math.min((item.done / item.required) * 100, 100)}%` }}

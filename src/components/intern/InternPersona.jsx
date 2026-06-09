@@ -19,24 +19,13 @@ export default function InternPersona({ nickname, avatar }) {
   if (!nickname && !avatar) return null;
 
   return (
-    <>
-      {/* Nickname - top center */}
-      {nickname && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
-          <div className="bg-white/90 backdrop-blur-sm border border-blue-200 shadow-md rounded-full px-5 py-1.5">
-            <span className="text-blue-700 font-bold text-base">✨ {nickname}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Avatar - top right (RTL: visually top-left) */}
+    <div className="flex items-center gap-2">
       {avatar && AVATAR_MAP[avatar] && (
-        <div className="fixed top-20 left-4 z-40 pointer-events-none">
-          <div className="text-5xl drop-shadow-lg select-none">
-            {AVATAR_MAP[avatar]}
-          </div>
-        </div>
+        <span className="text-2xl select-none leading-none">{AVATAR_MAP[avatar]}</span>
       )}
-    </>
+      {nickname && (
+        <span className="bg-blue-100 text-blue-700 font-semibold text-xs px-2 py-0.5 rounded-full">✨ {nickname}</span>
+      )}
+    </div>
   );
 }
