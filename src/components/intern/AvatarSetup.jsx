@@ -23,12 +23,14 @@ const AVATARS = [
 export default function AvatarSetup({ intern, onDone }) {
   const [nickname, setNickname] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [birthday, setBirthday] = useState('');
   const queryClient = useQueryClient();
 
   const saveMutation = useMutation({
     mutationFn: () => base44.entities.Intern.update(intern.id, {
       nickname: nickname || intern.name,
-      avatar: selectedAvatar
+      avatar: selectedAvatar,
+      ...(birthday ? { birthday } : {})
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['intern', intern.id] });
@@ -57,6 +59,17 @@ export default function AvatarSetup({ intern, onDone }) {
               maxLength={20}
             />
             <p className="text-xs text-slate-400 mt-1 text-center">ישאר ריק = ייעשה שימוש בשמך</p>
+          </div>
+
+          {/* Birthday */}
+          <div>
+            <label className="text-sm font-semibold text-slate-700 block mb-2">תאריך יום הולדת 🎂 (אופציונלי)</label>
+            <Input
+              type="date"
+              value={birthday}
+              onChange={e => setBirthday(e.target.value)}
+              className="text-center"
+            />
           </div>
 
           {/* Avatar selection */}
