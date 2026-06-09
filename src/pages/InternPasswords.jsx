@@ -125,6 +125,10 @@ export default function InternPasswords() {
     if (sortBy === 'rotation') {
       return (a.rotation || 'ת').localeCompare(b.rotation || 'ת', 'he');
     }
+    if (sortBy === 'joined') {
+      // טרם נכנס (ללא avatar) קודם
+      return (a.avatar ? 1 : 0) - (b.avatar ? 1 : 0);
+    }
     return (a.name || '').localeCompare(b.name || '', 'he');
   });
 
@@ -164,6 +168,7 @@ export default function InternPasswords() {
                 <SelectItem value="name">שם</SelectItem>
                 <SelectItem value="stage">שלב</SelectItem>
                 <SelectItem value="rotation">רוטציה</SelectItem>
+                <SelectItem value="joined">כניסה לאפליקציה</SelectItem>
               </SelectContent>
             </Select>
           </div>

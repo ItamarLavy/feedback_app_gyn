@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, ArrowUpDown } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from '@/lib/AuthContext';
 import AlertsBadge from '@/components/notifications/AlertsBadge';
 
@@ -26,6 +27,7 @@ export default function ExpertPasswords() {
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [sortBy, setSortBy] = useState('name');
   const queryClient = useQueryClient();
 
   const { data: experts = [] } = useQuery({
@@ -100,6 +102,15 @@ export default function ExpertPasswords() {
   ]);
   const pendingRequests = accessRequests.filter(r => !expertEmails.has(r.email));
 
+  const sortedExperts = [...experts].sort((a, b) => {
+    if (sortBy === 'joined') {
+      const aJoined = userPoints.some(p => p.user_id === a.id);
+      const bJoined = userPoints.some(p => p.user_id === b.id);
+      return (aJoined ? 1 : 0) - (bJoined ? 1 : 0);
+    }
+    return (a.name || '').localeCompare(b.name || '', 'he');
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100" dir="rtl">
       <div className="max-w-4xl mx-auto px-4 py-8 pb-40 md:pb-8">
@@ -123,13 +134,27 @@ export default function ExpertPasswords() {
           </Link>
         </div>
 
-        {/* Add new button */}
-        <div className="mb-4 flex justify-end">
+        {/* Controls row */}
+        <div className="mb-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-4 h-4 text-slate-500" />
+            <span className="text-sm text-slate-600">מיין לפי:</span>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="h-8 text-xs w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">שם</SelectItem>
+                <SelectItem value="joined">כניסה לאפליקציה</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button size="sm" onClick={() => setAddingNew(true)} className="bg-purple-600 hover:bg-purple-700">
             <Plus className="w-4 h-4 ml-1" />
             הוסף מומחה
           </Button>
         </div>
+
 
         {/* Add new form */}
         {addingNew && (
@@ -152,7 +177,7 @@ export default function ExpertPasswords() {
 
         {/* Experts list - card-based */}
         <div className="space-y-3 mb-6">
-          {experts.map((expert, index) => {
+          {sortedExperts.map((expert, index) => {
             const isEditingEmail = editingEmail === expert.id;
             const isEditingN = editingName === expert.id;
             const points = userPoints.find(p => p.user_id === expert.id)?.total_points ?? null;
