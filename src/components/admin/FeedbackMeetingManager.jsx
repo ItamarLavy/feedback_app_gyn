@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, Clock, Users, Plus, Trash2, AlertCircle, CheckCircle, Send, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, Clock, Users, Plus, Trash2, AlertCircle, CheckCircle, Send, ExternalLink, ChevronDown, ChevronUp, CalendarPlus } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/AuthContext';
@@ -124,11 +124,17 @@ export default function FeedbackMeetingManager({ interns, experts }) {
     notes: '',
     invited_experts: []
   });
+  const [quickScheduleInternId, setQuickScheduleInternId] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: meetings = [] } = useQuery({
     queryKey: ['feedback-meetings'],
     queryFn: () => base44.entities.FeedbackMeeting.list('-meeting_date')
+  });
+
+  const { data: rotationPlans = [] } = useQuery({
+    queryKey: ['rotation-plans-current'],
+    queryFn: () => base44.entities.InternRotationPlan.filter({ is_current: true })
   });
 
   const createMeetingMutation = useMutation({
@@ -243,6 +249,18 @@ export default function FeedbackMeetingManager({ interns, experts }) {
     return m.status === 'מתוכנן' && daysUntil >= 0 && daysUntil <= 2;
   });
 
+  // מתמחים שמשובצים לרוטציה כעת וחסרות להם פגישות
+  const internsWithMissingMeetings = rotationPlans.map(plan => {
+    const intern = interns.find(i => i.id === plan.intern_id);
+    if (!intern) return null;
+    const missing = [];
+    if (!plan.meeting_opening_done) missing.push('פתיחה');
+    if (!plan.meeting_middle_done) missing.push('אמצע');
+    if (!plan.meeting_closing_done) missing.push('סיום');
+    if (missing.length === 0) return null;
+    return { intern, plan, missing };
+  }).filter(Boolean);
+
   const internsWith6MonthReminder = interns.map(intern => {
     const internMeetings = meetings.filter(m => m.intern_id === intern.id && m.status === 'התקיים')
       .sort((a, b) => new Date(b.meeting_date) - new Date(a.meeting_date));
@@ -260,8 +278,58 @@ export default function FeedbackMeetingManager({ interns, experts }) {
     return { intern, needsReminder, lastMeeting, daysUntilDue };
   }).filter(item => item.needsReminder);
 
+  const handleQuickSchedule = (internId) => {
+    setQuickScheduleInternId(null);
+    setFormData(prev => ({ ...prev, intern_id: internId }));
+    setShowForm(true);
+    // גלול לטופס
+    setTimeout(() => {
+      document.getElementById('feedback-meeting-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
+
   return (
     <div className="space-y-6">
+
+      {/* תריס: מתמחים ברוטציה עם פגישות חסרות */}
+      {internsWithMissingMeetings.length > 0 && (
+        <Card className="border-2 border-orange-300 bg-orange-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2 text-orange-800">
+              <AlertCircle className="w-5 h-5" />
+              מתמחים ברוטציה כעת – פגישות חסרות ({internsWithMissingMeetings.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-2">
+              {internsWithMissingMeetings.map(({ intern, plan, missing }) => (
+                <div key={intern.id} className="flex items-center justify-between gap-3 p-3 bg-white rounded-lg border border-orange-200">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-800 text-sm">{intern.name}</p>
+                    <p className="text-xs text-slate-500 truncate">{plan.department}{plan.stage_name ? ` • ${plan.stage_name}` : ''}</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {missing.map(m => (
+                        <span key={m} className="text-xs bg-orange-100 text-orange-700 border border-orange-300 rounded px-1.5 py-0.5 font-medium">
+                          חסרה: שיחת {m}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="bg-teal-600 hover:bg-teal-700 text-white flex-shrink-0 text-xs gap-1"
+                    onClick={() => handleQuickSchedule(intern.id)}
+                  >
+                    <CalendarPlus className="w-3.5 h-3.5" />
+                    קבע פגישה
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* 6-Month Reminders */}
       {internsWith6MonthReminder.length > 0 && (
         <Card className="border-2 border-amber-300 bg-amber-50">
@@ -346,7 +414,7 @@ export default function FeedbackMeetingManager({ interns, experts }) {
         </CardHeader>
         <CardContent className="space-y-4">
           {showForm && (
-            <form onSubmit={handleSubmit} className="space-y-4 p-4 bg-slate-50 rounded-lg">
+            <form id="feedback-meeting-form" onSubmit={handleSubmit} className="space-y-4 p-4 bg-slate-50 rounded-lg">
               <div className="space-y-2">
                 <Label>מתמחה</Label>
                 <Select value={formData.intern_id} onValueChange={(value) => setFormData({ ...formData, intern_id: value })}>
