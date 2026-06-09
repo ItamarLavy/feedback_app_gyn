@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, Bell } from 'lucide-react';
+import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import AlertsBadge from '@/components/notifications/AlertsBadge';
 
@@ -210,13 +210,22 @@ export default function ExpertPasswords() {
                       )}
 
                       {/* Stats */}
-                      <div className="flex items-center gap-3 text-xs">
+                      <div className="flex items-center gap-3 text-xs flex-wrap">
                         <span className="flex items-center gap-1 text-teal-600 font-semibold">
                           <MessageSquare className="w-3 h-3" />{feedbackCount}
                         </span>
                         {points !== null && (
                           <span className="flex items-center gap-1 text-amber-600 font-semibold">
                             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{points}
+                          </span>
+                        )}
+                        {points !== null ? (
+                          <span className="flex items-center gap-1 bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xs font-medium">
+                            <Check className="w-3 h-3" /> נכנס לאפליקציה
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 bg-red-100 text-red-600 px-1.5 py-0.5 rounded text-xs font-medium">
+                            <AlertCircle className="w-3 h-3" /> טרם נכנס
                           </span>
                         )}
                         <span className="text-slate-400">#{index + 1}</span>

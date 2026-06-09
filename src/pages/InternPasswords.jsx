@@ -314,6 +314,15 @@ export default function InternPasswords() {
                        {intern.rotation && (
                          <span className="bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded text-xs">{intern.rotation}</span>
                        )}
+                       {intern.avatar ? (
+                         <span className="flex items-center gap-1 bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xs font-medium">
+                           <Check className="w-3 h-3" /> נכנס לאפליקציה
+                         </span>
+                       ) : (
+                         <span className="flex items-center gap-1 bg-red-100 text-red-600 px-1.5 py-0.5 rounded text-xs font-medium">
+                           <AlertCircle className="w-3 h-3" /> טרם נכנס
+                         </span>
+                       )}
                        <span className="text-slate-400">#{index + 1}</span>
                       </div>
                     </div>
