@@ -7,11 +7,10 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 
 import AlertsBadge from '../components/notifications/AlertsBadge';
 import InternsPanel from '../components/admin/InternsPanel';
-import PointsLeaderboard from '../components/admin/PointsLeaderboard';
 import {
   Shield, Users, ClipboardList,
   Search, Filter, Clock, Stethoscope, Trash2,
-  Trophy, ChevronDown, ChevronUp, X, MessageSquare, Lightbulb
+  ChevronDown, ChevronUp, X, MessageSquare, Lightbulb
 } from 'lucide-react';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +28,6 @@ export default function Admin() {
   const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('all');
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showAdmins, setShowAdmins] = useState(false);
   const [showMeetings, setShowMeetings] = useState(false);
 
@@ -285,19 +283,7 @@ export default function Admin() {
           </Card>
         </Link>
 
-        {/* Points Leaderboard */}
-        <Card className="border-0 shadow-lg mb-8">
-          <CardHeader className="cursor-pointer select-none hover:bg-slate-50 transition-colors rounded-xl" onClick={() => setShowLeaderboard(p => !p)}>
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-500" />
-                לוח ניקוד
-              </div>
-              {showLeaderboard ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-            </CardTitle>
-          </CardHeader>
-          {showLeaderboard && <CardContent className="pt-0"><PointsLeaderboard /></CardContent>}
-        </Card>
+
 
         {/* Feedbacks Search + List */}
         <div className="space-y-4">
