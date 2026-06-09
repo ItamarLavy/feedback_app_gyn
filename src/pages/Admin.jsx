@@ -11,7 +11,7 @@ import PointsLeaderboard from '../components/admin/PointsLeaderboard';
 import {
   Shield, Users, ClipboardList,
   Search, Filter, Clock, Stethoscope, Trash2,
-  Trophy, ChevronDown, ChevronUp, X, MessageSquare
+  Trophy, ChevronDown, ChevronUp, X, MessageSquare, Lightbulb
 } from 'lucide-react';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -269,6 +269,21 @@ export default function Admin() {
             </CardContent>
           )}
         </Card>
+
+        {/* Suggestions Button */}
+        <Link to="/Suggestions" className="block mb-8">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center flex-shrink-0">
+                <Lightbulb className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-slate-800">הצעות לשיפור מהמשתמשים</p>
+                <p className="text-sm text-slate-500">צפה בכל ההצעות שהוגשו</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Points Leaderboard */}
         <Card className="border-0 shadow-lg mb-8">

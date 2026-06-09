@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import UserSettings from '@/pages/UserSettings';
 import PointsTracker from '@/pages/PointsTracker';
+import Suggestions from '@/pages/Suggestions';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -73,6 +74,14 @@ const AuthenticatedApp = () => {
         element={
           <LayoutWrapper currentPageName="PointsTracker">
             <PointsTracker />
+          </LayoutWrapper>
+        }
+      />
+      <Route
+        path="/Suggestions"
+        element={
+          <LayoutWrapper currentPageName="Suggestions">
+            <Suggestions />
           </LayoutWrapper>
         }
       />

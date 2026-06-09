@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, BookOpen, Loader2, ArrowLeft, Zap, Users, Settings, Cake, Trophy } from 'lucide-react';
+import { Stethoscope, Shield, BookOpen, Loader2, Zap, Users, Settings, Cake, Trophy } from 'lucide-react';
 import PointsLeaderboard from '@/components/admin/PointsLeaderboard';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ export default function Home() {
   const pullToRefreshRef = usePullToRefresh(['user']);
   const [internId, setInternId] = useState(null);
   const [expertId, setExpertId] = useState(null);
-  const [showBirthdays, setShowBirthdays] = useState(true);
+
 
   const { data: allInterns = [] } = useQuery({
     queryKey: ['all-interns-bday'],
@@ -210,31 +210,23 @@ export default function Home() {
             )}
 
           </div>
-          {/* Birthday Collapsible */}
+          {/* Birthdays */}
           {todayBirthdays.length > 0 && (
             <Card className="shadow-xl border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-rose-50 mb-4">
               <CardContent className="p-4 md:p-6">
-                <button
-                  onClick={() => setShowBirthdays(v => !v)}
-                  className="w-full flex items-center justify-between gap-2 text-right"
-                >
-                  <div className="flex items-center gap-2">
-                    <Cake className="w-5 h-5 text-pink-500" />
-                    <span className="text-base font-bold text-slate-800">יום הולדת ל:</span>
-                  </div>
-                  {showBirthdays ? <ArrowLeft className="w-4 h-4 rotate-90 text-pink-400" /> : <ArrowLeft className="w-4 h-4 -rotate-90 text-pink-400" />}
-                </button>
-                {showBirthdays && (
-                  <div className="mt-3 space-y-2">
-                    {todayBirthdays.map(intern => (
-                      <div key={intern.id} className="flex items-center gap-2 bg-white/70 rounded-lg px-3 py-2">
-                        <span className="text-xl">🎂</span>
-                        <span className="font-semibold text-slate-800">{intern.name}</span>
-                        <span className="text-pink-500 text-sm">יום הולדת שמח! 🎉</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div className="flex items-center gap-2 mb-3">
+                  <Cake className="w-5 h-5 text-pink-500" />
+                  <span className="text-base font-bold text-slate-800">יום הולדת ל:</span>
+                </div>
+                <div className="space-y-2">
+                  {todayBirthdays.map(intern => (
+                    <div key={intern.id} className="flex items-center gap-2 bg-white/70 rounded-lg px-3 py-2">
+                      <span className="text-xl">🎂</span>
+                      <span className="font-semibold text-slate-800">{intern.name}</span>
+                      <span className="text-pink-500 text-sm">יום הולדת שמח! 🎉</span>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           )}
@@ -338,31 +330,23 @@ export default function Home() {
              </Link>
              </div>
 
-             {/* Birthday Collapsible - Manager */}
+             {/* Birthdays - Manager */}
              {todayBirthdays.length > 0 && (
                <Card className="mt-3 md:mt-6 shadow-xl border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-rose-50">
                  <CardContent className="p-4 md:p-6">
-                   <button
-                     onClick={() => setShowBirthdays(v => !v)}
-                     className="w-full flex items-center justify-between gap-2 text-right"
-                   >
-                     <div className="flex items-center gap-2">
-                       <Cake className="w-5 h-5 text-pink-500" />
-                       <span className="text-base font-bold text-slate-800">יום הולדת ל:</span>
-                     </div>
-                     {showBirthdays ? <ArrowLeft className="w-4 h-4 rotate-90 text-pink-400" /> : <ArrowLeft className="w-4 h-4 -rotate-90 text-pink-400" />}
-                   </button>
-                   {showBirthdays && (
-                     <div className="mt-3 space-y-2">
-                       {todayBirthdays.map(intern => (
-                         <div key={intern.id} className="flex items-center gap-2 bg-white/70 rounded-lg px-3 py-2">
-                           <span className="text-xl">🎂</span>
-                           <span className="font-semibold text-slate-800">{intern.name}</span>
-                           <span className="text-pink-500 text-sm">יום הולדת שמח! 🎉</span>
-                         </div>
-                       ))}
-                     </div>
-                   )}
+                   <div className="flex items-center gap-2 mb-3">
+                     <Cake className="w-5 h-5 text-pink-500" />
+                     <span className="text-base font-bold text-slate-800">יום הולדת ל:</span>
+                   </div>
+                   <div className="space-y-2">
+                     {todayBirthdays.map(intern => (
+                       <div key={intern.id} className="flex items-center gap-2 bg-white/70 rounded-lg px-3 py-2">
+                         <span className="text-xl">🎂</span>
+                         <span className="font-semibold text-slate-800">{intern.name}</span>
+                         <span className="text-pink-500 text-sm">יום הולדת שמח! 🎉</span>
+                       </div>
+                     ))}
+                   </div>
                  </CardContent>
                </Card>
              )}
