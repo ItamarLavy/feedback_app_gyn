@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Stethoscope, Shield, Home, BookOpen, Notebook, ArrowLeft, Settings, Lightbulb } from 'lucide-react';
+import { Stethoscope, Shield, Home, BookOpen, ArrowLeft, Settings, Lightbulb, Star } from 'lucide-react';
 import ImprovementSuggestionModal from '@/components/feedback/ImprovementSuggestionModal';
 
 import { useAuth } from '@/lib/AuthContext';
 import PointsBadge from '@/components/notifications/PointsBadge';
 import NotificationBanner from '@/components/notifications/NotificationBanner';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import BottomNav from '@/components/mobile/BottomNav';
 import PageTransition from '@/components/mobile/PageTransition';
 import { processPendingNotifications, sendFridayManagerSummary, sendFridayChampionMessage } from '@/hooks/useNotifications';
@@ -53,10 +55,18 @@ function BackButton({ currentPageName }) {
 export default function Layout({ children, currentPageName }) {
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [showSuggestion, setShowSuggestion] = useState(false);
   const isHomePage = location.pathname === '/';
   const showBackButton = !NO_BACK_PAGES.includes(currentPageName) && !isHomePage;
   const isManager = MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin';
+
+  const { data: userPointsData } = useQuery({
+    queryKey: ['user-points-layout', user?.id],
+    queryFn: () => base44.entities.UserPoints.filter({ user_id: user?.id }),
+    enabled: !!user?.id,
+  });
+  const userTotalPoints = userPointsData?.[0]?.total_points ?? null;
 
   useEffect(() => {
     if (isAuthenticated && user?.id) {
@@ -87,8 +97,15 @@ export default function Layout({ children, currentPageName }) {
             </Link>
 
             <div className="flex items-center gap-2">
-              {isAuthenticated && user?.id && (
-                <PointsBadge userId={user.id} />
+              {isAuthenticated && user?.id && userTotalPoints !== null && (
+                <Link
+                  to="/PointsTracker"
+                  className={`flex items-center gap-1.5 bg-gradient-to-l from-amber-500 to-yellow-400 text-white px-3 py-1.5 rounded-full shadow-md hover:opacity-90 transition-opacity select-none`}
+                >
+                  <Star className="w-4 h-4 fill-white" />
+                  <span className="font-bold text-sm">{userTotalPoints}</span>
+                  <span className="text-xs opacity-80">נקודות</span>
+                </Link>
               )}
               <Link
                 to={createPageUrl('Home')}
@@ -114,6 +131,17 @@ export default function Layout({ children, currentPageName }) {
                   <span className="hidden sm:inline">ניהול</span>
                 </Link>
               )}
+              <Link
+                to={createPageUrl('Instructions')}
+                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                  currentPageName === 'Instructions'
+                    ? 'bg-teal-100 text-teal-700'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">הוראות שימוש</span>
+              </Link>
               <Link
                 to="/UserSettings"
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
@@ -151,8 +179,15 @@ export default function Layout({ children, currentPageName }) {
               <span className="font-bold text-white text-sm">משוב הדסה</span>
             </div>
           )}
-          {isAuthenticated && user?.id && (
-            <PointsBadge userId={user.id} />
+          {isAuthenticated && user?.id && userTotalPoints !== null && (
+            <Link
+              to="/PointsTracker"
+              className="flex items-center gap-1.5 bg-gradient-to-l from-amber-500 to-yellow-400 text-white px-3 py-1.5 rounded-full shadow-md hover:opacity-90 transition-opacity select-none"
+            >
+              <Star className="w-4 h-4 fill-white" />
+              <span className="font-bold text-sm">{userTotalPoints}</span>
+              <span className="text-xs opacity-80">נקודות</span>
+            </Link>
           )}
         </div>
       </div>

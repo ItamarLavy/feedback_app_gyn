@@ -209,21 +209,6 @@ export default function Home() {
               </Card>
             )}
 
-            <Link to={createPageUrl('Instructions')}>
-              <Card className="border-2 border-amber-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-amber-50 to-yellow-50">
-                <CardContent className="p-4 md:p-8">
-                  <div className="flex items-center gap-3 md:gap-4">
-                    <div className="w-10 h-10 md:w-14 md:h-14 flex-shrink-0 rounded-xl bg-gradient-to-br from-amber-200 to-yellow-300 flex items-center justify-center group-hover:from-amber-300 group-hover:to-yellow-400 transition-colors shadow-md">
-                      <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-amber-800" />
-                    </div>
-                    <div>
-                      <h3 className="text-base md:text-xl font-bold text-slate-800 mb-0.5 md:mb-2">הוראות שימוש</h3>
-                      <p className="text-sm text-slate-600 md:font-medium md:text-slate-700">מדריך מפורט לשימוש במערכת</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
           </div>
           {/* Birthday Collapsible */}
           {todayBirthdays.length > 0 && (
@@ -335,22 +320,6 @@ export default function Home() {
                  </Card>
                </Link>
              )}
-
-             <Link to={createPageUrl('Instructions')}>
-               <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">
-                 <CardContent className="p-4 md:p-8">
-                   <div className="flex items-center gap-3 md:gap-4">
-                     <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-teal-300 to-emerald-400 flex items-center justify-center group-hover:from-teal-400 group-hover:to-emerald-500 transition-colors flex-shrink-0 shadow-md">
-                       <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-white" />
-                     </div>
-                     <div>
-                       <h3 className="text-base md:text-xl font-bold text-slate-900 mb-0.5 md:mb-2">הוראות שימוש</h3>
-                       <p className="text-sm text-slate-600 md:font-medium md:text-slate-800">מדריך מפורט לשימוש במערכת</p>
-                     </div>
-                   </div>
-                 </CardContent>
-               </Card>
-             </Link>
 
              <Link to={createPageUrl('Admin')}>
                <Card className="border-2 border-teal-300 shadow-xl hover:shadow-2xl transition-all cursor-pointer group h-full bg-gradient-to-br from-teal-50 to-emerald-50">

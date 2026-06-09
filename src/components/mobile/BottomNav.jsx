@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, Shield, Settings, Lightbulb, Star } from 'lucide-react';
+import { Home, Shield, Settings, Lightbulb, BookOpen } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import ImprovementSuggestionModal from '@/components/feedback/ImprovementSuggestionModal';
 
@@ -23,11 +23,12 @@ export default function BottomNav({ currentPageName }) {
     ? [
         { label: 'דף הבית', icon: Home, path: '/', id: 'home', root: '/' },
         { label: 'ניהול', icon: Shield, path: createPageUrl('Admin'), id: 'admin', root: '/Admin' },
+        { label: 'הוראות', icon: BookOpen, path: createPageUrl('Instructions'), id: 'instructions', root: '/Instructions' },
         { label: 'חשבון', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' }
       ]
     : [
         { label: 'דף הבית', icon: Home, path: '/', id: 'home', root: '/' },
-        { label: 'נקודות', icon: Star, path: '/PointsTracker', id: 'points', root: '/PointsTracker' },
+        { label: 'הוראות', icon: BookOpen, path: createPageUrl('Instructions'), id: 'instructions', root: '/Instructions' },
         { label: 'חשבון', icon: Settings, path: '/UserSettings', id: 'settings', root: '/UserSettings' }
       ];
 
