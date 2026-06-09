@@ -97,16 +97,20 @@ export default function Layout({ children, currentPageName }) {
             </Link>
 
             <div className="flex items-center gap-2">
-              {isAuthenticated && user?.id && userTotalPoints !== null && (
-                <Link
-                  to="/PointsTracker"
-                  className={`flex items-center gap-1.5 bg-gradient-to-l from-amber-500 to-yellow-400 text-white px-3 py-1.5 rounded-full shadow-md hover:opacity-90 transition-opacity select-none`}
-                >
-                  <Star className="w-4 h-4 fill-white" />
-                  <span className="font-bold text-sm">{userTotalPoints}</span>
-                  <span className="text-xs opacity-80">נקודות</span>
-                </Link>
-              )}
+              <Link
+                to="/PointsTracker"
+                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                  currentPageName === 'PointsTracker'
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                <Star className="w-4 h-4" />
+                <span className="hidden sm:inline">נקודות</span>
+                {isAuthenticated && user?.id && userTotalPoints !== null && (
+                  <span className="bg-amber-400 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">{userTotalPoints}</span>
+                )}
+              </Link>
               <Link
                 to={createPageUrl('Home')}
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${

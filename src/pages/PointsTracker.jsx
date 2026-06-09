@@ -89,12 +89,16 @@ export default function PointsTracker() {
             </div>
             <div className="space-y-2 text-sm text-slate-600">
               <div className="flex justify-between">
-                <span>משוב שהוגש (ממתין לאישור)</span>
-                <span className="font-bold text-amber-600">+10 ⭐</span>
+                <span>מילוי טופס מתמחה</span>
+                <span className="font-bold text-amber-600">+5 ⭐</span>
               </div>
               <div className="flex justify-between">
-                <span>משוב שהושלם (אושר ע"י מומחה)</span>
-                <span className="font-bold text-amber-600">+20 ⭐</span>
+                <span>מילוי טופס בכיר (גם למתמחה וגם לבכיר)</span>
+                <span className="font-bold text-amber-600">+5 ⭐</span>
+              </div>
+              <div className="flex justify-between">
+                <span>קיום שיחת משוב — לכל המשתתפים</span>
+                <span className="font-bold text-amber-600">+5 ⭐</span>
               </div>
             </div>
           </CardContent>
