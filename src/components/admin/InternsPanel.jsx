@@ -10,6 +10,9 @@ import {
   Users, GraduationCap, Building2, Star, MessageSquare,
   ChevronDown, ChevronUp, Calendar, AlertTriangle, CheckCircle2, Clock
 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { STAGE_OPTIONS } from '@/lib/procedureConstants';
+const ROTATION_OPTIONS = ['גינקולוגיה', 'מיילדות', 'פוריות', 'אונקולוגיה', 'מיון', 'רוטציה חיצונית'];
 import { format, parseISO, differenceInDays, addDays } from 'date-fns';
 import AlertsBadge from '@/components/notifications/AlertsBadge';
 import InternProgressBadges from '@/components/intern/InternProgressBadges';
@@ -63,48 +66,67 @@ function isMeetingOverdue(plan, type) {
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
 function InternRow({ intern, feedbacks, currentPlan }) {
+  const queryClient = useQueryClient();
   const { count, avg, feedbacks: internFeedbacks, needsReminder } = getInternStats(intern, feedbacks);
   return (
-    <Link
-      to={createPageUrl('InternDetails') + `?id=${intern.id}`}
-      className={`flex flex-col gap-2 p-3 rounded-xl transition-all border ${
-        needsReminder
-          ? 'bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-amber-200'
-          : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-teal-300'
-      } shadow-sm`}
-    >
+    <div className={`flex flex-col gap-2 p-3 rounded-xl border ${
+      needsReminder
+        ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200'
+        : 'bg-white border-slate-200'
+    } shadow-sm`}>
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
+        <Link to={createPageUrl('InternDetails') + `?id=${intern.id}`} className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-300 to-cyan-400 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
           {intern.name?.[0]}
-        </div>
+        </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="font-semibold text-slate-800 text-sm">{intern.name}</p>
+            <Link to={createPageUrl('InternDetails') + `?id=${intern.id}`} className="font-semibold text-slate-800 text-sm hover:text-teal-700">
+              {intern.name}
+            </Link>
             {needsReminder && <span className="text-xs text-amber-600">⚠</span>}
             <AlertsBadge personId={intern.id} role="intern" />
           </div>
-          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-            {intern.stage && (
-              <span className="flex items-center gap-0.5 text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-medium">
-                <GraduationCap className="w-2.5 h-2.5" />{intern.stage}
-              </span>
-            )}
-            {currentPlan && (
-              <span className="flex items-center gap-0.5 text-xs bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded-full font-medium">
-                <Building2 className="w-2.5 h-2.5" />{currentPlan.department}
-              </span>
-            )}
-            <span className="flex items-center gap-1 text-xs text-slate-500">
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400 flex-shrink-0" />
-              {avg ?? '-'}
-              <span className="text-slate-300">•</span>
-              {count} משובים
-            </span>
+          <div className="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
+            <Star className="w-3 h-3 fill-amber-400 text-amber-400 flex-shrink-0" />
+            {avg ?? '-'}
+            <span className="text-slate-300">•</span>
+            {count} משובים
           </div>
         </div>
       </div>
+      {/* Stage + Rotation selectors */}
+      <div className="grid grid-cols-2 gap-2" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center gap-1">
+          <GraduationCap className="w-3 h-3 text-purple-500 flex-shrink-0" />
+          <Select value={intern.stage || ''} onValueChange={async (val) => {
+            await base44.entities.Intern.update(intern.id, { stage: val });
+            queryClient.invalidateQueries({ queryKey: ['interns'] });
+          }}>
+            <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 flex-1 min-w-0">
+              <SelectValue placeholder="שלב..." />
+            </SelectTrigger>
+            <SelectContent>
+              {STAGE_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-1">
+          <Building2 className="w-3 h-3 text-teal-500 flex-shrink-0" />
+          <Select value={intern.rotation || ''} onValueChange={async (val) => {
+            await base44.entities.Intern.update(intern.id, { rotation: val });
+            queryClient.invalidateQueries({ queryKey: ['interns'] });
+          }}>
+            <SelectTrigger className="h-7 text-xs border-teal-200 text-teal-700 flex-1 min-w-0">
+              <SelectValue placeholder="רוטציה..." />
+            </SelectTrigger>
+            <SelectContent>
+              {ROTATION_OPTIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
       <InternProgressBadges feedbacks={internFeedbacks} />
-    </Link>
+    </div>
   );
 }
 

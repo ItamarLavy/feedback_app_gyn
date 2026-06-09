@@ -10,10 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, Check, Shield, Users, AlertCircle, Plus, Star, MessageSquare, Trash2, Pencil, X, GraduationCap, Stethoscope, ArrowUpDown, Cake } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import AlertsBadge from '@/components/notifications/AlertsBadge';
-
-import { STAGE_OPTIONS } from '@/lib/procedureConstants';
-const ROTATION_OPTIONS = ['גינקולוגיה', 'מיילדות', 'פוריות', 'אונקולוגיה', 'מיון', 'רוטציה חיצונית'];
-const STAGE_ORDER = { 'תורנות מחלקה': 1, 'מיון': 2, 'שחרור ממיון': 3, 'עצמאי': 4 };
 import { useAuth } from '@/lib/AuthContext';
 
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
@@ -27,8 +23,6 @@ export default function InternPasswords() {
   const [savingEmail, setSavingEmail] = useState(null);
   const [editingName, setEditingName] = useState(null);
   const [nameValue, setNameValue] = useState('');
-  const [editingStage, setEditingStage] = useState(null);
-  const [stageValue, setStageValue] = useState('');
   const [addingNew, setAddingNew] = useState(false);
   const [newName, setNewName] = useState('');
   const [newEmail, setNewEmail] = useState('');
@@ -76,12 +70,6 @@ export default function InternPasswords() {
     setEditingName(null);
   };
 
-  const handleSaveStage = async (internId) => {
-    await base44.entities.Intern.update(internId, { stage: stageValue });
-    queryClient.invalidateQueries({ queryKey: ['interns'] });
-    setEditingStage(null);
-  };
-
   const handleDeleteIntern = async (internId) => {
     try {
       await base44.entities.Intern.delete(internId);
@@ -119,12 +107,6 @@ export default function InternPasswords() {
   const pendingRequests = accessRequests.filter(r => !internEmails.has(r.email));
 
   const sortedInterns = [...interns].sort((a, b) => {
-    if (sortBy === 'stage') {
-      return (STAGE_ORDER[a.stage] || 99) - (STAGE_ORDER[b.stage] || 99);
-    }
-    if (sortBy === 'rotation') {
-      return (a.rotation || 'ת').localeCompare(b.rotation || 'ת', 'he');
-    }
     if (sortBy === 'joined') {
       // טרם נכנס (ללא avatar) קודם
       return (a.avatar ? 1 : 0) - (b.avatar ? 1 : 0);
@@ -166,8 +148,6 @@ export default function InternPasswords() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="name">שם</SelectItem>
-                <SelectItem value="stage">שלב</SelectItem>
-                <SelectItem value="rotation">רוטציה</SelectItem>
                 <SelectItem value="joined">כניסה לאפליקציה</SelectItem>
               </SelectContent>
             </Select>
@@ -256,38 +236,6 @@ export default function InternPasswords() {
                         </button>
                       )}
 
-                      {/* Stage + Rotation */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="flex items-center gap-1">
-                          <GraduationCap className="w-3 h-3 text-purple-500 flex-shrink-0" />
-                          <Select value={intern.stage || ''} onValueChange={async (val) => {
-                            await base44.entities.Intern.update(intern.id, { stage: val });
-                            queryClient.invalidateQueries({ queryKey: ['interns'] });
-                          }}>
-                            <SelectTrigger className="h-7 text-xs border-purple-200 text-purple-700 flex-1 min-w-0">
-                              <SelectValue placeholder="שלב..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {STAGE_OPTIONS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Stethoscope className="w-3 h-3 text-teal-500 flex-shrink-0" />
-                          <Select value={intern.rotation || ''} onValueChange={async (val) => {
-                            await base44.entities.Intern.update(intern.id, { rotation: val });
-                            queryClient.invalidateQueries({ queryKey: ['interns'] });
-                          }}>
-                            <SelectTrigger className="h-7 text-xs border-teal-200 text-teal-700 flex-1 min-w-0">
-                              <SelectValue placeholder="רוטציה..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ROTATION_OPTIONS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
                       {/* Birthday */}
                       <div className="flex items-center gap-1">
                         <Cake className="w-3 h-3 text-pink-400 flex-shrink-0" />
@@ -355,32 +303,7 @@ export default function InternPasswords() {
           )}
         </div>
 
-        {/* Pending requests */}
-        {pendingRequests.length > 0 && (
-          <Card className="border-0 shadow-xl border-l-4 border-amber-400">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-700 text-base">
-                <AlertCircle className="w-5 h-5" />
-                בקשות גישה שאינן ברשימת המתמחים ({pendingRequests.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {pendingRequests.map(req => (
-                  <div key={req.id} className="flex items-center justify-between bg-amber-50 rounded-lg px-4 py-2 gap-2">
-                    <div className="min-w-0">
-                      <p className="font-medium text-slate-800 text-sm">{req.full_name}</p>
-                      <p className="text-slate-500 text-xs truncate">{req.email}</p>
-                    </div>
-                    <Badge className={`flex-shrink-0 ${req.status === 'pending' ? 'bg-amber-500' : req.status === 'approved' ? 'bg-green-600' : 'bg-red-500'}`}>
-                      {req.status === 'pending' ? 'ממתין' : req.status === 'approved' ? 'אושר' : 'נדחה'}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+
       </div>
     </div>
   );

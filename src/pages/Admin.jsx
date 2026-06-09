@@ -174,7 +174,7 @@ export default function Admin() {
                     <Users className="w-3.5 h-3.5 md:w-5 md:h-5 text-cyan-700" />
                   </div>
                   <div className="text-center md:text-right">
-                    <p className="text-slate-500 text-[10px] md:text-xs leading-tight">מתמחים</p>
+                    <p className="text-slate-500 text-[10px] md:text-xs leading-tight">פרטי מתמחים</p>
                     <p className="text-lg md:text-2xl font-bold text-slate-800">{interns.length}</p>
                   </div>
                 </div>
@@ -190,7 +190,7 @@ export default function Admin() {
                     <Stethoscope className="w-3.5 h-3.5 md:w-5 md:h-5 text-purple-700" />
                   </div>
                   <div className="text-center md:text-right">
-                    <p className="text-slate-500 text-[10px] md:text-xs leading-tight">מומחים</p>
+                    <p className="text-slate-500 text-[10px] md:text-xs leading-tight">פרטי בכירים</p>
                     <p className="text-lg md:text-2xl font-bold text-slate-800">{experts.length}</p>
                   </div>
                 </div>
