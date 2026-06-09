@@ -29,6 +29,15 @@ export default function Home() {
     enabled: !!user?.id
   });
 
+  const userBirthdayToday = (() => {
+    if (!user?.email) return false;
+    const currentIntern = allInterns.find(i => i.email === user.email);
+    if (!currentIntern || !currentIntern.birthday) return false;
+    const bday = new Date(currentIntern.birthday);
+    const now = new Date();
+    return bday.getDate() === now.getDate() && bday.getMonth() === now.getMonth();
+  })();
+
   const todayBirthdays = allInterns.filter(intern => {
     if (!intern.birthday) return false;
     const bday = new Date(intern.birthday);
@@ -124,27 +133,13 @@ export default function Home() {
   
           </div>
 
-          {/* Birthday Button */}
-          {todayBirthdays.length > 0 && (
+          {/* Birthday Button - only show if user has birthday today */}
+          {userBirthdayToday && (
             <div className="mb-4">
-              <button
-                onClick={() => setShowBirthdays(s => !s)}
-                className="w-full bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500 text-white rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-semibold shadow-md transition-all"
-              >
+              <div className="w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-semibold shadow-md">
                 <Cake className="w-5 h-5" />
-                🎂 יום הולדת היום! ({todayBirthdays.length})
-              </button>
-              {showBirthdays && (
-                <div className="mt-2 bg-white rounded-xl border border-pink-200 shadow p-3 space-y-2">
-                  {todayBirthdays.map(intern => (
-                    <div key={intern.id} className="flex items-center gap-2 text-sm text-slate-700">
-                      <Cake className="w-4 h-4 text-pink-400" />
-                      <span className="font-medium">{intern.name}</span>
-                      <span className="text-pink-500">🎉</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+                🎂 יום הולדת שלך היום! 🎉
+              </div>
             </div>
           )}
 
@@ -224,27 +219,13 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-sky-50 via-teal-50/50 to-cyan-100" dir="rtl">
         <div ref={pullToRefreshRef} className="max-w-4xl mx-auto px-4 py-6 md:py-12 w-full pb-40">
-          {/* Birthday Banner for manager */}
-          {todayBirthdays.length > 0 && (
+          {/* Birthday Banner for manager - only show if manager has birthday today */}
+          {userBirthdayToday && (
             <div className="mb-4">
-              <button
-                onClick={() => setShowBirthdays(s => !s)}
-                className="w-full bg-gradient-to-r from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500 text-white rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-semibold shadow-md transition-all"
-              >
+              <div className="w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl px-4 py-3 flex items-center justify-center gap-2 font-semibold shadow-md">
                 <Cake className="w-5 h-5" />
-                🎂 יום הולדת היום! ({todayBirthdays.length})
-              </button>
-              {showBirthdays && (
-                <div className="mt-2 bg-white rounded-xl border border-pink-200 shadow p-3 space-y-2">
-                  {todayBirthdays.map(intern => (
-                    <div key={intern.id} className="flex items-center gap-2 text-sm text-slate-700">
-                      <Cake className="w-4 h-4 text-pink-400" />
-                      <span className="font-medium">{intern.name}</span>
-                      <span className="text-pink-500">🎉</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+                🎂 יום הולדת שלך היום! 🎉
+              </div>
             </div>
           )}
 
