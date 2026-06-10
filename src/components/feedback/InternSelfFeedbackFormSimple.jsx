@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Send, CheckCircle, Calendar, Hash, Zap } from 'lucide-react';
+import { CheckCircle, Hash } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getFormTypeForProcedure } from '@/lib/epaFormTypeMapping';
-import { onFeedbackRequested, getOrCreateUserPoints, addPoints } from '@/hooks/useNotifications';
-import { PROCEDURE_CATEGORIES, SENIOR_INTERN_STAGE, STAGE_TRANSITION_REQUIREMENTS, EPA_CODE_TO_PROCEDURE_NAMES } from '@/lib/procedureConstants';
-
+import { onFeedbackRequested, addPoints } from '@/hooks/useNotifications';
+import { PROCEDURE_CATEGORIES, STAGE_TRANSITION_REQUIREMENTS, EPA_CODE_TO_PROCEDURE_NAMES } from '@/lib/procedureConstants';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/lib/AuthContext';
 
 const FORM_TYPES = [
@@ -72,8 +72,25 @@ function getProceduresForStage(internStage) {
   return result;
 }
 
-export default function InternSelfFeedbackFormSimple({ internId, internName, internStage, experts, seniorInterns = [], onSuccess, prefill }) {
+export default function InternSelfFeedbackFormSimple({ internId, internName, internStage, experts: expertsProp = [], seniorInterns: seniorInternsProp = [], onSuccess, prefill }) {
   const { user } = useAuth();
+
+  // טוען בכירים ישירות מה-DB תמיד (לא מסתמך רק על props)
+  const { data: expertsFromDB = [] } = useQuery({
+    queryKey: ['experts-for-form'],
+    queryFn: () => base44.entities.Expert.list(),
+  });
+  const { data: seniorInternsFromDB = [] } = useQuery({
+    queryKey: ['senior-interns-for-form'],
+    queryFn: () => base44.entities.Intern.filter({ stage: 'תורן 1 מתקדם' }),
+  });
+
+  // העדף נתוני DB — אם טרם נטענו, השתמש ב-props כ-fallback
+  const experts = expertsFromDB.length > 0 ? expertsFromDB : expertsProp;
+  const seniorInterns = seniorInternsFromDB.length > 0
+    ? seniorInternsFromDB.filter(s => s.id !== internId)
+    : seniorInternsProp;
+
   // מנטורים = מומחים + תורן 1 מתקדם
   const allMentors = [
     ...experts.map(e => ({ ...e, _type: 'expert' })),
@@ -81,14 +98,11 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
   ];
 
   // מצא את ה-expert_id הנכון מתוך allMentors לפי id או לפי שם
-  const resolvedExpertId = prefill?.expert_id || prefill?.expert_name
+  const resolvedExpertId = (prefill?.expert_id || prefill?.expert_name)
     ? (allMentors.find(m => m.id === prefill?.expert_id)?.id ||
        allMentors.find(m => m.name === prefill?.expert_name)?.id ||
        allMentors.find(m => m.name?.includes(prefill?.expert_name || '___'))?.id || '')
     : '';
-  console.log('[prefill debug] prefill:', JSON.stringify(prefill));
-  console.log('[prefill debug] allMentors:', allMentors.map(m => ({ id: m.id, name: m.name })));
-  console.log('[prefill debug] resolvedExpertId:', resolvedExpertId);
 
   const emptyForm = {
     expert_id: resolvedExpertId,
@@ -104,8 +118,17 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
     intern_verbal_feedback: ''
   };
   const [formData, setFormData] = useState(emptyForm);
-  // אם יש prefill — מצב ברירת מחדל הוא 'all'
   const [procedureMode, setProcedureMode] = useState(prefill?.procedure_type ? 'all' : null);
+
+  // כשה-experts נטענים מה-DB ויש prefill — עדכן את expert_id
+  useEffect(() => {
+    if (!prefill || allMentors.length === 0) return;
+    const found = allMentors.find(m => m.id === prefill.expert_id)?.id ||
+                  allMentors.find(m => m.name === prefill.expert_name)?.id || '';
+    if (found) {
+      setFormData(prev => ({ ...prev, expert_id: found }));
+    }
+  }, [allMentors.length, prefill?.expert_id, prefill?.expert_name]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [procedureCode, setProcedureCode] = useState('');
@@ -122,12 +145,9 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    console.log('[InternForm] handleSubmit started, formData:', JSON.stringify(formData));
     const selectedExpert = allMentors.find(ex => ex.id === formData.expert_id);
-    console.log('[InternForm] selectedExpert:', selectedExpert);
     const existingFeedbacks = await base44.entities.Feedback.list();
     const code = generateProcedureCode(existingFeedbacks.length);
-    console.log('[InternForm] generated code:', code);
 
     const dataToSave = {
       procedure_id_code: code,
@@ -150,17 +170,13 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
     if (formData.intern_communication_rating > 0) dataToSave.intern_communication_rating = formData.intern_communication_rating;
     if (formData.intern_independence !== null) dataToSave.intern_independence = formData.intern_independence;
 
-    console.log('[InternForm] saving feedback:', JSON.stringify(dataToSave));
     const created = await base44.entities.Feedback.create(dataToSave);
-    console.log('[InternForm] feedback created, id:', created.id);
 
     // שלח מייל למומחה עם קישור למשוב
     const expertObj = allMentors.find(ex => ex.id === formData.expert_id);
     const expertEmail = expertObj?.email;
-    console.log('[InternForm] expertObj:', expertObj, '| expertEmail:', expertEmail);
     if (expertEmail) {
       try {
-        console.log('[InternForm] invoking sendFeedbackEmail...');
         await base44.functions.invoke('sendFeedbackEmail', {
           to: expertEmail,
           expertName: expertObj?.name,
@@ -172,8 +188,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
           feedbackId: created.id,
           appOrigin: window.location.origin
         });
-        console.log('[InternForm] sendFeedbackEmail success');
-      } catch(e) { console.warn('[InternForm] email send error:', e); }
+      } catch(e) { console.warn('email send error:', e); }
     } else {
       console.warn('[InternForm] no expertEmail found - skipping email');
     }
@@ -181,10 +196,8 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
     // הוסף 5 נקודות למתמחה על שליחת המשוב
     if (user?.id) {
       try {
-        console.log('[InternForm] adding points for intern, user.id:', user.id);
         await addPoints(user.id, internName, 'intern', 5);
-        console.log('[InternForm] intern points added');
-      } catch(e) { console.warn('[InternForm] intern points error:', e); }
+      } catch(e) { console.warn('intern points error:', e); }
     }
 
     // שלח תזכורות פנימיות

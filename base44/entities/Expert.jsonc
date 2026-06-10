@@ -12,7 +12,7 @@
     },
     "email2": {
       "type": "string",
-      "description": "\u05db\u05ea\u05d5\u05d1\u05ea \u05de\u05d9\u05d9\u05dc \u05e0\u05d5\u05e1\u05e4\u05ea (\u05e9\u05e0\u05d9\u05d4)"
+      "description": "\u05db\u05ea\u05d5\u05d1\u05ea \u05de\u05d9\u05d9\u05dc \u05e0\u05d5\u05e1\u05e4\u05ea (\u05e9\u05e0\u05d9\u05d9\u05d4)"
     },
     "password": {
       "type": "string",
@@ -29,24 +29,9 @@
       }
     },
     "read": {
-      "$or": [
-        {
-          "data.email": "{{user.email}}"
-        },
-        {
-          "data.email2": "{{user.email}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        },
-        {
-          "user_condition": {
-            "role": "manager"
-          }
-        }
-      ]
+      "user_condition": {
+        "isAuthenticated": true
+      }
     },
     "update": {
       "$or": [
