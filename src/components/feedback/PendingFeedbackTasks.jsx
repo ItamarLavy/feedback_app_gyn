@@ -19,12 +19,13 @@ export default function PendingFeedbackTasks({ internId, internName, internStage
   const pendingTasks = tasks.filter(t => t.status === 'pending');
   const completedTasks = tasks.filter(t => t.status === 'completed');
 
-  if (tasks.length === 0) return null;
+  // Always render the section so it's visible even when empty
 
   const activeTask = tasks.find(t => t.id === activeTaskId);
 
   return (
     <details className="mb-4 bg-white rounded-xl border-2 border-purple-200 shadow-sm overflow-hidden" open={pendingTasks.length > 0}>
+
       <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-purple-50 transition-colors list-none">
         <Bell className="w-4 h-4 text-purple-500" />
         בקשות ממתינות
@@ -33,6 +34,9 @@ export default function PendingFeedbackTasks({ internId, internName, internStage
         )}
       </summary>
       <div className="px-4 pb-4 pt-2 space-y-3">
+        {tasks.length === 0 && (
+          <p className="text-sm text-slate-400 text-center py-2">אין בקשות ממתינות</p>
+        )}
         {/* פורם מילוי - אם נבחרה משימה */}
         {activeTask && (
           <div className="border-2 border-purple-200 rounded-xl overflow-hidden">

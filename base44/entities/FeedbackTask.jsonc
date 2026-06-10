@@ -67,51 +67,24 @@
   ],
   "rls": {
     "create": {
-      "$or": [
-        {
-          "data.expert_id": "{{user.expert_entity_id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "isAuthenticated": true
+      }
     },
     "read": {
-      "$or": [
-        {
-          "data.expert_id": "{{user.expert_entity_id}}"
-        },
-        {
-          "data.intern_id": "{{user.intern_entity_id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "isAuthenticated": true
+      }
     },
     "update": {
-      "$or": [
-        {
-          "data.expert_id": "{{user.expert_entity_id}}"
-        },
-        {
-          "data.intern_id": "{{user.intern_entity_id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "isAuthenticated": true
+      }
     },
     "delete": {
       "$or": [
         {
-          "data.expert_id": "{{user.expert_entity_id}}"
+          "created_by_id": "{{user.id}}"
         },
         {
           "user_condition": {
