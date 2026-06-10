@@ -32,6 +32,7 @@ export default function SendFeedbackTask({ expertId, expertName }) {
   });
 
   const createMutation = useMutation({
+    onError: (e) => alert('שגיאה: ' + e.message),
     mutationFn: async (data) => {
       const intern = interns.find(i => i.id === data.intern_id);
       const task = await base44.entities.FeedbackTask.create({
