@@ -29,9 +29,24 @@
       }
     },
     "read": {
-      "user_condition": {
-        "isAuthenticated": true
-      }
+      "$or": [
+        {
+          "data.email": "{{user.email}}"
+        },
+        {
+          "data.email2": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "manager"
+          }
+        }
+      ]
     },
     "update": {
       "$or": [

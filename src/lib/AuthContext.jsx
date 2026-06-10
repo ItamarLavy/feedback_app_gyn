@@ -58,6 +58,11 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
       
+      // Admins always have access - skip the registration check entirely
+      if (currentUser?.role === 'admin') {
+        return;
+      }
+
       // Check if user exists in interns, experts, or managers
       if (currentUser?.email) {
         const [interns, experts, interns2, experts2, managers] = await Promise.all([
@@ -72,8 +77,8 @@ export const AuthProvider = ({ children }) => {
         const allInterns = [...interns, ...interns2];
         const allExperts = [...experts, ...experts2];
 
-        // If user not found in any list, create access request (skip for admins)
-        if (allInterns.length === 0 && allExperts.length === 0 && managers.length === 0 && currentUser?.role !== 'admin') {
+        // If user not found in any list, create access request
+        if (allInterns.length === 0 && allExperts.length === 0 && managers.length === 0) {
           const existing = await base44.entities.AccessRequest.filter({ email: currentUser.email });
           if (existing.length === 0) {
             await base44.entities.AccessRequest.create({
