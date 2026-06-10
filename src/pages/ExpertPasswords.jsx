@@ -57,7 +57,7 @@ export default function ExpertPasswords() {
   const handleSaveEmail = async (expertId, field) => {
     setSavingEmail(expertId);
     await base44.entities.Expert.update(expertId, { [field]: emailValue });
-    queryClient.invalidateQueries({ queryKey: ['experts'] });
+    queryClient.invalidateQueries({ queryKey: ['experts-passwords'] });
     setEditingEmail(null);
     setEditingEmailId(null);
     setSavingEmail(null);
@@ -66,20 +66,20 @@ export default function ExpertPasswords() {
   const handleSaveName = async (expertId) => {
     if (!nameValue.trim()) return;
     await base44.entities.Expert.update(expertId, { name: nameValue });
-    queryClient.invalidateQueries({ queryKey: ['experts'] });
+    queryClient.invalidateQueries({ queryKey: ['experts-passwords'] });
     setEditingName(null);
   };
 
   const handleDeleteExpert = async (expertId) => {
     await base44.entities.Expert.delete(expertId);
-    queryClient.invalidateQueries({ queryKey: ['experts'] });
+    queryClient.invalidateQueries({ queryKey: ['experts-passwords'] });
     setConfirmDelete(null);
   };
 
   const handleAddExpert = async () => {
     if (!newName.trim()) return;
     await base44.entities.Expert.create({ name: newName, email: newEmail });
-    queryClient.invalidateQueries({ queryKey: ['experts'] });
+    queryClient.invalidateQueries({ queryKey: ['experts-passwords'] });
     setAddingNew(false);
     setNewName('');
     setNewEmail('');
