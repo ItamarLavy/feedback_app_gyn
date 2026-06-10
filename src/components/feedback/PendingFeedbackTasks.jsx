@@ -24,18 +24,17 @@ export default function PendingFeedbackTasks({ internId, internName, internStage
   const activeTask = tasks.find(t => t.id === activeTaskId);
 
   return (
-    <details className="mb-4 bg-white rounded-xl border-2 border-purple-200 shadow-sm overflow-hidden" open={pendingTasks.length > 0}>
-
-      <summary className="px-4 py-3 cursor-pointer font-medium text-slate-800 flex items-center gap-2 hover:bg-purple-50 transition-colors list-none">
+    <div className="mb-4 bg-white rounded-xl border-2 border-purple-200 shadow-sm overflow-hidden">
+      <div className="px-4 py-3 bg-purple-50 font-medium text-slate-800 flex items-center gap-2">
         <Bell className="w-4 h-4 text-purple-500" />
-        בקשות ממתינות
+        בקשות מבכיר
         {pendingTasks.length > 0 && (
           <span className="bg-purple-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{pendingTasks.length}</span>
         )}
-      </summary>
+      </div>
       <div className="px-4 pb-4 pt-2 space-y-3">
         {tasks.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-2">אין בקשות ממתינות</p>
+          <p className="text-sm text-slate-400 text-center py-3">אין בקשות ממתינות</p>
         )}
         {/* פורם מילוי - אם נבחרה משימה */}
         {activeTask && (
@@ -128,6 +127,6 @@ export default function PendingFeedbackTasks({ internId, internName, internStage
           </div>
         )}
       </div>
-    </details>
+    </div>
   );
 }
