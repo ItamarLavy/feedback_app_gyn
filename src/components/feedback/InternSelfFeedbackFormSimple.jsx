@@ -79,8 +79,15 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
     ...experts.map(e => ({ ...e, _type: 'expert' })),
     ...seniorInterns.map(i => ({ ...i, _type: 'senior_intern', name: `${i.name} (תורן 1 מתקדם)` }))
   ];
+
+  // מצא את ה-expert_id הנכון מתוך allMentors לפי id או לפי שם
+  const resolvedExpertId = prefill?.expert_id
+    ? (allMentors.find(m => m.id === prefill.expert_id)?.id ||
+       allMentors.find(m => m.name === prefill.expert_name || m.name.startsWith(prefill.expert_name || ''))?.id || '')
+    : '';
+
   const emptyForm = {
-    expert_id: prefill?.expert_id || '',
+    expert_id: resolvedExpertId,
     procedure_category: prefill?.procedure_category || '',
     procedure_type: prefill?.procedure_type || '',
     form_type: prefill?.procedure_type ? (getFormTypeForProcedure(prefill.procedure_type) || '') : '',
