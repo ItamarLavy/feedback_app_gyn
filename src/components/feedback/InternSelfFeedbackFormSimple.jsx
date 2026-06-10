@@ -83,7 +83,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
     expert_id: prefill?.expert_id || '',
     procedure_category: prefill?.procedure_category || '',
     procedure_type: prefill?.procedure_type || '',
-    form_type: '',
+    form_type: prefill?.procedure_type ? (getFormTypeForProcedure(prefill.procedure_type) || '') : '',
     procedure_date: prefill?.procedure_date || '',
     intern_overall_rating: 0,
     intern_knowledge_rating: 0,
