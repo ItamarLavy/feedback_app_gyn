@@ -81,10 +81,14 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
   ];
 
   // מצא את ה-expert_id הנכון מתוך allMentors לפי id או לפי שם
-  const resolvedExpertId = prefill?.expert_id
-    ? (allMentors.find(m => m.id === prefill.expert_id)?.id ||
-       allMentors.find(m => m.name === prefill.expert_name || m.name.startsWith(prefill.expert_name || ''))?.id || '')
+  const resolvedExpertId = prefill?.expert_id || prefill?.expert_name
+    ? (allMentors.find(m => m.id === prefill?.expert_id)?.id ||
+       allMentors.find(m => m.name === prefill?.expert_name)?.id ||
+       allMentors.find(m => m.name?.includes(prefill?.expert_name || '___'))?.id || '')
     : '';
+  console.log('[prefill debug] prefill:', JSON.stringify(prefill));
+  console.log('[prefill debug] allMentors:', allMentors.map(m => ({ id: m.id, name: m.name })));
+  console.log('[prefill debug] resolvedExpertId:', resolvedExpertId);
 
   const emptyForm = {
     expert_id: resolvedExpertId,
