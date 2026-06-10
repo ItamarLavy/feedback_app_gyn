@@ -72,8 +72,8 @@ export const AuthProvider = ({ children }) => {
         const allInterns = [...interns, ...interns2];
         const allExperts = [...experts, ...experts2];
 
-        // If user not found in any list, create access request
-        if (allInterns.length === 0 && allExperts.length === 0 && managers.length === 0) {
+        // If user not found in any list, create access request (skip for admins)
+        if (allInterns.length === 0 && allExperts.length === 0 && managers.length === 0 && currentUser?.role !== 'admin') {
           const existing = await base44.entities.AccessRequest.filter({ email: currentUser.email });
           if (existing.length === 0) {
             await base44.entities.AccessRequest.create({
