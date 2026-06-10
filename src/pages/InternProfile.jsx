@@ -22,6 +22,7 @@ import MonthlyTableUpload from '@/components/intern/MonthlyTableUpload';
 import MyRotationPlan from '@/components/intern/MyRotationPlan';
 
 import { PROCEDURE_REQUIREMENTS } from '@/lib/procedureConstants';
+import PendingFeedbackTasks from '@/components/feedback/PendingFeedbackTasks';
 
 export default function InternProfile() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -230,6 +231,23 @@ export default function InternProfile() {
             </Button>
           )}
         </div>
+
+        {/* Pending Feedback Tasks */}
+        <PendingFeedbackTasks
+          internId={internId}
+          internName={intern.name}
+          internStage={intern.stage}
+          experts={experts}
+          seniorInterns={seniorInterns.filter(s => {
+            if (s.id === internId) return false;
+            const sLastName = s.name?.split(' ').pop()?.toLowerCase();
+            return !experts.some(e => {
+              if (e.email && s.email && e.email.toLowerCase() === s.email.toLowerCase()) return true;
+              const eLastName = e.name?.split(' ').pop()?.toLowerCase();
+              return sLastName && eLastName && sLastName === eLastName;
+            });
+          })}
+        />
 
         {/* Next Stage Requirements - collapsible */}
         <details className="mb-4 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">

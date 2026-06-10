@@ -72,7 +72,7 @@ function getProceduresForStage(internStage) {
   return result;
 }
 
-export default function InternSelfFeedbackFormSimple({ internId, internName, internStage, experts, seniorInterns = [], onSuccess }) {
+export default function InternSelfFeedbackFormSimple({ internId, internName, internStage, experts, seniorInterns = [], onSuccess, prefill }) {
   const { user } = useAuth();
   // מנטורים = מומחים + תורן 1 מתקדם
   const allMentors = [
@@ -80,11 +80,11 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
     ...seniorInterns.map(i => ({ ...i, _type: 'senior_intern', name: `${i.name} (תורן 1 מתקדם)` }))
   ];
   const emptyForm = {
-    expert_id: '',
-    procedure_category: '',
-    procedure_type: '',
+    expert_id: prefill?.expert_id || '',
+    procedure_category: prefill?.procedure_category || '',
+    procedure_type: prefill?.procedure_type || '',
     form_type: '',
-    procedure_date: '',
+    procedure_date: prefill?.procedure_date || '',
     intern_overall_rating: 0,
     intern_knowledge_rating: 0,
     intern_clinical_skill_rating: 0,
@@ -93,11 +93,11 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
     intern_verbal_feedback: ''
   };
   const [formData, setFormData] = useState(emptyForm);
+  // אם יש prefill — מצב ברירת מחדל הוא 'all'
+  const [procedureMode, setProcedureMode] = useState(prefill?.procedure_type ? 'all' : null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [procedureCode, setProcedureCode] = useState('');
-  // 'stage' = רק פרוצדורות לשלב הנוכחי, 'all' = כל הפרוצדורות, null = לא נבחר
-  const [procedureMode, setProcedureMode] = useState(null);
 
   const stageProcedures = getProceduresForStage(internStage); // [{category, procedure}]
   const stageProceduresByCategory = stageProcedures.reduce((acc, { category, procedure }) => {
@@ -227,7 +227,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
       setShowSuccess(false);
       setProcedureCode('');
       setFormData(emptyForm);
-      onSuccess?.();
+      onSuccess?.(created.id);
     }, 3000);
     setIsSubmitting(false);
   };

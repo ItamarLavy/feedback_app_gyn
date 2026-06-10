@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, User, Calendar, Hash, Star, CheckCircle, AlertCircle, Send, Clock, MapPin, ChevronDown } from 'lucide-react';
+import SendFeedbackTask from '@/components/feedback/SendFeedbackTask';
 import { format, parseISO, isPast } from 'date-fns';
 import { onFeedbackCompleted, getOrCreateUserPoints, sendExpertWeeklySummary, checkExpertWeeklyReminder } from '@/hooks/useNotifications';
 import { useAuth } from '@/lib/AuthContext';
@@ -249,6 +250,13 @@ export default function ExpertFeedbackDetailWithAuth() {
             <ArrowLeft className="w-4 h-4" />
           </Link>
         </div>
+
+        {/* Send Feedback Task */}
+        {!isSeniorInternMode && (
+          <div className="mb-8">
+            <SendFeedbackTask expertId={expertId} expertName={expert.name} />
+          </div>
+        )}
 
         {/* Meetings - Collapsible */}
         {(upcomingMeetings.length > 0 || pastMeetings.length > 0) && (
