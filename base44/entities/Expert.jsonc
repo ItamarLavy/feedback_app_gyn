@@ -25,7 +25,7 @@
   "rls": {
     "create": {
       "user_condition": {
-        "role": "admin"
+        "isAuthenticated": true
       }
     },
     "read": {
