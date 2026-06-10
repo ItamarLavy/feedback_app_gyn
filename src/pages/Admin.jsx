@@ -13,6 +13,7 @@ import {
   ChevronDown, ChevronUp, X, MessageSquare, Lightbulb
 } from 'lucide-react';
 import FeedbackMeetingManager from '../components/admin/FeedbackMeetingManager';
+import FeedbackTasksPanel from '../components/admin/FeedbackTasksPanel';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -267,6 +268,9 @@ export default function Admin() {
             </CardContent>
           )}
         </Card>
+
+        {/* בקשות משוב מבכירים */}
+        <FeedbackTasksPanel />
 
         {/* Suggestions Button */}
         <Link to="/Suggestions" className="block mb-8">
