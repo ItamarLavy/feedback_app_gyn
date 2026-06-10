@@ -60,14 +60,13 @@ export default function ExpertPasswords() {
     enabled: isAuthenticated
   });
 
-  // קבוצת user_id של מי שנכנס לאפליקציה (יש לו רשומת UserPoints)
-  const joinedUserIds = new Set(userPoints.map(p => p.user_id));
-  // בודק אם מומחה התחבר: מתאים את האימייל שלו ל-User ואז ל-UserPoints
-  const hasExpertJoined = (expert) => {
+  // בודק אם בכיר התחבר לאפליקציה: די בכך שקיים User עם אימייל תואם (הוא נרשם/התחבר)
+  const findExpertUser = (expert) => {
     const emails = [expert.email, expert.email2].filter(Boolean).map(e => e.toLowerCase());
-    const matchedUser = allUsers.find(u => u.email && emails.includes(u.email.toLowerCase()));
-    return !!(matchedUser && joinedUserIds.has(matchedUser.id));
+    if (emails.length === 0) return null;
+    return allUsers.find(u => u.email && emails.includes(u.email.toLowerCase())) || null;
   };
+  const hasExpertJoined = (expert) => !!findExpertUser(expert);
 
   const handleSaveEmail = async (expertId, field) => {
     setSavingEmail(expertId);
@@ -203,10 +202,9 @@ export default function ExpertPasswords() {
           {sortedExperts.map((expert, index) => {
             const isEditingEmail = editingEmail === expert.id;
             const isEditingN = editingName === expert.id;
-            const expertEmails = [expert.email, expert.email2].filter(Boolean).map(e => e.toLowerCase());
-            const matchedUser = allUsers.find(u => u.email && expertEmails.includes(u.email.toLowerCase()));
+            const matchedUser = findExpertUser(expert);
             const points = matchedUser ? (userPoints.find(p => p.user_id === matchedUser.id)?.total_points ?? null) : null;
-            const joined = hasExpertJoined(expert);
+            const joined = !!matchedUser;
             const feedbackCount = feedbacks.filter(f => f.expert_id === expert.id).length;
 
             return (

@@ -96,12 +96,19 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
     ...seniorInterns.map(i => ({ ...i, _type: 'senior_intern', name: `${i.name} (תורן 1 מתקדם)` }))
   ];
 
-  // מצא את ה-expert_id הנכון מתוך allMentors לפי id או לפי שם
-  const resolvedExpertId = (prefill?.expert_id || prefill?.expert_name)
-    ? (allMentors.find(m => m.id === prefill?.expert_id)?.id ||
-       allMentors.find(m => m.name === prefill?.expert_name)?.id ||
-       allMentors.find(m => m.name?.includes(prefill?.expert_name || '___'))?.id || '')
-    : '';
+  // מצא את ה-expert_id הנכון מתוך allMentors לפי id או לפי שם (גם התאמה חלקית בשני הכיוונים)
+  const matchMentor = (mentors) => {
+    if (!prefill) return '';
+    const byId = mentors.find(m => m.id === prefill.expert_id);
+    if (byId) return byId.id;
+    const name = (prefill.expert_name || '').trim();
+    if (!name) return '';
+    const exact = mentors.find(m => (m.name || '').trim() === name);
+    if (exact) return exact.id;
+    const partial = mentors.find(m => (m.name || '').includes(name) || name.includes((m.name || '').replace(/\s*\(תורן 1 מתקדם\)/, '').trim()));
+    return partial?.id || '';
+  };
+  const resolvedExpertId = matchMentor(allMentors);
 
   const emptyForm = {
     expert_id: resolvedExpertId,
@@ -122,8 +129,7 @@ export default function InternSelfFeedbackFormSimple({ internId, internName, int
   // כשה-experts נטענים מה-DB ויש prefill — עדכן את expert_id
   useEffect(() => {
     if (!prefill || allMentors.length === 0) return;
-    const found = allMentors.find(m => m.id === prefill.expert_id)?.id ||
-                  allMentors.find(m => m.name === prefill.expert_name)?.id || '';
+    const found = matchMentor(allMentors);
     if (found) {
       setFormData(prev => ({ ...prev, expert_id: found }));
     }
