@@ -75,20 +75,19 @@ function getProceduresForStage(internStage) {
 export default function InternSelfFeedbackFormSimple({ internId, internName, internStage, experts: expertsProp = [], seniorInterns: seniorInternsProp = [], onSuccess, prefill }) {
   const { user } = useAuth();
 
-  // טוען בכירים ישירות מה-DB תמיד (לא מסתמך רק על props)
-  const { data: expertsFromDB = [] } = useQuery({
-    queryKey: ['experts-for-form'],
-    queryFn: () => base44.entities.Expert.list(),
-  });
-  const { data: seniorInternsFromDB = [] } = useQuery({
-    queryKey: ['senior-interns-for-form'],
-    queryFn: () => base44.entities.Intern.filter({ stage: 'תורן 1 מתקדם' }),
+  // טוען מנטורים דרך backend function (עוקף RLS שמונע ממתמחה לקרוא את רשימת המומחים)
+  const { data: mentorsData } = useQuery({
+    queryKey: ['mentors-for-form'],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('listMentors', {});
+      return res.data;
+    },
   });
 
-  // העדף נתוני DB — אם טרם נטענו, השתמש ב-props כ-fallback
-  const experts = expertsFromDB.length > 0 ? expertsFromDB : expertsProp;
-  const seniorInterns = seniorInternsFromDB.length > 0
-    ? seniorInternsFromDB.filter(s => s.id !== internId)
+  // העדף נתוני ה-function — אם טרם נטענו, השתמש ב-props כ-fallback
+  const experts = mentorsData?.experts?.length > 0 ? mentorsData.experts : expertsProp;
+  const seniorInterns = mentorsData?.seniorInterns?.length > 0
+    ? mentorsData.seniorInterns.filter(s => s.id !== internId)
     : seniorInternsProp;
 
   // מנטורים = מומחים + תורן 1 מתקדם

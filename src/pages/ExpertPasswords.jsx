@@ -54,6 +54,21 @@ export default function ExpertPasswords() {
     enabled: isAuthenticated
   });
 
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['all-users-experts'],
+    queryFn: () => base44.entities.User.list(),
+    enabled: isAuthenticated
+  });
+
+  // קבוצת user_id של מי שנכנס לאפליקציה (יש לו רשומת UserPoints)
+  const joinedUserIds = new Set(userPoints.map(p => p.user_id));
+  // בודק אם מומחה התחבר: מתאים את האימייל שלו ל-User ואז ל-UserPoints
+  const hasExpertJoined = (expert) => {
+    const emails = [expert.email, expert.email2].filter(Boolean).map(e => e.toLowerCase());
+    const matchedUser = allUsers.find(u => u.email && emails.includes(u.email.toLowerCase()));
+    return !!(matchedUser && joinedUserIds.has(matchedUser.id));
+  };
+
   const handleSaveEmail = async (expertId, field) => {
     setSavingEmail(expertId);
     await base44.entities.Expert.update(expertId, { [field]: emailValue });
@@ -112,8 +127,8 @@ export default function ExpertPasswords() {
 
   const sortedExperts = [...experts].sort((a, b) => {
     if (sortBy === 'joined') {
-      const aJoined = userPoints.some(p => p.user_id === a.id);
-      const bJoined = userPoints.some(p => p.user_id === b.id);
+      const aJoined = hasExpertJoined(a);
+      const bJoined = hasExpertJoined(b);
       return (aJoined ? 1 : 0) - (bJoined ? 1 : 0);
     }
     return (a.name || '').localeCompare(b.name || '', 'he');
@@ -188,7 +203,10 @@ export default function ExpertPasswords() {
           {sortedExperts.map((expert, index) => {
             const isEditingEmail = editingEmail === expert.id;
             const isEditingN = editingName === expert.id;
-            const points = userPoints.find(p => p.user_id === expert.id)?.total_points ?? null;
+            const expertEmails = [expert.email, expert.email2].filter(Boolean).map(e => e.toLowerCase());
+            const matchedUser = allUsers.find(u => u.email && expertEmails.includes(u.email.toLowerCase()));
+            const points = matchedUser ? (userPoints.find(p => p.user_id === matchedUser.id)?.total_points ?? null) : null;
+            const joined = hasExpertJoined(expert);
             const feedbackCount = feedbacks.filter(f => f.expert_id === expert.id).length;
 
             return (
@@ -252,7 +270,7 @@ export default function ExpertPasswords() {
                             <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{points}
                           </span>
                         )}
-                        {points !== null ? (
+                        {joined ? (
                           <span className="flex items-center gap-1 bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xs font-medium">
                             <Check className="w-3 h-3" /> נכנס לאפליקציה
                           </span>
