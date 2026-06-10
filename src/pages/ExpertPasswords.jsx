@@ -15,7 +15,7 @@ import AlertsBadge from '@/components/notifications/AlertsBadge';
 const MANAGER_EMAILS = ['yuval.lavie@hadassah.org.il', 'ronit.gilad@hadassah.org.il', 'zvika@hadassah.org.il'];
 
 export default function ExpertPasswords() {
-  const { user, isAuthenticated: isLoggedIn } = useAuth();
+  const { user, isAuthenticated: isLoggedIn, isLoadingAuth } = useAuth();
   const isAuthenticated = isLoggedIn && (MANAGER_EMAILS.includes(user?.email) || user?.role === 'admin');
   const [editingEmail, setEditingEmail] = useState(null); // 'email' | 'email2' | null — stores which field
   const [editingEmailId, setEditingEmailId] = useState(null);
@@ -84,6 +84,14 @@ export default function ExpertPasswords() {
     setNewName('');
     setNewEmail('');
   };
+
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-purple-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
