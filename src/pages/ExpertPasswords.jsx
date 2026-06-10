@@ -30,8 +30,8 @@ export default function ExpertPasswords() {
   const [sortBy, setSortBy] = useState('name');
   const queryClient = useQueryClient();
 
-  const { data: experts = [] } = useQuery({
-    queryKey: ['experts'],
+  const { data: experts = [], isLoading: expertsLoading } = useQuery({
+    queryKey: ['experts-passwords'],
     queryFn: () => base44.entities.Expert.list(),
     enabled: isAuthenticated
   });
@@ -275,7 +275,10 @@ export default function ExpertPasswords() {
               </Card>
             );
           })}
-          {experts.length === 0 && (
+          {expertsLoading && (
+            <div className="text-center py-12 text-slate-400">טוען...</div>
+          )}
+          {!expertsLoading && experts.length === 0 && (
             <div className="text-center py-12 text-slate-500">אין מומחים במערכת</div>
           )}
         </div>
